@@ -1,61 +1,66 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ArvoreExplorer, { type NoArvore } from '../../components/arvore/ArvoreExplorer';
+import ArvoreGeracoes, { type NoArvore, type Uniao } from '../../components/arvore/ArvoreGeracoes';
 import { carregarAcervo } from '../../lib/pessoas-build';
-import { RAIZ_DA_LINHA, ROTULO_LINHA, periodoVida } from '../../lib/pessoas';
+import { RAIZ_DA_LINHA, ROTULO_LINHA, anoCurto, dataAcervoLegivel, periodoVida, rotuloOcupacao } from '../../lib/pessoas';
 
-const { pessoas } = await carregarAcervo();
+const { pessoas, documentos, documentoPorId } = await carregarAcervo();
 const nos: NoArvore[] = pessoas.map((p) => ({
   id: p.id,
   nome: p.nome_exibicao,
+  outros: p.nomes_alternativos,
   vida: periodoVida(p),
+  anoNasc: anoCurto(p.nascimento?.data).replace(/\D/g, '').slice(0, 4),
+  anoMorte: anoCurto(p.morte?.data).replace(/\D/g, '').slice(0, 4),
   lugar: p.nascimento?.lugar ?? '',
+  ocupacao: rotuloOcupacao(p.ocupacao),
   linha: p.linha,
   sexo: p.sexo,
-  relacoes: p.relacoes.map((r) => ({ tipo: r.tipo, pessoa: r.pessoa, firmeza: r.firmeza })),
+  documentos: p.aparece_em.length,
+  relacoes: p.relacoes.map((r) => ({ tipo: r.tipo, pessoa: r.pessoa, firmeza: r.firmeza, documentos: r.documentos })),
 }));
-const raizes = (['suraci', 'cardillo', 'marsicano', 'vecchia'] as const)
-  .map((l) => ({ id: RAIZ_DA_LINHA[l]!, rotulo: ROTULO_LINHA[l] }))
-  .filter((r) => nos.some((n) => n.id === r.id));
-const foco = raizes[0]?.id ?? nos[0].id;
-const comParentesco = nos.filter((n) => n.relacoes.length > 0).length;
+const existe = (id?: string) => !!id && nos.some((n) => n.id === id);
+const linhas = [
+  { id: 'suraci', rotulo: 'Suraci → Sorage (Calábria)', raiz: RAIZ_DA_LINHA.suraci!, inclui: ['suraci', 'vecchia'] },
+  { id: 'cardillo', rotulo: 'Cardillo → Cardilo (Campânia)', raiz: RAIZ_DA_LINHA.cardillo!, inclui: ['cardillo', 'marsicano'] },
+].filter((l) => existe(l.raiz));
+
+// O casal imigrante de cada linha: o cônjuge da raiz e o ato que registra o casamento.
+const unioes: Uniao[] = linhas.flatMap((l) => {
+  const raiz = pessoas.find((p) => p.id === l.raiz)!;
+  return raiz.relacoes
+    .filter((r) => r.tipo === 'conjuge')
+    .map((r) => {
+      const docs = r.documentos.map((id) => documentoPorId.get(id)).filter((d): d is NonNullable<typeof d> => !!d);
+      const doc = docs.find((d) => d.tipo === 'casamento' || d.tipo === 'matrimonio') ?? docs[0];
+      return {
+        raiz: l.raiz,
+        conjuge: r.pessoa,
+        firmeza: r.firmeza,
+        ...(doc ? { documento: { id: doc.id, titulo: doc.titulo, data: dataAcervoLegivel(doc.data_documento), lugar: doc.lugar } } : {}),
+      };
+    });
+});
 ---
 
 <Base
   titulo="Árvores de linhagem"
-  descricao="As linhas Suraci → Sorage e Cardillo → Cardilo, geração a geração, com o grau de firmeza de cada ligação de parentesco e o documento que a sustenta."
+  descricao="As linhas Suraci → Sorage e Cardillo → Cardilo geração a geração, a partir dos dois imigrantes, com o caminho documentado até cada antepassado e a firmeza de cada ligação."
 >
   <div class="space-y-8 py-8">
-    <section class="border-b border-[#E7E2D8] pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      <div class="lg:col-span-8 space-y-4">
-        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">Grafo de evidências · uma pessoa no centro</div>
-        <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">Árvores de linhagem</h1>
-        <p class="font-editorial text-lg sm:text-xl text-[#44403C] leading-relaxed">
-          Esta árvore não é um desenho: é o grafo das relações que os documentos afirmam. Cada ligação pai–filho ou
-          marido–mulher existe aqui porque um ato a declara, e aparece com a firmeza que esse ato permite — cheia
-          quando o próprio ato a estabelece, tracejada quando é declarada ou inferida, pontilhada quando há contra-indícios.
-        </p>
-        <p class="font-editorial text-base text-[#57534E] leading-relaxed">
-          Clique numa pessoa para pôr a árvore em volta dela; o ícone ao lado abre o dossiê, com o documento de cada ligação.
+    <section class="border-b border-[#E7E2D8] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27] mb-1">Ascendência documentada · geração a geração</div>
+        <h1 class="font-display text-3xl sm:text-4xl font-medium text-[#1C1917]">Árvores de linhagem: Suraci &amp; Cardillo</h1>
+        <p class="font-editorial text-sm sm:text-base text-[#57534E] mt-1 max-w-2xl">
+          Dos dois imigrantes para cima: pais, avós, bisavós, até onde os livros de Laganadi, Padula e Vibonati chegam.
+          Cada ligação existe porque um ato a afirma, e aparece com a firmeza que esse ato permite. Escolha uma pessoa
+          para ver o caminho documentado entre ela e o imigrante.
           <a href="/pessoas/" class="text-[#8C3A27] underline decoration-[#E8D9CE] hover:decoration-[#8C3A27]">Lista de todas as pessoas →</a>
         </p>
       </div>
-      <aside class="lg:col-span-4 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg space-y-2 text-xs font-sans">
-        <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
-        <dl class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-[#57534E]">
-          <dt>Pessoas</dt>
-          <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{nos.length}</dd>
-          <dt>Com parentesco documentado</dt>
-          <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{comParentesco}</dd>
-          <dt>Ligações</dt>
-          <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{nos.reduce((n, p) => n + p.relacoes.length, 0)}</dd>
-        </dl>
-        <p class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
-          Só pessoas nascidas na Itália, nesta fase. Os filhos nascidos no Brasil ainda não aparecem.
-        </p>
-      </aside>
     </section>
 
-    <ArvoreExplorer client:load pessoas={nos} raizes={raizes} focoInicial={foco} rotulosLinha={ROTULO_LINHA} />
+    <ArvoreGeracoes client:load pessoas={nos} linhas={linhas} unioes={unioes} totalDocumentos={documentos.length} rotulosLinha={ROTULO_LINHA} />
   </div>
 </Base>
