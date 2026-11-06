@@ -1,0 +1,122 @@
+---
+import Base from '../../layouts/Base.astro';
+import BuscaRegistros from '../../components/registros/BuscaRegistros';
+import ListagensPorLocalidade from '../../components/registros/ListagensPorLocalidade.astro';
+import { carregarRegistros } from '../../lib/registros-build';
+import { dataLegivel } from '../../lib/registros';
+
+const { meta, recortes } = await carregarRegistros();
+const localidades = new Set(recortes.map((r) => r.comune)).size;
+const totais = meta.totais;
+const fmt = (n: number) => n.toLocaleString('pt-BR');
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: 'Registros vistos — nomes transcritos e páginas consultadas',
+  description:
+    'Nomes lidos em registros civis e paroquiais italianos (e em algumas fontes brasileiras e uruguaias) durante a pesquisa das famílias Sorage/Suraci e Cardillo, com o grau de leitura e o link para a imagem no portal de origem.',
+  url: 'https://genealogia.rsorage.com/registros-vistos/',
+  creator: { '@type': 'Person', name: 'Ramon Sorage' },
+  temporalCoverage: `../${meta.cortes.obitos}`,
+  isAccessibleForFree: true,
+}).replace(/</g, '\\u003c');
+---
+
+<Base
+  titulo="Registros vistos"
+  descricao={`Busca por nomes em ${fmt(totais.nomes)} ocorrências transcritas e ${fmt(totais.paginas)} páginas consultadas de registros civis e paroquiais, com grau de leitura e link para a imagem original.`}
+  jsonLd={jsonLd}
+>
+  <div class="space-y-10 py-8">
+    <!-- Cabeçalho editorial -->
+    <section class="border-b border-[#E7E2D8] pb-8">
+      <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27] mb-2">
+        Índice de trabalho · publicado para quem pesquisa os mesmos livros
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-8 space-y-4">
+          <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1] text-balance">
+            Registros vistos
+          </h1>
+          <p class="font-editorial text-lg sm:text-xl text-[#44403C] leading-relaxed">
+            Ao procurar os nossos nos livros de Laganadi, Scilla, Messina e arredores, passamos os olhos por milhares de
+            nomes de outras famílias. Em vez de deixá-los perdidos nos cadernos, anotamos aqui o que lemos — <em>como</em> lemos, com o grau de certeza de cada leitura e o link para a imagem no portal de origem — para que o próximo
+            pesquisador não precise folhear o mesmo livro do zero.
+          </p>
+          <p class="font-editorial text-base text-[#57534E] leading-relaxed">
+            A lista é parcial por natureza: só cobre as páginas que abrimos, e em muitas delas só procuramos sobrenomes.
+            Não encontrar um nome aqui não prova que ele não esteja no livro. Os graus de leitura dizem respeito à grafia
+            lida, não confirmam identidade nem parentesco. <a href="#sobre" class="text-[#8C3A27] underline decoration-[#E8D9CE] hover:decoration-[#8C3A27]">Entenda os limites da lista</a>.
+          </p>
+        </div>
+        <aside class="lg:col-span-4 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg space-y-3 text-xs font-sans">
+          <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
+          <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-[#57534E]">
+            <dt>Ocorrências</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(totais.nomes)}</dd>
+            <dt>Páginas consultadas</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(totais.paginas)}</dd>
+            <dt>Localidades</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{localidades}</dd>
+            <dt>Recortes (localidade · série · ano)</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{recortes.length}</dd>
+            <dt>Última consulta registrada</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] text-right">{dataLegivel(meta.ultima_consulta)}</dd>
+          </dl>
+          <div class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
+            <Fragment set:html={`Cortes de publicação: nascimentos e demais registros até ${meta.cortes.nascimentos_e_demais}; óbitos até ${meta.cortes.obitos}, só de quem nasceu até ${meta.cortes.nascidos_ate}. Ninguém nascido depois de ${meta.cortes.nascidos_ate} aparece aqui.`} />
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <BuscaRegistros client:load totais={totais} />
+
+    <ListagensPorLocalidade recortes={recortes} />
+
+    <!-- Limites da lista -->
+    <section id="sobre" class="bg-[#FAF7F0] border border-[#E5DFD3] rounded-xl p-6 sm:p-8 space-y-5 scroll-mt-24">
+      <div>
+        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27] mb-1">Sobre esta lista</div>
+        <h2 class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">O que ela é — e o que não é</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-editorial text-sm sm:text-base text-[#44403C] leading-relaxed">
+        <div class="space-y-3">
+          <p>
+            <strong class="text-[#1C1917]">Transcrição própria, parcial.</strong> Cada linha foi lida por nós na imagem do
+            livro; não copiamos índices de terceiros. Uma página marcada <em>só procurada</em> foi varrida à procura de
+            sobrenomes, não lida linha a linha; uma página <em>lida inteira</em> teve todas as linhas lidas em boa resolução.
+          </p>
+          <p>
+            <strong class="text-[#1C1917]">Grau de leitura ≠ identidade.</strong> <em>Certa</em>, <em>provável</em> e
+            <em>duvidosa</em> dizem o quanto confiamos na grafia que transcrevemos. Dois nomes iguais no mesmo livro podem
+            ser duas pessoas; a presença de pessoas no mesmo ato não estabelece parentesco entre elas.
+          </p>
+          <p>
+            <strong class="text-[#1C1917]">Nomes como estão no papel.</strong> Preservamos as grafias de cada escrivão
+            (Suraci, Soraci, Surace, Sorace…) e os sinais de dúvida, como «S[uraci?]». Não normalizamos sobrenomes.
+          </p>
+        </div>
+        <div class="space-y-3">
+          <p>
+            <strong class="text-[#1C1917]">Nenhuma imagem é hospedada aqui.</strong> Os portais de origem (Antenati,
+            FamilySearch, arquivo diocesano, Gazzetta Ufficiale) têm regras próprias; cada ocorrência leva ao endereço da
+            imagem lá. Alguns exigem cadastro gratuito.
+          </p>
+          <p>
+            <strong class="text-[#1C1917]">Privacidade.</strong>
+            <Fragment set:html={`Publicamos nascimentos e demais registros até ${meta.cortes.nascimentos_e_demais} e óbitos até ${meta.cortes.obitos}, estes só de pessoas com nascimento comprovado até ${meta.cortes.nascidos_ate}.`} />
+            O filtro é aplicado duas vezes: na exportação a partir do acervo e de novo na geração do site, que recusa publicar
+            qualquer linha fora da regra.
+          </p>
+          <p>
+            <strong class="text-[#1C1917]">Viu um erro?</strong> Escreva para
+            <a href="mailto:rsorage@gmail.com" class="text-[#8C3A27] underline decoration-[#E8D9CE] hover:decoration-[#8C3A27]">rsorage@gmail.com</a>
+            indicando o link da ocorrência e a referência do ato. Correções entram com a próxima exportação.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>

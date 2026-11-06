@@ -35,10 +35,11 @@ export const AcoesCabecalho: React.FC = () => {
       </button>
       <button
         onClick={() => setContatoAberto(true)}
-        className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-[#FBF9F5] bg-[#1C1917] hover:bg-[#342F2C] rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
+        className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-xs font-medium text-[#FBF9F5] bg-[#1C1917] hover:bg-[#342F2C] rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
+        aria-label="Enviar uma pista"
       >
         <Mail className="w-3.5 h-3.5" />
-        <span>Enviar uma pista</span>
+        <span className="hidden sm:inline">Enviar uma pista</span>
       </button>
 
       <SearchDialog

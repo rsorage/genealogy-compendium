@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HistoricalRecordsViewer } from '../HistoricalRecordsViewer';
 import { historicalRecordsDatabase } from '../../data/genealogyData';
 import type { HistoricalRecord } from '../../types/genealogy';

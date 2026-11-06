@@ -1,4 +1,3 @@
-import React from 'react';
 import { CompendiumOverview } from '../CompendiumOverview';
 import { irPara } from '../../lib/navegacao';
 

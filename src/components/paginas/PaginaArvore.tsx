@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FamilyTreeExplorer } from '../FamilyTreeExplorer';
 import { AncestorDossierModal } from '../AncestorDossierModal';
 import { peopleDatabase } from '../../data/genealogyData';

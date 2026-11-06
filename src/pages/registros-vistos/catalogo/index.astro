@@ -1,0 +1,38 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ListagensPorLocalidade from '../../../components/registros/ListagensPorLocalidade.astro';
+import Trilha from '../../../components/registros/Trilha.astro';
+import { carregarRegistros } from '../../../lib/registros-build';
+import { jsonLdTrilha } from '../../../lib/registros';
+
+const { recortes, meta } = await carregarRegistros();
+const trilha = [
+  { nome: 'Registros vistos', caminho: '/registros-vistos/' },
+  { nome: 'Listagens', caminho: '/registros-vistos/catalogo/' },
+];
+---
+
+<Base
+  titulo="Transcrições parciais por localidade e ano"
+  descricao="Explore nomes transcritos de registros históricos por localidade, série e ano, com graus de leitura e links para os documentos de origem."
+  jsonLd={jsonLdTrilha(trilha)}
+>
+  <div class="space-y-10 py-8">
+    <Trilha itens={trilha} />
+    <section class="border-b border-[#E7E2D8] pb-8 space-y-4 max-w-3xl">
+      <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">Registros vistos · consulta por fonte</div>
+      <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">
+        Transcrições por <em class="text-[#8C3A27] not-italic">localidade e ano</em>
+      </h1>
+      <p class="font-editorial text-lg text-[#44403C] leading-relaxed">
+        Nomes que anotamos nos livros e documentos consultados, com referências para conferir as imagens originais.
+        {recortes.length} recortes, {meta.totais.nomes.toLocaleString('pt-BR')} ocorrências.
+      </p>
+      <aside class="bg-[#FAF7F0] border border-[#E5DFD3] rounded-lg p-4 text-sm font-sans text-[#44403C]">
+        <strong class="text-[#1C1917]">Transcrições parciais.</strong> Os recortes abaixo não representam cobertura completa
+        dos anos ou livros. Uma ausência nesta lista não prova ausência no documento.
+      </aside>
+    </section>
+    <ListagensPorLocalidade recortes={recortes} comTitulo={false} />
+  </div>
+</Base>

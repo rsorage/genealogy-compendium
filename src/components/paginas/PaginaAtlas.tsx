@@ -1,4 +1,3 @@
-import React from 'react';
 import { MigrationTimeline } from '../MigrationTimeline';
 import { irPara } from '../../lib/navegacao';
 
