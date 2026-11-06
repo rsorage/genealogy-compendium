@@ -12,12 +12,13 @@ import { MigrationTimeline } from './components/MigrationTimeline';
 import { ResearchQuestLog } from './components/ResearchQuestLog';
 import { AncestorDossierModal } from './components/AncestorDossierModal';
 import { LeadSubmissionModal } from './components/LeadSubmissionModal';
+import { RegistrosVistosView } from './components/RegistrosVistosView';
 import { SearchDialog } from './components/SearchDialog';
 import { Person, HistoricalRecord } from './types/genealogy';
 import { peopleDatabase, historicalRecordsDatabase } from './data/genealogyData';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'compendium' | 'tree' | 'records' | 'migration' | 'quest'>('compendium');
+  const [activeTab, setActiveTab] = useState<'compendium' | 'tree' | 'registros-vistos' | 'records' | 'migration' | 'quest'>('compendium');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<HistoricalRecord | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -69,6 +70,7 @@ export default function App() {
           <CompendiumOverview
             onNavigateToTree={() => setActiveTab('tree')}
             onNavigateToRecords={() => setActiveTab('records')}
+            onNavigateToRegistrosVistos={() => setActiveTab('registros-vistos')}
             onNavigateToQuests={() => setActiveTab('quest')}
             onSelectRecord={handleSelectRecordFromAnywhere}
           />
@@ -76,6 +78,13 @@ export default function App() {
 
         {activeTab === 'tree' && (
           <FamilyTreeExplorer onSelectPerson={setSelectedPerson} />
+        )}
+
+        {activeTab === 'registros-vistos' && (
+          <RegistrosVistosView
+            onSelectFacsimileRecord={handleSelectRecordFromAnywhere}
+            onOpenContactModal={handleOpenContactWithQuest}
+          />
         )}
 
         {activeTab === 'records' && (
@@ -149,6 +158,13 @@ export default function App() {
               &copy; {new Date().getFullYear()} Suraci &amp; Cardillo Genealogy Archive. All primary facsimiles cited for historical and familial research.
             </div>
             <div className="flex items-center gap-4">
+              <button
+                onClick={() => setActiveTab('registros-vistos')}
+                className="hover:text-[#8C3A27] transition-colors cursor-pointer font-medium"
+              >
+                Registros Vistos
+              </button>
+              <span aria-hidden="true">·</span>
               <button
                 onClick={() => setIsSearchOpen(true)}
                 className="hover:text-[#1C1917] transition-colors cursor-pointer"

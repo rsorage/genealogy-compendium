@@ -6,6 +6,7 @@ import { HistoricalRecord } from '../types/genealogy';
 interface CompendiumOverviewProps {
   onNavigateToTree: () => void;
   onNavigateToRecords: () => void;
+  onNavigateToRegistrosVistos?: () => void;
   onNavigateToQuests: () => void;
   onSelectRecord: (record: HistoricalRecord) => void;
 }
@@ -13,6 +14,7 @@ interface CompendiumOverviewProps {
 export const CompendiumOverview: React.FC<CompendiumOverviewProps> = ({
   onNavigateToTree,
   onNavigateToRecords,
+  onNavigateToRegistrosVistos,
   onNavigateToQuests,
   onSelectRecord,
 }) => {
@@ -108,19 +110,27 @@ export const CompendiumOverview: React.FC<CompendiumOverviewProps> = ({
               <span>Explore Lineage Tree</span>
               <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </button>
+            {onNavigateToRegistrosVistos && (
+              <button
+                onClick={onNavigateToRegistrosVistos}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#8C3A27] bg-[#FAF3F0] hover:bg-[#F5E8E4] border border-[#E8DDD5] rounded-md transition-colors cursor-pointer"
+              >
+                <FileText className="w-4 h-4 text-[#8C3A27]" />
+                <span>Registros Vistos (Acervo)</span>
+              </button>
+            )}
             <button
               onClick={onNavigateToRecords}
               className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#57534E] hover:text-[#1C1917] transition-colors cursor-pointer"
             >
               <BookOpen className="w-4 h-4 text-[#78716C]" />
-              <span>Browse Primary Records</span>
+              <span>Primary Facsimiles</span>
             </button>
             <button
               onClick={onNavigateToQuests}
               className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#57534E] hover:text-[#1C1917] transition-colors cursor-pointer"
             >
-              <FileText className="w-4 h-4 text-[#78716C]" />
-              <span>Active Research Quests</span>
+              <span>Research Quests</span>
             </button>
           </div>
         </div>

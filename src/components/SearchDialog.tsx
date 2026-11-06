@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X, User, FileText, Compass, HelpCircle, ArrowRight } from 'lucide-react';
 import { peopleDatabase, historicalRecordsDatabase, questLogEntries, migrationStages } from '../data/genealogyData';
-import { Person, HistoricalRecord } from '../types/genealogy';
+import { consultedRecordsDatabase } from '../data/consultedRecordsData';
+import { Person, HistoricalRecord, ConsultedRecord } from '../types/genealogy';
 
 interface SearchDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectPerson: (person: Person) => void;
   onSelectRecord: (record: HistoricalRecord) => void;
-  onNavigateTab: (tab: 'compendium' | 'tree' | 'records' | 'migration' | 'quest') => void;
+  onNavigateTab: (tab: 'compendium' | 'tree' | 'registros-vistos' | 'records' | 'migration' | 'quest') => void;
 }
 
 export const SearchDialog: React.FC<SearchDialogProps> = ({
@@ -46,6 +47,17 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
           p.birthCommune.toLowerCase().includes(normalized) ||
           p.occupation?.toLowerCase().includes(normalized) ||
           p.biography.toLowerCase().includes(normalized)
+      )
+    : [];
+
+  const matchedConsulted = normalized
+    ? consultedRecordsDatabase.filter(
+        (c) =>
+          c.personName.toLowerCase().includes(normalized) ||
+          c.surnameVariant.toLowerCase().includes(normalized) ||
+          c.commune.toLowerCase().includes(normalized) ||
+          c.sourceRepository.toLowerCase().includes(normalized) ||
+          c.researcherNotes.toLowerCase().includes(normalized)
       )
     : [];
 
@@ -161,11 +173,55 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                 </div>
               )}
 
+              {/* Matched Consulted Records (Registros Vistos) */}
+              {matchedConsulted.length > 0 && (
+                <div className="space-y-1.5">
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-[#8C3A27] px-1 flex items-center justify-between">
+                    <span>Registros Vistos &amp; Fontes Consultadas ({matchedConsulted.length})</span>
+                    <button
+                      onClick={() => {
+                        onClose();
+                        onNavigateTab('registros-vistos');
+                      }}
+                      className="text-[#8C3A27] hover:underline cursor-pointer"
+                    >
+                      Ver todos
+                    </button>
+                  </div>
+                  {matchedConsulted.slice(0, 4).map((rec) => (
+                    <button
+                      key={rec.id}
+                      onClick={() => {
+                        onClose();
+                        onNavigateTab('registros-vistos');
+                      }}
+                      className="w-full text-left p-2.5 rounded-lg bg-white hover:bg-[#F5F0E6] border border-[#E7E2D8] transition-all flex items-center justify-between gap-2 cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <FileText className="w-4 h-4 text-[#8C3A27] shrink-0" />
+                        <div>
+                          <div className="font-semibold text-[#1C1917] flex items-center gap-1.5">
+                            <span>{rec.personName}</span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#FAF7F0] text-[#78716C] border border-[#E7E0D2]">
+                              {rec.commune} · {rec.year}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-[#78716C] line-clamp-1">
+                            {rec.sourceRepository} — {rec.researcherNotes}
+                          </div>
+                        </div>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#A8A29E]" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {/* Matched Records */}
               {matchedRecords.length > 0 && (
                 <div className="space-y-1.5">
                   <div className="text-[10px] font-semibold uppercase tracking-wider text-[#78716C] px-1">
-                    Historical Documents ({matchedRecords.length})
+                    Primary Facsimiles ({matchedRecords.length})
                   </div>
                   {matchedRecords.map((record) => (
                     <button

@@ -2,8 +2,8 @@ import React from 'react';
 import { Search, Mail } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: 'compendium' | 'tree' | 'records' | 'migration' | 'quest';
-  onSelectTab: (tab: 'compendium' | 'tree' | 'records' | 'migration' | 'quest') => void;
+  activeTab: 'compendium' | 'tree' | 'registros-vistos' | 'records' | 'migration' | 'quest';
+  onSelectTab: (tab: 'compendium' | 'tree' | 'registros-vistos' | 'records' | 'migration' | 'quest') => void;
   onOpenSearch: () => void;
   onOpenContact: () => void;
 }
@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* Zone 2: 5 single-line clean text navigation links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#57534E]">
+          <nav className="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-medium text-[#57534E]">
             <button
               onClick={() => onSelectTab('compendium')}
               className={`hover:text-[#1C1917] transition-colors whitespace-nowrap shrink-0 pb-1 cursor-pointer ${
@@ -52,6 +52,16 @@ export const Header: React.FC<HeaderProps> = ({
               Lineage Trees
             </button>
             <button
+              onClick={() => onSelectTab('registros-vistos')}
+              className={`hover:text-[#1C1917] transition-colors whitespace-nowrap shrink-0 pb-1 cursor-pointer ${
+                activeTab === 'registros-vistos'
+                  ? 'text-[#1C1917] border-b-2 border-[#8C3A27] font-semibold'
+                  : 'hover:border-b-2 hover:border-[#D6CEBE]'
+              }`}
+            >
+              Registros Vistos
+            </button>
+            <button
               onClick={() => onSelectTab('records')}
               className={`hover:text-[#1C1917] transition-colors whitespace-nowrap shrink-0 pb-1 cursor-pointer ${
                 activeTab === 'records'
@@ -59,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
                   : 'hover:border-b-2 hover:border-[#D6CEBE]'
               }`}
             >
-              Historical Records
+              Facsimiles
             </button>
             <button
               onClick={() => onSelectTab('migration')}
@@ -69,17 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
                   : 'hover:border-b-2 hover:border-[#D6CEBE]'
               }`}
             >
-              Migration Routes
-            </button>
-            <button
-              onClick={() => onSelectTab('quest')}
-              className={`hover:text-[#1C1917] transition-colors whitespace-nowrap shrink-0 pb-1 cursor-pointer ${
-                activeTab === 'quest'
-                  ? 'text-[#1C1917] border-b-2 border-[#8C3A27] font-semibold'
-                  : 'hover:border-b-2 hover:border-[#D6CEBE]'
-              }`}
-            >
-              Research Quests
+              Migration Atlas
             </button>
           </nav>
 
@@ -104,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Mobile Navigation Strip */}
-        <div className="md:hidden flex items-center justify-between overflow-x-auto py-2.5 border-t border-[#E7E2D8] text-xs font-medium text-[#57534E] gap-4 scrollbar-none">
+        <div className="md:hidden flex items-center justify-between overflow-x-auto py-2.5 border-t border-[#E7E2D8] text-xs font-medium text-[#57534E] gap-3 scrollbar-none">
           <button
             onClick={() => onSelectTab('compendium')}
             className={`whitespace-nowrap px-2 py-1 rounded ${activeTab === 'compendium' ? 'text-[#8C3A27] font-semibold bg-[#F3EFE6]' : ''}`}
@@ -115,13 +115,19 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectTab('tree')}
             className={`whitespace-nowrap px-2 py-1 rounded ${activeTab === 'tree' ? 'text-[#8C3A27] font-semibold bg-[#F3EFE6]' : ''}`}
           >
-            Lineage Trees
+            Trees
+          </button>
+          <button
+            onClick={() => onSelectTab('registros-vistos')}
+            className={`whitespace-nowrap px-2 py-1 rounded ${activeTab === 'registros-vistos' ? 'text-[#8C3A27] font-semibold bg-[#F3EFE6]' : ''}`}
+          >
+            Registros Vistos
           </button>
           <button
             onClick={() => onSelectTab('records')}
             className={`whitespace-nowrap px-2 py-1 rounded ${activeTab === 'records' ? 'text-[#8C3A27] font-semibold bg-[#F3EFE6]' : ''}`}
           >
-            Records
+            Facsimiles
           </button>
           <button
             onClick={() => onSelectTab('migration')}

@@ -117,3 +117,52 @@ export interface EtymologyData {
   historicalContext: string;
   archivalFrequency: string;
 }
+
+export type RecordCertaintyDegree =
+  | 'documentado' // Documented / Verified Direct Ancestor
+  | 'muito_provavel' // Highly Probable / Direct Line Link
+  | 'hipotese' // Working Hypothesis / Collateral Line
+  | 'em_aberto' // Open / Under Investigation
+  | 'busca_negativa'; // Checked Ledger / Negative Search (Proves absence in given year)
+
+export type ConsultedRecordType =
+  | 'nascimento'
+  | 'matrimonio'
+  | 'obito'
+  | 'batismo'
+  | 'hospedaria'
+  | 'passaporte'
+  | 'militar'
+  | 'busca_negativa';
+
+export interface ConsultedRecord {
+  id: string;
+  personName: string;
+  surnameVariant: 'Suraci' | 'Sorage' | 'Surace' | 'Cardillo' | 'Cardilo' | 'Cardilho' | 'Morabito' | 'Minniti' | 'Esposito' | 'Outro';
+  branch: 'suraci' | 'cardillo' | 'both' | 'allied';
+  recordType: ConsultedRecordType;
+  year: number;
+  exactDate?: string;
+  commune: string;
+  provinceOrState: string;
+  country: 'Itália' | 'Brasil' | 'Marítimo';
+  sourceRepository: string;
+  callNumber?: string;
+  certaintyDegree: RecordCertaintyDegree;
+  familyRole:
+    | 'Ancestral Direto'
+    | 'Ramo Colateral / Irmão'
+    | 'Família Aliada / Cônjuge'
+    | 'Candidato / Homônimo'
+    | 'Testemunha / Padrinho'
+    | 'Pesquisa em Acervo';
+  fatherName?: string;
+  motherName?: string;
+  spouseName?: string;
+  witnesses?: string;
+  researcherNotes: string;
+  transcriptionSnippet?: string;
+  externalUrl?: string;
+  hasFacsimileAttached?: boolean;
+  facsimileRecordId?: string;
+}
