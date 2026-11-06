@@ -60,7 +60,8 @@ export const urlPortal = z
     { message: 'link fora dos portais oficiais aceitos' },
   );
 
-export const Firmeza = z.enum(['certa', 'provavel', 'declarada', 'hipotese']);
+/** O vocabulário de firmeza do acervo, 1:1 (certain, stated, probable, doubtful); «rejected» não é publicado. */
+export const Firmeza = z.enum(['certa', 'declarada', 'provavel', 'duvidosa']);
 export const Leitura = z.string().regex(/^(certa|provável|duvidosa)(?:$| \()/, 'grau de leitura não reconhecido');
 export const Linha = z.enum(['suraci', 'cardillo', 'marsicano', 'vecchia', 'rede']);
 
@@ -167,18 +168,18 @@ const exportacao = defineCollection({
     .strict(),
 });
 
-// ---------------------------------------------------------------- próximas fases (CONTRATO)
-// Esquemas definidos agora para fixar o formato; os arquivos ainda estão vazios ([]).
-// Serão preenchidos por módulos do exportador nas fases Pessoas/Documentos, Frentes e Atlas.
+// ---------------------------------------------------------------- pessoas e documentos (REAL)
+// Gerados por scripts/exportar-pessoas-documentos.py a partir de persons.yaml e dos blocos YAML das fichas.
 
-/** Referência a um documento do acervo pelo seu id público (IT-SOR-001, BR-CAR-004, NEG-018…). */
-const idDocumento = z.string().regex(/^(IT|BR|UY|US)-[A-Z]{3}-\d{3}[a-z]?$|^NEG-\d{3}$/);
+/** Referência a um documento do acervo pelo seu id público (IT-SOR-001, BR-CAR-004…). */
+const idDocumento = z.string().regex(/^(IT|BR|UY|US|DE)-[A-Z]{3}-\d{3}[a-z]?$/);
+const idPessoa = z.string().regex(/^P-[a-z0-9]+-[a-z0-9]+(-\d{4})?$/);
 
-/** Uma data como o acervo a escreve: ISO completa, só o ano, aproximada («~1736») ou janela («1802-09-19/1816-02-14»). */
-const dataAcervo = z.string().regex(/^(~?\d{4}(-\d{2}(-\d{2})?)?|\d{4}(-\d{2}(-\d{2})?)?\/\d{4}(-\d{2}(-\d{2})?)?|<\d{4}(-\d{2}(-\d{2})?)?|>\d{4}(-\d{2}(-\d{2})?)?)$/);
+/** Uma data como o acervo a escreve: ISO (completa, mês ou ano), aproximada («~1736»), limite («<1810-05-08») ou janela («1802/1816», «/1865-09-01»). */
+const dataAcervo = z.string().regex(/^(?=.)[~<>]?(\d{4}(-\d{2}(-\d{2})?)?)?(\/\d{4}(-\d{2}(-\d{2})?)?)?$/, 'data fora dos formatos do acervo');
 
-function anoDe(data: string): number | null {
-  const m = data.match(/(\d{4})/);
+function anoDe(data: string | undefined): number | null {
+  const m = (data ?? '').match(/(\d{4})/);
   return m ? Number(m[1]) : null;
 }
 
@@ -187,22 +188,32 @@ const evento = z
   .object({
     data: dataAcervo.optional(),
     lugar: textoPublico.optional(),
-    /** Jurisdição vigente NA DATA do evento (regra de 14/09/2026), não a atual. */
-    jurisdicao: textoPublico.optional(),
     firmeza: Firmeza,
-    base: textoPublico.min(1),
+    base: textoPublico,
     documentos: z.array(idDocumento),
   })
   .strict();
 
-/** Aresta do grafo de evidências: quem é pai, mãe ou cônjuge de quem, segundo qual ato. */
+/** Aresta do grafo de evidências: pai, mãe, cônjuge, irmão ou filho, segundo quais atos. */
 const relacao = z
   .object({
-    tipo: z.enum(['pai', 'mae', 'conjuge']),
-    pessoa: z.string().regex(/^P-[a-z0-9-]+$/),
+    tipo: z.enum(['pai', 'mae', 'conjuge', 'irmao', 'filho']),
+    pessoa: idPessoa,
     firmeza: Firmeza,
     documentos: z.array(idDocumento).min(1),
     justificativa: textoPublico.optional(),
+  })
+  .strict();
+
+/** O que um ato escreveu sobre a pessoa: nome como está no papel, papel no ato, idade, ofício, se assina. */
+const aparicao = z
+  .object({
+    documento: idDocumento,
+    nome_escrito: textoPublico.min(1),
+    papeis: z.array(textoPublico).min(1),
+    idade: z.number().int().min(0).max(120).optional(),
+    oficio: textoPublico.optional(),
+    assina: z.boolean().optional(),
   })
   .strict();
 
@@ -210,7 +221,7 @@ const pessoas = defineCollection({
   loader: file('src/content/pessoas.json'),
   schema: z
     .object({
-      id: z.string().regex(/^P-[a-z0-9-]+$/),
+      id: idPessoa,
       nome_exibicao: textoPublico.min(1),
       nomes_alternativos: z.array(textoPublico),
       sexo: z.enum(['M', 'F', '?']),
@@ -219,27 +230,28 @@ const pessoas = defineCollection({
       morte: evento.optional(),
       ocupacao: textoPublico.optional(),
       familysearch: z.string().regex(/^[A-Z0-9]{4}-[A-Z0-9]{3}$/).optional(),
+      /** O `public_summary` do persons.yaml; vazio quando ainda não foi escrito. O `summary` interno nunca chega aqui. */
       resumo: textoPublico,
       relacoes: z.array(relacao),
+      aparece_em: z.array(aparicao),
     })
     .strict()
-    // Ninguém nascido depois de 1925 é publicado; sem data de nascimento, a pessoa só entra
-    // se tiver morte documentada (o exportador decide; aqui é a última barreira).
-    .refine((p) => !p.nascimento?.data || (anoDe(p.nascimento.data) ?? 0) <= CORTE_GERAL, {
-      message: 'pessoa nascida depois do corte de 1925',
-    })
-    .refine((p) => p.nascimento?.data || p.morte?.data, { message: 'pessoa sem nenhuma data: impossível aplicar o corte' }),
+    // Ninguém nascido depois de 1925 — a última barreira, depois do exportador.
+    .refine((p) => (anoDe(p.nascimento?.data) ?? 0) <= CORTE_GERAL, { message: 'pessoa nascida depois do corte de 1925' })
+    .refine((p) => p.nascimento?.data || p.morte?.data || p.aparece_em.length > 0, {
+      message: 'pessoa sem data e sem documento: impossível aplicar o corte',
+    }),
 });
 
-/** Nota de leitura paleográfica: a palavra, como se leu, e o CONTROLE que testou a leitura. */
-const notaLeitura = z
-  .object({
-    termo: textoPublico.min(1),
-    leitura: textoPublico.min(1),
-    controle: textoPublico.optional(),
-    nota: textoPublico,
-  })
-  .strict();
+const TIPOS_DOCUMENTO = [
+  'nascita', 'battesimo', 'matrimonio', 'pubblicazioni', 'processetti', 'morte', 'sepoltura', 'catasto', 'lista_di_leva',
+  'lista_de_bordo', 'passaporte', 'notarial', 'indice', 'jornal', 'outro',
+  'nascimento', 'casamento', 'obito', 'hospedaria',
+] as const;
+const TIPOS_OBITO = new Set(['morte', 'sepoltura', 'obito']);
+
+const pessoaNoDocumento = aparicao.omit({ documento: true }).extend({ pessoa: idPessoa, firmeza: Firmeza }).strict();
+const nomeTranscrito = aparicao.omit({ documento: true }).strict();
 
 const documentos = defineCollection({
   loader: file('src/content/documentos.json'),
@@ -247,31 +259,33 @@ const documentos = defineCollection({
     .object({
       id: idDocumento,
       titulo: textoPublico.min(1),
-      tipo: z.enum([
-        'nascita', 'battesimo', 'matrimonio', 'pubblicazioni', 'processetti', 'morte', 'sepoltura',
-        'catasto', 'stato_delle_anime', 'lista_di_leva', 'cittadinanza',
-        'nascimento', 'casamento', 'obito', 'hospedaria', 'lista_de_bordo', 'certidao', 'correspondencia', 'outro',
-      ]),
+      tipo: z.enum(TIPOS_DOCUMENTO),
+      tipo_original: textoPublico,
       data_documento: dataAcervo,
+      ano: z.number().int().min(1000).max(CORTE_OBITOS),
       lugar: textoPublico.min(1),
-      jurisdicao: textoPublico.optional(),
+      pais: z.enum(['IT', 'BR', 'UY', 'US', 'DE']),
+      jurisdicao: textoPublico,
       repositorio: textoPublico.min(1),
       referencia: textoPublico,
-      /** Link para a imagem no portal oficial; vazio quando o documento veio por correspondência. */
+      /** Link para a imagem num portal oficial aceito; ausente quando o documento veio por correspondência ou cartório. */
       url: urlPortal.optional(),
-      pessoas: z.array(z.string().regex(/^P-[a-z0-9-]+$/)),
-      resumo: textoPublico,
-      /** Só trechos transcritos — nenhuma imagem é publicada (regra de 14/10/2026). */
-      trechos: z.array(
-        z.object({ original: textoPublico.min(1), traducao: textoPublico.optional(), nota: textoPublico.optional() }).strict(),
-      ),
-      notas_leitura: z.array(notaLeitura),
+      portal: textoPublico.optional(),
+      pessoas: z.array(pessoaNoDocumento),
+      nomes_transcritos: z.array(nomeTranscrito),
+      /** Só texto transcrito — nenhuma imagem é publicada (regra de 14/10/2026). Integral só até 1925. */
+      transcricao: textoPublico,
+      ressalvas: textoPublico,
+      linhas: z.array(Linha),
     })
     .strict()
-    .refine((d) => (anoDe(d.data_documento) ?? 0) <= (d.tipo === 'morte' || d.tipo === 'obito' || d.tipo === 'sepoltura' ? CORTE_OBITOS : CORTE_GERAL), {
+    .refine((d) => d.ano <= (TIPOS_OBITO.has(d.tipo) ? CORTE_OBITOS : CORTE_GERAL), {
       message: 'documento fora do corte de publicação do seu tipo',
     }),
 });
+
+// ---------------------------------------------------------------- próximas fases (CONTRATO)
+// Esquemas definidos agora para fixar o formato; os arquivos ainda estão vazios ([]).
 
 const frentes = defineCollection({
   loader: file('src/content/frentes.json'),

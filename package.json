@@ -9,8 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "exportar": "python3 scripts/exportar-registros.py",
-    "exportar:verificar": "python3 scripts/exportar-registros.py --verificar",
+    "exportar": "python3 scripts/exportar-registros.py && python3 scripts/exportar-pessoas-documentos.py",
+    "exportar:verificar": "python3 scripts/exportar-registros.py --verificar && python3 scripts/exportar-pessoas-documentos.py --verificar",
     "test:py": "python3 -m unittest discover -s tests -p 'test_*.py'"
   },
   "dependencies": {
