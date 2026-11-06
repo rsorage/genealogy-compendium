@@ -3,5 +3,5 @@ import { irPara } from '../../lib/navegacao';
 
 /** Atlas da migração. */
 export default function PaginaAtlas() {
-  return <MigrationTimeline onSelectRecord={(r) => irPara(`/documentos/?registro=${encodeURIComponent(r.id)}`)} />;
+  return <MigrationTimeline onSelectRecord={() => irPara('/documentos/')} />;
 }

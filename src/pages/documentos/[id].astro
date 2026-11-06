@@ -1,0 +1,191 @@
+---
+import Base from '../../layouts/Base.astro';
+import Trilha from '../../components/registros/Trilha.astro';
+import SeloFirmeza from '../../components/pessoas/SeloFirmeza.astro';
+import { carregarAcervo } from '../../lib/pessoas-build';
+import { jsonLdTrilha } from '../../lib/registros';
+import {
+  ROTULO_LINHA,
+  ROTULO_TIPO_DOC,
+  caminhoDocumento,
+  caminhoPessoa,
+  dataAcervoLegivel,
+  rotuloPapeis,
+  rotuloRepositorio,
+  type Documento,
+} from '../../lib/pessoas';
+
+export async function getStaticPaths() {
+  const { documentos } = await carregarAcervo();
+  return documentos.map((d) => ({ params: { id: d.id }, props: { documento: d } }));
+}
+
+interface Props {
+  documento: Documento;
+}
+const { documento: d } = Astro.props;
+const { pessoaPorId } = await carregarAcervo();
+const trilha = [
+  { nome: 'Documentos', caminho: '/documentos/' },
+  { nome: d.titulo, caminho: caminhoDocumento(d.id) },
+];
+const descricao = `${ROTULO_TIPO_DOC[d.tipo]}, ${d.lugar}, ${dataAcervoLegivel(d.data_documento)}: quem aparece no ato, a transcrição e o link para a imagem no ${d.portal ?? 'arquivo de origem'}.`;
+const meta: [string, string][] = [
+  ['Tipo', ROTULO_TIPO_DOC[d.tipo] + (d.tipo_original ? ` (${d.tipo_original})` : '')],
+  ['Data', dataAcervoLegivel(d.data_documento)],
+  ['Lugar', d.lugar],
+  ['Jurisdição', d.jurisdicao],
+  ['Repositório', rotuloRepositorio(d.repositorio)],
+  ['Referência', d.referencia],
+  ['Identificador no acervo', d.id],
+];
+const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+---
+
+<Base titulo={d.titulo} descricao={descricao} caminho={caminhoDocumento(d.id)} jsonLd={jsonLdTrilha(trilha)}>
+  <div class="space-y-10 py-8">
+    <Trilha itens={trilha} />
+
+    <section class="border-b border-[#E7E2D8] pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-7 space-y-3">
+        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">
+          {ROTULO_TIPO_DOC[d.tipo]} · {d.lugar} · {d.ano}
+        </div>
+        <h1 class="font-display text-3xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">{d.titulo}</h1>
+        <p class="text-xs font-sans text-[#78716C]">
+          {d.linhas.map((l) => ROTULO_LINHA[l]).join(' · ')}
+        </p>
+        {
+          d.url ? (
+            <a href={d.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#FBF9F5] bg-[#1C1917] hover:bg-[#342F2C] rounded-md transition-colors">
+              Ver a imagem no {d.portal} ↗
+            </a>
+          ) : (
+            <p class="text-xs font-sans text-[#78716C] bg-[#FAF7F0] border border-[#E5DFD3] rounded-md px-3 py-2 inline-block">
+              Sem imagem em portal público: o documento veio por correspondência ou de cartório. Só a transcrição é publicada.
+            </p>
+          )
+        }
+      </div>
+      <dl class="lg:col-span-5 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-xs font-sans">
+        {
+          meta
+            .filter(([, v]) => v)
+            .map(([k, v]) => (
+              <>
+                <dt class="text-[#78716C]">{k}</dt>
+                <dd class="text-[#1C1917] break-words">{v}</dd>
+              </>
+            ))
+        }
+      </dl>
+    </section>
+
+    <!-- Quem está no ato -->
+    <section class="space-y-4" aria-labelledby="pessoas">
+      <div>
+        <h2 id="pessoas" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Quem está no ato</h2>
+        <p class="font-editorial text-sm text-[#57534E] mt-1">
+          Nomes, idades e ofícios como o escrivão os escreveu. A costura entre o nome no papel e a pessoa publicada traz a sua firmeza.
+        </p>
+      </div>
+      <div class="overflow-x-auto -mx-4 sm:mx-0">
+        <table class="min-w-full text-sm font-sans">
+          <thead>
+            <tr class="text-left text-[10px] uppercase tracking-widest text-[#78716C] border-b border-[#E7E2D8]">
+              <th class="py-2 px-4 sm:px-2 font-semibold">Como está escrito</th>
+              <th class="py-2 px-2 font-semibold">Papel</th>
+              <th class="py-2 px-2 font-semibold">Idade</th>
+              <th class="py-2 px-2 font-semibold">Ofício</th>
+              <th class="py-2 px-2 font-semibold">Assina</th>
+              <th class="py-2 px-2 font-semibold">Pessoa</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#EFEAE0]">
+            {
+              d.pessoas.map((p) => {
+                const pessoa = pessoaPorId.get(p.pessoa);
+                return (
+                  <tr>
+                    <td class="py-2.5 px-4 sm:px-2 font-editorial italic text-[#292524]">«{p.nome_escrito}»</td>
+                    <td class="py-2.5 px-2 text-[#57534E]">{rotuloPapeis(p.papeis)}</td>
+                    <td class="py-2.5 px-2 font-mono tabular-nums text-[#57534E]">{p.idade ?? ''}</td>
+                    <td class="py-2.5 px-2 text-[#57534E]">{p.oficio ?? ''}</td>
+                    <td class="py-2.5 px-2 text-[#57534E]">{p.assina === undefined ? '' : p.assina ? 'sim' : 'não'}</td>
+                    <td class="py-2.5 px-2">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <a href={caminhoPessoa(p.pessoa)} class="text-[#8C3A27] font-semibold hover:underline">
+                          {pessoa?.nome_exibicao ?? p.pessoa}
+                        </a>
+                        <SeloFirmeza firmeza={p.firmeza} />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            }
+            {
+              d.nomes_transcritos.map((n) => (
+                <tr class="text-[#57534E]">
+                  <td class="py-2.5 px-4 sm:px-2 font-editorial italic">«{n.nome_escrito}»</td>
+                  <td class="py-2.5 px-2">{rotuloPapeis(n.papeis)}</td>
+                  <td class="py-2.5 px-2 font-mono tabular-nums">{n.idade ?? ''}</td>
+                  <td class="py-2.5 px-2">{n.oficio ?? ''}</td>
+                  <td class="py-2.5 px-2">{n.assina === undefined ? '' : n.assina ? 'sim' : 'não'}</td>
+                  <td class="py-2.5 px-2 text-[#A8A29E]">—</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      {
+        d.nomes_transcritos.length > 0 && (
+          <p class="text-xs font-sans text-[#78716C]">
+            As linhas sem pessoa são nomes transcritos do ato (testemunhas, oficiais, parteiras) que não têm página própria. A presença no mesmo ato não estabelece parentesco.
+          </p>
+        )
+      }
+    </section>
+
+    <!-- Transcrição -->
+    {
+      d.transcricao && (
+        <section class="space-y-4" aria-labelledby="transcricao">
+          <div>
+            <h2 id="transcricao" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Transcrição</h2>
+            <p class="font-editorial text-sm text-[#57534E] mt-1">
+              Leitura própria sobre a imagem; colchetes marcam leitura não fixada. Confira a imagem original antes de usar uma informação.
+            </p>
+          </div>
+          <div class="paper-grain border border-[#E5DFD3] rounded-xl p-5 sm:p-8">
+            <pre class="font-editorial text-base sm:text-lg leading-relaxed text-[#292524] whitespace-pre-wrap break-words">{d.transcricao}</pre>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      paragrafosRessalvas.length > 0 && (
+        <section class="space-y-3" aria-labelledby="ressalvas">
+          <h2 id="ressalvas" class="font-display text-2xl font-medium text-[#1C1917]">Ressalvas de leitura</h2>
+          <div class="bg-[#FAF7F2] border border-[#E7E0D2] rounded-lg p-5 space-y-3 font-sans text-sm text-[#44403C] leading-relaxed">
+            {paragrafosRessalvas.map((p) => (
+              <p>{p}</p>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <aside class="font-sans text-sm text-[#44403C] leading-relaxed max-w-3xl border-t border-[#E7E2D8] pt-6 space-y-3">
+      <p>
+        Nenhuma imagem de documento é hospedada neste site. Os portais de origem podem exigir cadastro gratuito; alguns arquivos pedem que as cópias não sejam divulgadas.
+      </p>
+      <p>
+        Viu um erro de leitura? Escreva para <a href="mailto:rsorage@gmail.com" class="text-[#8C3A27] underline decoration-[#E8D9CE]">rsorage@gmail.com</a> indicando o identificador {d.id}.
+      </p>
+      <p><a href="/documentos/" class="text-[#8C3A27] font-semibold hover:underline">Todos os documentos →</a></p>
+    </aside>
+  </div>
+</Base>

@@ -12,8 +12,8 @@ interface Props {
   imagemOg?: string;
   /** Marca a página para não ser indexada (ex.: rascunhos). */
   naoIndexar?: boolean;
-  /** JSON-LD adicional (já serializado). */
-  jsonLd?: string;
+  /** JSON-LD adicional (já serializado); um ou vários blocos. */
+  jsonLd?: string | string[];
   /** Largura máxima do conteúdo. */
   largura?: 'normal' | 'larga';
 }
@@ -56,7 +56,7 @@ const tituloCompleto = caminho === '/' ? `${SITE_NOME} · Compêndio genealógic
     <meta property="og:url" content={canonico} />
     <meta property="og:image" content={og} />
     <meta name="twitter:card" content="summary_large_image" />
-    {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+    {jsonLd && (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((bloco) => <script type="application/ld+json" set:html={bloco} />)}
   </head>
   <body class="bg-[#FBF9F5] text-[#1C1917] antialiased selection:bg-[#E2D9CC] selection:text-[#1C1917]">
     <a

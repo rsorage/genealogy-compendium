@@ -1,8 +1,66 @@
 ---
 import Base from '../../layouts/Base.astro';
-import PaginaDocumentos from '../../components/paginas/PaginaDocumentos';
+import ListaDocumentos, { type ResumoDocumento } from '../../components/documentos/ListaDocumentos';
+import { carregarAcervo } from '../../lib/pessoas-build';
+import { ROTULO_LINHA, ROTULO_TIPO_DOC, caminhoDocumento, dataAcervoLegivel } from '../../lib/pessoas';
+
+const { documentos, pessoaPorId } = await carregarAcervo();
+const resumos: ResumoDocumento[] = documentos.map((d) => ({
+  id: d.id,
+  titulo: d.titulo,
+  tipoRotulo: ROTULO_TIPO_DOC[d.tipo],
+  ano: d.ano,
+  dataLegivel: dataAcervoLegivel(d.data_documento),
+  lugar: d.lugar,
+  linhas: d.linhas,
+  linhasRotulo: d.linhas.map((l) => ROTULO_LINHA[l].split(' (')[0]).join(' · '),
+  pessoas: d.pessoas.map((p) => pessoaPorId.get(p.pessoa)?.nome_exibicao ?? p.pessoa),
+  temLink: !!d.url,
+  temTranscricao: !!d.transcricao,
+  caminho: caminhoDocumento(d.id),
+}));
+const comLink = documentos.filter((d) => d.url).length;
+const comTranscricao = documentos.filter((d) => d.transcricao).length;
+const lugares = new Set(documentos.map((d) => d.lugar)).size;
+const fmt = (n: number) => n.toLocaleString('pt-BR');
 ---
 
-<Base naoIndexar={true} titulo="Documentos" descricao="Os atos civis e paroquiais lidos na pesquisa — transcrições, notas de leitura e links para as imagens nos portais oficiais.">
-  <PaginaDocumentos client:load />
+<Base
+  titulo="Documentos"
+  descricao={`${fmt(documentos.length)} atos civis e paroquiais, catasti e certidões lidos na pesquisa das famílias Suraci e Cardillo, com quem aparece em cada um, a transcrição e o link para a imagem no portal de origem.`}
+>
+  <div class="space-y-10 py-8">
+    <section class="border-b border-[#E7E2D8] pb-8">
+      <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27] mb-2">Fontes primárias · uma página por documento</div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-8 space-y-4">
+          <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">Documentos</h1>
+          <p class="font-editorial text-lg sm:text-xl text-[#44403C] leading-relaxed">
+            Os atos de nascimento, batismo, casamento e óbito, os catasti e as certidões em que a pesquisa se apoia. Cada
+            página diz quem está no ato — com o nome, a idade e o ofício que o escrivão escreveu —, traz a transcrição
+            feita sobre a imagem e aponta para o original no portal de origem.
+          </p>
+          <p class="font-editorial text-base text-[#57534E] leading-relaxed">
+            Nenhuma imagem é hospedada aqui. Documentos até 1925 têm a transcrição integral; óbitos até 1955 só os
+            trechos genealógicos.
+          </p>
+        </div>
+        <aside class="lg:col-span-4 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg space-y-2 text-xs font-sans">
+          <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
+          <dl class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-[#57534E]">
+            <dt>Documentos</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(documentos.length)}</dd>
+            <dt>Com imagem em portal público</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(comLink)}</dd>
+            <dt>Com transcrição</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(comTranscricao)}</dd>
+            <dt>Lugares</dt>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{lugares}</dd>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <ListaDocumentos client:load documentos={resumos} rotulosLinha={ROTULO_LINHA} />
+  </div>
 </Base>

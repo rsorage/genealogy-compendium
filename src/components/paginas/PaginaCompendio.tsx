@@ -9,7 +9,7 @@ export default function PaginaCompendio() {
       onNavigateToRecords={() => irPara('/documentos/')}
       onNavigateToRegistrosVistos={() => irPara('/registros-vistos/')}
       onNavigateToQuests={() => irPara('/frentes/')}
-      onSelectRecord={(r) => irPara(`/documentos/?registro=${encodeURIComponent(r.id)}`)}
+      onSelectRecord={() => irPara('/documentos/')}
     />
   );
 }

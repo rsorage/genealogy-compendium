@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro';
+import CartaoPessoa from '../../components/pessoas/CartaoPessoa.astro';
+import { carregarAcervo } from '../../lib/pessoas-build';
+import { DESCRICAO_LINHA, ORDEM_LINHAS, RAIZ_DA_LINHA, ROTULO_LINHA, caminhoPessoa, type Linha } from '../../lib/pessoas';
+
+const { pessoas, documentos } = await carregarAcervo();
+const porLinha = new Map<Linha, typeof pessoas>();
+for (const p of pessoas) porLinha.set(p.linha, [...(porLinha.get(p.linha) ?? []), p]);
+const fmt = (n: number) => n.toLocaleString('pt-BR');
+---
+
+<Base
+  titulo="Pessoas"
+  descricao={`${fmt(pessoas.length)} pessoas das linhas Suraci, Cardillo, Marsicano e Vecchia, nascidas na Itália, com datas, firmeza de cada fato e os ${fmt(documentos.length)} documentos que as sustentam.`}
+>
+  <div class="space-y-12 py-8">
+    <section class="border-b border-[#E7E2D8] pb-8">
+      <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27] mb-2">Dossiês · uma página por pessoa</div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-8 space-y-4">
+          <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">Pessoas</h1>
+          <p class="font-editorial text-lg sm:text-xl text-[#44403C] leading-relaxed">
+            Cada pessoa aqui tem uma página com o que os documentos dizem dela — e com que firmeza. As datas trazem a
+            base que as sustenta; as relações de parentesco apontam para o ato que as afirma; e a lista «nos
+            documentos» mostra como cada escrivão a escreveu, com a idade e o ofício que <em>ele</em> anotou.
+          </p>
+          <p class="font-editorial text-base text-[#57534E] leading-relaxed">
+            Nesta fase o site cobre as pessoas nascidas na Itália: os dois imigrantes, Luigi Suraci e Luigi Cardillo,
+            seus pais, irmãos e ascendentes. Quem nasceu no Brasil ainda não está aqui.
+          </p>
+        </div>
+        <aside class="lg:col-span-4 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg space-y-2 text-xs font-sans">
+          <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
+          <dl class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-[#57534E]">
+            {
+              ORDEM_LINHAS.filter((l) => porLinha.has(l)).map((l) => (
+                <>
+                  <dt>{ROTULO_LINHA[l]}</dt>
+                  <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{porLinha.get(l)!.length}</dd>
+                </>
+              ))
+            }
+            <dt class="pt-1 border-t border-[#E5DFD3]">Documentos</dt>
+            <dd class="pt-1 border-t border-[#E5DFD3] font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(documentos.length)}</dd>
+          </dl>
+          <p class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
+            Ninguém nascido depois de 1925. Os nomes seguem a grafia do ato de nascimento; outras grafias ficam como nomes alternativos.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    {
+      ORDEM_LINHAS.filter((l) => porLinha.has(l)).map((linha) => {
+        const lista = porLinha.get(linha)!;
+        const raiz = RAIZ_DA_LINHA[linha];
+        return (
+          <section id={linha} class="space-y-5 scroll-mt-24">
+            <div class="border-b border-[#E7E2D8] pb-3 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+              <div>
+                <h2 class="font-display text-3xl font-medium text-[#1C1917]">{ROTULO_LINHA[linha]}</h2>
+                <p class="font-editorial text-sm text-[#57534E] mt-1 max-w-2xl">{DESCRICAO_LINHA[linha]}</p>
+              </div>
+              <div class="flex items-center gap-4 text-xs font-sans whitespace-nowrap">
+                <span class="text-[#78716C]">{lista.length} pessoas</span>
+                {raiz && (
+                  <a href={`/arvore/?pessoa=${raiz}`} class="text-[#8C3A27] font-semibold hover:underline">
+                    Ver na árvore →
+                  </a>
+                )}
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {lista.map((p) => (
+                <CartaoPessoa pessoa={p} />
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+  </div>
+</Base>

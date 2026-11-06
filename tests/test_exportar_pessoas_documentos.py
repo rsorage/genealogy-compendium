@@ -106,6 +106,7 @@ asserts:
 
 ```text
 Numero Trenta — Luigi Fictio.
+Seconda riga.
 ```
 
 ## Ressalvas de leitura
@@ -268,7 +269,9 @@ class Acervo(unittest.TestCase):
         self.assertEqual(obito["pessoas"][0]["firmeza"], "provavel")
         luigi = next(d for d in dados["documentos"] if d["id"] == "IT-FIC-002")
         self.assertIn("Numero Trenta", luigi["transcricao"])
+        self.assertEqual(luigi["tipo_original"], "")
         self.assertEqual([n["nome_escrito"] for n in luigi["nomes_transcritos"]], ["Angelo Misiano"])
+        self.assertIn("Numero Trenta — Luigi Fictio.\nSeconda riga.", luigi["transcricao"])
         self.assertIn("trentadue", luigi["ressalvas"])
         self.assertNotIn("04 Pesquisa", luigi["ressalvas"])
         self.assertEqual(luigi["url"], "https://antenati.cultura.gov.it/ark:/12657/an_ua2/y")

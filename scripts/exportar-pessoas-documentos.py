@@ -114,6 +114,14 @@ def publico(valor: str, onde: str) -> str:
     return valor
 
 
+def publico_multilinha(valor: str, onde: str) -> str:
+    """Como publico(), mas preserva as quebras de linha (transcrições e ressalvas)."""
+    linhas = [" ".join(l.split()) for l in str(valor or "").replace("\r\n", "\n").split("\n")]
+    texto_plano = "\n".join(linhas).strip()
+    publico(texto_plano.replace("\n", " "), onde)
+    return texto_plano
+
+
 def pais_do_lugar(lugar: str) -> str | None:
     lugar = texto(lugar)
     if not lugar:
@@ -397,7 +405,7 @@ def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
             "id": fid,
             "titulo": publico(titulo_de(corpo, fid), fid),
             "tipo": tipo,
-            "tipo_original": publico(f.get("record_type_raw") or tipo_acervo, fid),
+            "tipo_original": publico(f.get("record_type_raw") or "", fid),
             "data_documento": texto(f.get("date_event") or f.get("date_recorded")),
             "ano": ano,
             "lugar": publico(", ".join(v for v in (texto(lugar.get("comune")), texto(lugar.get("province"))) if v), fid),
@@ -408,8 +416,8 @@ def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
             **({"url": link[0], "portal": link[1]} if link else {}),
             "pessoas": pessoas_doc,
             "nomes_transcritos": nomes,
-            "transcricao": publico(transcricao_de(corpo, integral=ano <= CORTE), fid),
-            "ressalvas": publico(ressalvas_de(corpo), fid),
+            "transcricao": publico_multilinha(transcricao_de(corpo, integral=ano <= CORTE), fid),
+            "ressalvas": publico_multilinha(ressalvas_de(corpo), fid),
             "linhas": sorted({publicadas[pe["pessoa"]]["line"] for pe in pessoas_doc}),
         })
     ids_docs = set(docs_pub)

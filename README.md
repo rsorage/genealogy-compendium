@@ -24,14 +24,16 @@ npm run test:py           # testes do exportador
 
 | caminho | o que é |
 |---|---|
-| `src/pages/` | as rotas: `/`, `/arvore/`, `/registros-vistos/` (+ `catalogo/…` e `dados/*.json`), `/documentos/`, `/atlas/`, `/frentes/` |
+| `src/pages/` | as rotas: `/`, `/pessoas/` (+ uma por pessoa), `/arvore/`, `/registros-vistos/` (+ `catalogo/…` e `dados/*.json`), `/documentos/` (+ uma por documento), `/busca/indice.json`, `/atlas/`, `/frentes/` |
 | `src/content.config.ts` | o modelo de dados e as guardas de privacidade (zod) |
 | `src/content/` | dados gerados pelo exportador — não editar à mão |
 | `src/components/site/` | cabeçalho, rodapé e ações (busca, pista) |
 | `src/components/registros/` | a vista Registros vistos (busca, listagens, páginas do catálogo) |
+| `src/components/pessoas/`, `arvore/`, `documentos/` | cartões, selos de firmeza, a ilha da árvore e a lista filtrável de documentos |
 | `src/components/paginas/` | os invólucros das vistas ainda ligadas aos dados fictícios |
 | `src/components/*.tsx`, `src/data/`, `src/types/` | a casca gerada pelo Gemini, com dados de exemplo (ver AGENTS.md) |
 | `src/lib/` | utilidades: navegação, agrupamento e endereços do catálogo |
-| `scripts/exportar-registros.py` | exportador acervo → JSON; `scripts/registros-vistos/notas-publicas.json` são as notas revisadas |
+| `scripts/exportar-registros.py` | exportador dos registros vistos; `scripts/registros-vistos/notas-publicas.json` são as notas revisadas |
+| `scripts/exportar-pessoas-documentos.py` | exportador de pessoas e documentos (persons.yaml + blocos YAML das fichas) |
 | `tests/` | testes do exportador |
 | `public/` | `CNAME`, `robots.txt`, favicon, imagem de compartilhamento, imagens |

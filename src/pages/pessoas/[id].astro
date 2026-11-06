@@ -1,0 +1,253 @@
+---
+import Base from '../../layouts/Base.astro';
+import Trilha from '../../components/registros/Trilha.astro';
+import SeloFirmeza from '../../components/pessoas/SeloFirmeza.astro';
+import CartaoPessoa from '../../components/pessoas/CartaoPessoa.astro';
+import { carregarAcervo } from '../../lib/pessoas-build';
+import { jsonLdTrilha } from '../../lib/registros';
+import {
+  ROTULO_LINHA,
+  ROTULO_RELACAO,
+  ROTULO_TIPO_DOC,
+  caminhoDocumento,
+  caminhoPessoa,
+  dataAcervoLegivel,
+  periodoVida,
+  rotuloOcupacao,
+  rotuloPapeis,
+  type Pessoa,
+} from '../../lib/pessoas';
+
+export async function getStaticPaths() {
+  const { pessoas } = await carregarAcervo();
+  return pessoas.map((p) => ({ params: { id: p.id }, props: { pessoa: p } }));
+}
+
+interface Props {
+  pessoa: Pessoa;
+}
+const { pessoa } = Astro.props;
+const { pessoaPorId, documentoPorId } = await carregarAcervo();
+
+const vida = periodoVida(pessoa);
+const grupos = (['pai', 'mae', 'conjuge', 'irmao', 'filho'] as const).map((tipo) => ({
+  tipo,
+  itens: pessoa.relacoes.filter((r) => r.tipo === tipo),
+}));
+const temFamilia = pessoa.relacoes.length > 0;
+type Evento = NonNullable<Pessoa['nascimento']>;
+const eventos: [string, Evento][] = [];
+if (pessoa.nascimento) eventos.push(['Nascimento', pessoa.nascimento]);
+if (pessoa.morte) eventos.push(['Morte', pessoa.morte]);
+const aparicoes = pessoa.aparece_em
+  .map((a) => ({ ...a, doc: documentoPorId.get(a.documento)! }))
+  .sort((a, b) => a.doc.data_documento.localeCompare(b.doc.data_documento));
+const documentouNoBrasil = aparicoes.some((a) => a.doc.pais === 'BR');
+const trilha = [
+  { nome: 'Pessoas', caminho: '/pessoas/' },
+  { nome: ROTULO_LINHA[pessoa.linha], caminho: `/pessoas/#${pessoa.linha}` },
+  { nome: pessoa.nome_exibicao, caminho: caminhoPessoa(pessoa.id) },
+];
+const descricao = [
+  pessoa.nome_exibicao,
+  vida ? `(${vida})` : '',
+  pessoa.nascimento?.lugar ? `, ${pessoa.nascimento.lugar}` : '',
+  ' — ',
+  pessoa.resumo || `o que ${aparicoes.length} ${aparicoes.length === 1 ? 'documento diz' : 'documentos dizem'} sobre esta pessoa, com a firmeza de cada fato e de cada parentesco.`,
+].join('');
+
+const iso = (d?: string) => (d && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(d) ? d : undefined);
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: pessoa.nome_exibicao,
+  alternateName: pessoa.nomes_alternativos,
+  url: `https://genealogia.rsorage.com${caminhoPessoa(pessoa.id)}`,
+  ...(iso(pessoa.nascimento?.data) ? { birthDate: iso(pessoa.nascimento?.data) } : {}),
+  ...(iso(pessoa.morte?.data) ? { deathDate: iso(pessoa.morte?.data) } : {}),
+  ...(pessoa.nascimento?.lugar ? { birthPlace: pessoa.nascimento.lugar } : {}),
+  ...(pessoa.morte?.lugar ? { deathPlace: pessoa.morte.lugar } : {}),
+  ...(pessoa.ocupacao ? { jobTitle: rotuloOcupacao(pessoa.ocupacao) } : {}),
+  parent: pessoa.relacoes.filter((r) => r.tipo === 'pai' || r.tipo === 'mae').map((r) => ({ '@type': 'Person', name: pessoaPorId.get(r.pessoa)?.nome_exibicao, url: `https://genealogia.rsorage.com${caminhoPessoa(r.pessoa)}` })),
+  spouse: pessoa.relacoes.filter((r) => r.tipo === 'conjuge').map((r) => ({ '@type': 'Person', name: pessoaPorId.get(r.pessoa)?.nome_exibicao, url: `https://genealogia.rsorage.com${caminhoPessoa(r.pessoa)}` })),
+  children: pessoa.relacoes.filter((r) => r.tipo === 'filho').map((r) => ({ '@type': 'Person', name: pessoaPorId.get(r.pessoa)?.nome_exibicao, url: `https://genealogia.rsorage.com${caminhoPessoa(r.pessoa)}` })),
+}).replace(/</g, '\\u003c');
+---
+
+<Base titulo={pessoa.nome_exibicao} descricao={descricao} caminho={caminhoPessoa(pessoa.id)} jsonLd={[jsonLd, jsonLdTrilha(trilha)]}>
+  <div class="space-y-10 py-8">
+    <Trilha itens={trilha} />
+
+    <!-- Cabeçalho -->
+    <section class="border-b border-[#E7E2D8] pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-8 space-y-3">
+        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">{ROTULO_LINHA[pessoa.linha]}</div>
+        <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">{pessoa.nome_exibicao}</h1>
+        {
+          pessoa.nomes_alternativos.length > 0 && (
+            <p class="font-editorial text-base text-[#57534E]">
+              Também escrito{' '}
+              {pessoa.nomes_alternativos.map((n, i) => (
+                <>
+                  <span class="text-[#1C1917]">{n}</span>
+                  {i < pessoa.nomes_alternativos.length - 1 ? ', ' : ''}
+                </>
+              ))}
+            </p>
+          )
+        }
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-sans text-[#57534E]">
+          {vida && <span class="font-mono tabular-nums text-[#8C3A27] font-semibold">{vida}</span>}
+          {pessoa.ocupacao && <span>{rotuloOcupacao(pessoa.ocupacao)}</span>}
+          {pessoa.sexo !== '?' && <span class="text-[#A8A29E]">{pessoa.sexo === 'F' ? 'mulher' : 'homem'}</span>}
+        </div>
+        {pessoa.resumo && <p class="font-editorial text-lg text-[#292524] leading-relaxed pt-2 max-w-3xl">{pessoa.resumo}</p>}
+      </div>
+      <aside class="lg:col-span-4 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg space-y-3 text-xs font-sans">
+        <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Ligações</div>
+        <ul class="space-y-1.5">
+          <li>
+            <a href={`/arvore/?pessoa=${pessoa.id}`} class="text-[#1C1917] font-semibold hover:text-[#8C3A27] hover:underline">Ver na árvore →</a>
+          </li>
+          {
+            pessoa.familysearch && (
+              <li>
+                <a href={`https://www.familysearch.org/tree/person/details/${pessoa.familysearch}`} target="_blank" rel="noopener noreferrer" class="text-[#57534E] hover:text-[#8C3A27] hover:underline">
+                  Árvore Familiar do FamilySearch ({pessoa.familysearch}) ↗
+                </a>
+              </li>
+            )
+          }
+          <li class="text-[#78716C]">{aparicoes.length} {aparicoes.length === 1 ? 'documento a nomeia' : 'documentos a nomeiam'} · {pessoa.relacoes.length} {pessoa.relacoes.length === 1 ? 'parentesco' : 'parentescos'} documentados</li>
+        </ul>
+        <p class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
+          Cada fato traz a sua firmeza (certa, declarada, provável, duvidosa) e a base que o sustenta. Conclusão sem evidência não entra.
+        </p>
+      </aside>
+    </section>
+
+    <!-- Fatos -->
+    {
+      (pessoa.nascimento || pessoa.morte) && (
+        <section class="space-y-4" aria-labelledby="fatos">
+          <h2 id="fatos" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">O que se sabe, e com que firmeza</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {eventos.map(([rotulo, ev]) => (
+                <article class="bg-white border border-[#E7E2D8] rounded-xl p-5 space-y-3">
+                  <div class="flex items-center justify-between gap-3">
+                    <h3 class="font-display text-xl font-semibold text-[#1C1917]">{rotulo}</h3>
+                    <SeloFirmeza firmeza={ev.firmeza} />
+                  </div>
+                  <p class="font-editorial text-lg text-[#292524]">
+                    {ev.data ? dataAcervoLegivel(ev.data) : <span class="text-[#78716C]">data não conhecida</span>}
+                    {ev.lugar && <span class="text-[#57534E]"> · {ev.lugar}</span>}
+                  </p>
+                  <div class="bg-[#FAF7F2] border border-[#E7E0D2] rounded-lg p-3.5 space-y-2">
+                    <div class="text-[10px] uppercase tracking-widest font-sans font-semibold text-[#78716C]">Base</div>
+                    <p class="font-sans text-xs text-[#44403C] leading-relaxed">{ev.base}</p>
+                    {ev.documentos.length > 0 && (
+                      <p class="flex flex-wrap gap-x-3 gap-y-1 text-xs font-sans pt-1">
+                        {ev.documentos.map((id) => (
+                          <a href={caminhoDocumento(id)} class="text-[#8C3A27] font-semibold hover:underline">
+                            {documentoPorId.get(id)?.titulo ?? id}
+                          </a>
+                        ))}
+                      </p>
+                    )}
+                  </div>
+                </article>
+              ))}
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Família -->
+    <section class="space-y-4" aria-labelledby="familia">
+      <h2 id="familia" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Família</h2>
+      {
+        temFamilia ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {grupos
+              .filter((g) => g.itens.length > 0)
+              .map((g) => (
+                <div class="space-y-2">
+                  <h3 class="text-xs uppercase tracking-widest font-sans font-semibold text-[#78716C]">
+                    {ROTULO_RELACAO[g.tipo]}
+                    {g.itens.length > 1 && g.tipo !== 'pai' && g.tipo !== 'mae' ? ` (${g.itens.length})` : ''}
+                  </h3>
+                  <ul class="space-y-2">
+                    {g.itens.map((r) => {
+                      const outro = pessoaPorId.get(r.pessoa)!;
+                      return (
+                        <li class="space-y-1">
+                          <CartaoPessoa pessoa={outro} compacto />
+                          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-sans text-[#78716C] px-1">
+                            <SeloFirmeza firmeza={r.firmeza} />
+                            <span>segundo</span>
+                            {r.documentos.map((id) => (
+                              <a href={caminhoDocumento(id)} class="text-[#8C3A27] hover:underline">
+                                {documentoPorId.get(id)?.titulo ?? id}
+                              </a>
+                            ))}
+                          </div>
+                          {r.justificativa && <p class="text-xs font-sans text-[#57534E] leading-relaxed px-1">{r.justificativa}</p>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
+          </div>
+        ) : (
+          <p class="font-editorial text-base text-[#57534E]">Nenhum parentesco documentado entre as pessoas publicadas.</p>
+        )
+      }
+      {
+        documentouNoBrasil && (
+          <p class="text-xs font-sans text-[#78716C] border-t border-[#EFEAE0] pt-3">
+            Parentes nascidos no Brasil ainda não estão publicados: nesta fase o site cobre as pessoas nascidas na Itália.
+          </p>
+        )
+      }
+    </section>
+
+    <!-- Nos documentos -->
+    <section class="space-y-4" aria-labelledby="documentos">
+      <div>
+        <h2 id="documentos" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Nos documentos</h2>
+        <p class="font-editorial text-sm text-[#57534E] mt-1">
+          Como cada ato a escreveu — nome, papel, idade e ofício são os que <em>aquele</em> escrivão anotou, não conclusões nossas.
+        </p>
+      </div>
+      {
+        aparicoes.length > 0 ? (
+          <ol class="divide-y divide-[#EFEAE0] border-y border-[#E7E2D8]">
+            {aparicoes.map((a) => (
+              <li class="py-4 grid grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)] gap-x-6 gap-y-1">
+                <div class="font-mono text-sm tabular-nums text-[#8C3A27]">{dataAcervoLegivel(a.doc.data_documento)}</div>
+                <div class="space-y-1">
+                  <a href={caminhoDocumento(a.doc.id)} class="font-display text-lg font-semibold text-[#1C1917] hover:text-[#8C3A27] leading-snug">
+                    {a.doc.titulo}
+                  </a>
+                  <div class="text-xs font-sans text-[#57534E]">
+                    {ROTULO_TIPO_DOC[a.doc.tipo]} · {a.doc.lugar}
+                  </div>
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-sans">
+                    <span class="font-medium px-2 py-0.5 rounded bg-[#FAF7F0] border border-[#E7E0D2] text-[#57534E]">{rotuloPapeis(a.papeis)}</span>
+                    <span class="font-editorial italic text-[#292524]">«{a.nome_escrito}»</span>
+                    {a.idade !== undefined && <span class="text-[#78716C]">{a.idade} anos declarados</span>}
+                    {a.oficio && <span class="text-[#78716C]">{a.oficio}</span>}
+                    {a.assina !== undefined && <span class="text-[#78716C]">{a.assina ? 'assina' : 'não sabe escrever'}</span>}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p class="font-editorial text-base text-[#57534E]">Nenhum documento publicado a nomeia ainda.</p>
+        )
+      }
+    </section>
+  </div>
+</Base>

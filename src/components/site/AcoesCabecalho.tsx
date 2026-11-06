@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Mail } from 'lucide-react';
-import { SearchDialog } from '../SearchDialog';
+import BuscaGlobal from './BuscaGlobal';
 import { LeadSubmissionModal } from '../LeadSubmissionModal';
-import { caminhoDaAba, irPara } from '../../lib/navegacao';
 
 /**
  * Zona 3 do cabeçalho: busca rápida (Ctrl/Cmd+K) e envio de pista.
@@ -42,13 +41,7 @@ export const AcoesCabecalho: React.FC = () => {
         <span className="hidden sm:inline lg:hidden xl:inline">Enviar uma pista</span>
       </button>
 
-      <SearchDialog
-        isOpen={buscaAberta}
-        onClose={() => setBuscaAberta(false)}
-        onSelectPerson={(p) => irPara(`/arvore/?pessoa=${encodeURIComponent(p.id)}`)}
-        onSelectRecord={(r) => irPara(`/documentos/?registro=${encodeURIComponent(r.id)}`)}
-        onNavigateTab={(aba) => irPara(caminhoDaAba(aba))}
-      />
+      <BuscaGlobal aberta={buscaAberta} aoFechar={() => setBuscaAberta(false)} />
       <LeadSubmissionModal isOpen={contatoAberto} onClose={() => setContatoAberto(false)} />
     </div>
   );

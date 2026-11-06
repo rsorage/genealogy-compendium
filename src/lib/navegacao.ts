@@ -14,7 +14,7 @@ export interface Secao {
 
 export const SECOES: Secao[] = [
   { id: 'compendio', caminho: '/', rotulo: 'O Compêndio', rotuloCurto: 'Compêndio' },
-  { id: 'arvore', caminho: '/arvore/', rotulo: 'Árvores de linhagem', rotuloCurto: 'Árvores' },
+  { id: 'arvore', caminho: '/arvore/', rotulo: 'Pessoas e árvores', rotuloCurto: 'Pessoas' },
   { id: 'registros-vistos', caminho: '/registros-vistos/', rotulo: 'Registros vistos', rotuloCurto: 'Registros vistos' },
   { id: 'documentos', caminho: '/documentos/', rotulo: 'Documentos', rotuloCurto: 'Documentos' },
   { id: 'atlas', caminho: '/atlas/', rotulo: 'Atlas da migração', rotuloCurto: 'Atlas' },
@@ -41,6 +41,7 @@ export function irPara(caminho: string): void {
 
 export function secaoAtiva(pathname: string): SecaoId {
   if (pathname === '/' || pathname === '') return 'compendio';
+  if (pathname.startsWith('/pessoas/')) return 'arvore';
   const achada = SECOES.find((s) => s.caminho !== '/' && pathname.startsWith(s.caminho));
   return achada?.id ?? 'compendio';
 }

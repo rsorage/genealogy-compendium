@@ -1,8 +1,61 @@
 ---
 import Base from '../../layouts/Base.astro';
-import PaginaArvore from '../../components/paginas/PaginaArvore';
+import ArvoreExplorer, { type NoArvore } from '../../components/arvore/ArvoreExplorer';
+import { carregarAcervo } from '../../lib/pessoas-build';
+import { RAIZ_DA_LINHA, ROTULO_LINHA, periodoVida } from '../../lib/pessoas';
+
+const { pessoas } = await carregarAcervo();
+const nos: NoArvore[] = pessoas.map((p) => ({
+  id: p.id,
+  nome: p.nome_exibicao,
+  vida: periodoVida(p),
+  lugar: p.nascimento?.lugar ?? '',
+  linha: p.linha,
+  sexo: p.sexo,
+  relacoes: p.relacoes.map((r) => ({ tipo: r.tipo, pessoa: r.pessoa, firmeza: r.firmeza })),
+}));
+const raizes = (['suraci', 'cardillo', 'marsicano', 'vecchia'] as const)
+  .map((l) => ({ id: RAIZ_DA_LINHA[l]!, rotulo: ROTULO_LINHA[l] }))
+  .filter((r) => nos.some((n) => n.id === r.id));
+const foco = raizes[0]?.id ?? nos[0].id;
+const comParentesco = nos.filter((n) => n.relacoes.length > 0).length;
 ---
 
-<Base naoIndexar={true} titulo="Árvores de linhagem" descricao="As linhas Suraci → Sorage e Cardillo → Cardilo, geração a geração, com o grau de firmeza de cada ligação e o documento que a sustenta.">
-  <PaginaArvore client:load />
+<Base
+  titulo="Árvores de linhagem"
+  descricao="As linhas Suraci → Sorage e Cardillo → Cardilo, geração a geração, com o grau de firmeza de cada ligação de parentesco e o documento que a sustenta."
+>
+  <div class="space-y-8 py-8">
+    <section class="border-b border-[#E7E2D8] pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-8 space-y-4">
+        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">Grafo de evidências · uma pessoa no centro</div>
+        <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">Árvores de linhagem</h1>
+        <p class="font-editorial text-lg sm:text-xl text-[#44403C] leading-relaxed">
+          Esta árvore não é um desenho: é o grafo das relações que os documentos afirmam. Cada ligação pai–filho ou
+          marido–mulher existe aqui porque um ato a declara, e aparece com a firmeza que esse ato permite — cheia
+          quando o próprio ato a estabelece, tracejada quando é declarada ou inferida, pontilhada quando há contra-indícios.
+        </p>
+        <p class="font-editorial text-base text-[#57534E] leading-relaxed">
+          Clique numa pessoa para pôr a árvore em volta dela; o ícone ao lado abre o dossiê, com o documento de cada ligação.
+          <a href="/pessoas/" class="text-[#8C3A27] underline decoration-[#E8D9CE] hover:decoration-[#8C3A27]">Lista de todas as pessoas →</a>
+        </p>
+      </div>
+      <aside class="lg:col-span-4 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg space-y-2 text-xs font-sans">
+        <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
+        <dl class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-[#57534E]">
+          <dt>Pessoas</dt>
+          <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{nos.length}</dd>
+          <dt>Com parentesco documentado</dt>
+          <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{comParentesco}</dd>
+          <dt>Ligações</dt>
+          <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{nos.reduce((n, p) => n + p.relacoes.length, 0)}</dd>
+        </dl>
+        <p class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
+          Só pessoas nascidas na Itália, nesta fase. Os filhos nascidos no Brasil ainda não aparecem.
+        </p>
+      </aside>
+    </section>
+
+    <ArvoreExplorer client:load pessoas={nos} raizes={raizes} focoInicial={foco} rotulosLinha={ROTULO_LINHA} />
+  </div>
 </Base>

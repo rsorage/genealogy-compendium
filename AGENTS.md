@@ -33,32 +33,37 @@ acervo privado (CSV, YAML, fichas)  ──exportador──▶  src/content/*.jso
 ```
 
 - `npm run exportar` lê o acervo (padrão `../family-research`, ou `--acervo /caminho`) e grava
-  `src/content/registros-vistos/{nomes,paginas,meta}.json`. O relatório detalhado (exclusões e
-  motivos) vai para o acervo, não para cá.
+  `src/content/registros-vistos/{nomes,paginas,meta}.json`, `src/content/pessoas.json` e
+  `src/content/documentos.json`. Os relatórios detalhados (exclusões e motivos) vão para o acervo
+  (`01 Indice/`), não para cá.
 - `npm run exportar:verificar` confere se os JSON estão atualizados (sai com 1 se não).
 - `npm run test:py` roda os testes do exportador (dados fictícios).
 - `npm run build` valida e gera o site; `npm run check` faz a checagem de tipos.
 - Ninguém edita `src/content/` à mão.
 
-## Estado das vistas (06/11/2026)
+## Estado das vistas (06/11/2026, fase 3)
 
 | rota | estado | fonte |
 |---|---|---|
-| `/registros-vistos/` + `/registros-vistos/catalogo/…` | **real** | `01 Indice/registros-vistos/*.csv` via exportador |
+| `/registros-vistos/` + `/registros-vistos/catalogo/…` | **real** | `01 Indice/registros-vistos/*.csv` via `exportar-registros.py` |
+| `/pessoas/` e `/pessoas/<id>/` | **real** — 243 dossiês | `persons.yaml` + fichas via `exportar-pessoas-documentos.py` |
+| `/arvore/` | **real** — grafo com firmeza por ligação | idem (ilha `ArvoreExplorer`) |
+| `/documentos/` e `/documentos/<id>/` | **real** — 192 documentos, sem imagem | idem |
+| busca rápida (Ctrl+K) | **real** | `/busca/indice.json` |
 | `/` (compêndio) | casca com texto gerado (ficção), `noindex` | — |
-| `/arvore/` | casca com dados fictícios (`src/data/genealogyData.ts`), `noindex` | futuro: `persons.yaml` + grafo das fichas |
-| `/documentos/` | casca com dados fictícios, `noindex`; o visualizador de imagem **não pode** ir ao ar | futuro: `indice-documentos.csv` + fichas |
-| `/atlas/` | casca com rota fictícia, `noindex` | futuro: itinerário real com trechos tracejados para hipóteses; inclui os Vecchia |
+| `/atlas/` | casca com rota fictícia, `noindex` | futuro: itinerário real com trechos tracejados; inclui os Vecchia |
 | `/frentes/` | casca com dados fictícios, `noindex` | futuro: `BACKLOG.md` + fichas NEG + `03 Correspondencia` |
 
-`src/types/genealogy.ts` e `src/data/*.ts` são o modelo e os dados **gerados pelo Gemini**: tudo
-ali é inventado (Fortunato Suraci, Castelnuovo Cilento, vapores Italia e Caffaro, Hospedaria do
-Brás, «Cardilho»…). Servem só para manter a casca de pé até cada vista ser ligada aos dados reais;
-não corrigir ficção, substituir. As imagens em `public/imagens/` são stock, mantidas por enquanto a
-pedido de Ramon; o «retrato de família» não é da família.
+**Recorte das pessoas (decisão de 06/11/2026): «até os italianos».** Publica-se quem nasceu na Itália
+(lugar no `persons.yaml`, lugar declarado num ato, ou pessoa documentada só na Itália) e dali para cima
+sem limite; nascidos no Brasil ficam para outra fase; casos indeterminados decidem-se em
+`01 Indice/publicacao-pessoas.json` (`publicar_pessoas` / `ocultar_pessoas` / `ocultar_documentos`).
+O texto de apresentação de cada pessoa é o campo `public_summary` do `persons.yaml` (escrito à mão);
+o `summary` interno nunca é exportado. A `line` de cada pessoa também vem do `persons.yaml`.
 
-O modelo real está em `src/content.config.ts` (coleções `pessoas`, `documentos`, `frentes`,
-`itinerario`, ainda vazias). Ao ligar uma vista, retirar o `naoIndexar` da página.
+`src/types/genealogy.ts` e `src/data/*.ts` são o que resta do modelo **gerado pelo Gemini**, usado só
+pelas três vistas ainda fictícias (compêndio, atlas, frentes). Tudo ali é inventado; não corrigir
+ficção, substituir. As imagens em `public/imagens/` são stock, mantidas por enquanto a pedido de Ramon.
 
 ## Convenções
 
