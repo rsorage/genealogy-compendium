@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Compass, Users, Sparkles, FileText, ChevronRight, Anchor, Heart, ArrowRight } from 'lucide-react';
 import { peopleDatabase, historicalRecordsDatabase } from '../data/genealogyData';
-import { Person, BranchId } from '../types/genealogy';
+import type { Person, BranchId } from '../types/genealogy';
 import { RelationshipPathIndicator } from './RelationshipPathIndicator';
 
 interface FamilyTreeExplorerProps {

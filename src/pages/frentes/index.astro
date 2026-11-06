@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import PaginaFrentes from '../../components/paginas/PaginaFrentes';
+---
+
+<Base naoIndexar={true} titulo="Frentes de pesquisa" descricao="O que ainda está em aberto: hipóteses, arquivos consultados, pedidos em espera e buscas negativas.">
+  <PaginaFrentes client:load />
+</Base>

@@ -16,14 +16,9 @@ import {
   ChevronRight,
   ExternalLink,
 } from 'lucide-react';
-import {
-  waypointsDatabase,
-  decadeMilestones,
-  atlanticBasinLandGeoJSON,
-  Waypoint,
-  DecadeMilestone,
-} from '../data/cartographyData';
-import { HistoricalRecord } from '../types/genealogy';
+import { waypointsDatabase, decadeMilestones, atlanticBasinLandGeoJSON } from '../data/cartographyData';
+import type { Waypoint, DecadeMilestone } from '../data/cartographyData';
+import type { HistoricalRecord } from '../types/genealogy';
 import { historicalRecordsDatabase } from '../data/genealogyData';
 
 interface D3MigrationMapProps {

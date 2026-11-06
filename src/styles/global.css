@@ -1,0 +1,141 @@
+/* Fontes servidas pelo próprio site (sem Google Fonts): o site abre offline e
+   não envia o visitante a terceiros. Licença OFL em cada pacote @fontsource. */
+@import "@fontsource/cormorant-garamond/400.css";
+@import "@fontsource/cormorant-garamond/400-italic.css";
+@import "@fontsource/cormorant-garamond/500.css";
+@import "@fontsource/cormorant-garamond/600.css";
+@import "@fontsource/cormorant-garamond/600-italic.css";
+@import "@fontsource/cormorant-garamond/700.css";
+@import "@fontsource/newsreader/400.css";
+@import "@fontsource/newsreader/400-italic.css";
+@import "@fontsource/newsreader/500.css";
+@import "@fontsource/newsreader/600.css";
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/500.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@import "tailwindcss";
+
+/* Os componentes React ficam fora de src/pages; o Tailwind precisa saber
+   onde procurar as classes. */
+@source "../components";
+@source "../layouts";
+@source "../pages";
+
+@theme {
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-editorial: "Newsreader", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Paleta do compêndio (papel, tinta, selo) — os mesmos hexadecimais que os
+     componentes usam em classes arbitrárias; aqui ganham nome para novos
+     componentes. */
+  --color-paper: #fbf9f5;
+  --color-paper-2: #f5f0e6;
+  --color-paper-3: #f4efe6;
+  --color-ink: #1c1917;
+  --color-ink-2: #292524;
+  --color-ink-3: #57534e;
+  --color-ink-4: #78716c;
+  --color-rule: #e7e2d8;
+  --color-rule-2: #d6cebe;
+  --color-seal: #8c3a27;
+  --color-moss: #2a6f54;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-sans);
+    background-color: #fbf9f5;
+    color: #1c1917;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: #e2d9cc;
+    color: #1c1917;
+  }
+}
+
+.font-display {
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+.font-editorial {
+  font-family: "Newsreader", Georgia, serif;
+}
+
+.font-sans-clean {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+/* Capitular editorial */
+.drop-cap::first-letter {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 3.75rem;
+  line-height: 0.8;
+  float: left;
+  margin-right: 0.75rem;
+  margin-top: 0.25rem;
+  font-weight: 600;
+  color: #1c1917;
+}
+
+/* Textura de papel de arquivo */
+.paper-grain {
+  background-color: #fbf9f5;
+  background-image: radial-gradient(#e5dfd3 0.65px, transparent 0.65px);
+  background-size: 16px 16px;
+}
+
+/* Barra de rolagem do visualizador de documentos */
+.archive-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.archive-scroll::-webkit-scrollbar-track {
+  background: #f4efe6;
+}
+.archive-scroll::-webkit-scrollbar-thumb {
+  background: #d4cbbc;
+  border-radius: 3px;
+}
+.archive-scroll::-webkit-scrollbar-thumb:hover {
+  background: #b8ac98;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Os componentes gerados usam .animate-fade-in sem defini-la. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 180ms ease-out;
+}
+
+/* Páginas estáticas do catálogo (legíveis sem JavaScript). */
+.catalogo-alvo:target {
+  background: #fff;
+  outline: 2px solid #e8d9ce;
+  outline-offset: 8px;
+  border-radius: 4px;
+}

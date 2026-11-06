@@ -1,0 +1,9 @@
+---
+/* naoIndexar: o conteúdo desta vista ainda é o texto gerado pelo Gemini (ficção). Retirar quando o conteúdo real entrar. */
+import Base from '../layouts/Base.astro';
+import PaginaCompendio from '../components/paginas/PaginaCompendio';
+---
+
+<Base naoIndexar={true} titulo="O Compêndio" descricao="Compêndio genealógico das famílias Sorage (Suraci, de Laganadi) e Cardillo (de Battaglia di Casaletto Spartano): árvores, documentos transcritos, registros consultados e frentes de pesquisa.">
+  <PaginaCompendio client:load />
+</Base>

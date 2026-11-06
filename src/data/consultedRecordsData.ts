@@ -1,4 +1,4 @@
-import { ConsultedRecord } from '../types/genealogy';
+import type { ConsultedRecord } from '../types/genealogy';
 
 export const consultedRecordsDatabase: ConsultedRecord[] = [
   // --- LAGANADI & CALABRIA (Suraci / Sorage Lineage) ---

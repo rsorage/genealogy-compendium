@@ -1,0 +1,81 @@
+---
+import '../styles/global.css';
+import Cabecalho from '../components/site/Cabecalho.astro';
+import Rodape from '../components/site/Rodape.astro';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  /** Caminho canônico (com barra final). Padrão: a URL da página. */
+  caminho?: string;
+  /** Imagem de compartilhamento, relativa à raiz do site. */
+  imagemOg?: string;
+  /** Marca a página para não ser indexada (ex.: rascunhos). */
+  naoIndexar?: boolean;
+  /** JSON-LD adicional (já serializado). */
+  jsonLd?: string;
+  /** Largura máxima do conteúdo. */
+  largura?: 'normal' | 'larga';
+}
+
+const SITE_NOME = 'Sorage & Cardillo';
+const {
+  titulo,
+  descricao,
+  caminho = Astro.url.pathname,
+  imagemOg = '/og/portal.jpg',
+  naoIndexar = false,
+  jsonLd,
+  largura = 'normal',
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://genealogia.rsorage.com');
+const canonico = new URL(caminho, site).toString();
+const og = new URL(imagemOg, site).toString();
+const tituloCompleto = caminho === '/' ? `${SITE_NOME} · Compêndio genealógico` : `${titulo} | ${SITE_NOME}`;
+---
+
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descricao} />
+    <meta name="author" content="Ramon Sorage" />
+    <meta name="theme-color" content="#fbf9f5" />
+    <link rel="canonical" href={canonico} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {naoIndexar && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={SITE_NOME} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonico} />
+    <meta property="og:image" content={og} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+  </head>
+  <body class="bg-[#FBF9F5] text-[#1C1917] antialiased selection:bg-[#E2D9CC] selection:text-[#1C1917]">
+    <a
+      href="#conteudo"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-[#1C1917] focus:text-[#FBF9F5] focus:px-3 focus:py-2 focus:rounded-md focus:text-sm"
+      >Ir para o conteúdo</a
+    >
+    <div class="min-h-screen flex flex-col">
+      <Cabecalho />
+      <main
+        id="conteudo"
+        class:list={[
+          'flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8',
+          largura === 'larga' ? 'max-w-[90rem]' : 'max-w-7xl',
+        ]}
+      >
+        <slot />
+      </main>
+      <Rodape />
+    </div>
+  </body>
+</html>

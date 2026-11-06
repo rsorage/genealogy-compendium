@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://genealogia.rsorage.com/sitemap-index.xml

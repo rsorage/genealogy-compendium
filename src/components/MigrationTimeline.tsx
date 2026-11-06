@@ -15,7 +15,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { migrationStages, historicalRecordsDatabase } from '../data/genealogyData';
-import { MigrationStage, HistoricalRecord } from '../types/genealogy';
+import type { MigrationStage, HistoricalRecord } from '../types/genealogy';
 import { D3MigrationMap } from './D3MigrationMap';
 
 interface MigrationTimelineProps {

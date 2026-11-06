@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Volume2, BookOpen, Compass, ChevronRight, FileText, ArrowRight, Quote } from 'lucide-react';
 import { etymologyDatabase, historicalRecordsDatabase } from '../data/genealogyData';
-import { HistoricalRecord } from '../types/genealogy';
+import type { HistoricalRecord } from '../types/genealogy';
 
 interface CompendiumOverviewProps {
   onNavigateToTree: () => void;
@@ -140,7 +140,7 @@ export const CompendiumOverview: React.FC<CompendiumOverviewProps> = ({
           <div className="space-y-2">
             <div className="relative overflow-hidden rounded-md border border-[#DCD5C6] group">
               <img
-                src="/src/assets/images/archive_manuscript_plate_1793921471832.jpg"
+                src="/imagens/archive_manuscript_plate.jpg"
                 alt="Archival civil registration ledger from Reggio Calabria, Italy"
                 className="w-full h-72 object-cover object-center group-hover:scale-[1.02] transition-transform duration-500"
                 referrerPolicy="no-referrer"
@@ -351,7 +351,7 @@ export const CompendiumOverview: React.FC<CompendiumOverviewProps> = ({
             <div>
               <div className="relative h-48 overflow-hidden bg-[#EAE5DA]">
                 <img
-                  src="/src/assets/images/migration_ship_plate_1793921472471.jpg"
+                  src="/imagens/migration_ship_plate.jpg"
                   alt="Historic steamship departing Genoa for Santos"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
@@ -385,7 +385,7 @@ export const CompendiumOverview: React.FC<CompendiumOverviewProps> = ({
             <div>
               <div className="relative h-48 overflow-hidden bg-[#EAE5DA]">
                 <img
-                  src="/src/assets/images/calabria_ancestral_village_1793921473340.jpg"
+                  src="/imagens/calabria_ancestral_village.jpg"
                   alt="Ancient stone hillside village in Calabria"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
@@ -419,7 +419,7 @@ export const CompendiumOverview: React.FC<CompendiumOverviewProps> = ({
             <div>
               <div className="relative h-48 overflow-hidden bg-[#EAE5DA]">
                 <img
-                  src="/src/assets/images/immigrant_family_portrait_1793921472772.jpg"
+                  src="/imagens/immigrant_family_portrait.jpg"
                   alt="Vintage cabinet card portrait of Italian immigrant family in São Paulo"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"

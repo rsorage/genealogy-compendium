@@ -1,4 +1,4 @@
-import {
+import type {
   Person,
   HistoricalRecord,
   MigrationStage,
@@ -120,7 +120,7 @@ export const peopleDatabase: Person[] = [
       'Original Italian birth certificate retrieved from Archivio di Stato di Reggio Calabria (Registro Nati, anno 1871, atto n. 142).',
       'Civil marriage celebrated at the 2º Subdistrito da Mooca in 1901; document officially marks the transition to "Sorage".',
     ],
-    portraitPath: '/src/assets/images/immigrant_family_portrait_1793921472772.jpg',
+    portraitPath: '/imagens/immigrant_family_portrait.jpg',
   },
   {
     id: 'morabito-carmela-1875',
@@ -224,7 +224,7 @@ export const peopleDatabase: Person[] = [
       'Documented on the passenger manifest of the Piroscafo Italia (Archivio di Stato di Genova / Arquivo Público de SP).',
       'Dual spelling "Cardilo" and "Cardilho" appears on his children\'s civil birth registrations in Campinas.',
     ],
-    portraitPath: '/src/assets/images/immigrant_family_portrait_1793921472772.jpg',
+    portraitPath: '/imagens/immigrant_family_portrait.jpg',
   },
   {
     id: 'esposito-rosa-1873',
@@ -388,7 +388,7 @@ export const historicalRecordsDatabase: HistoricalRecord[] = [
     country: 'Italy',
     archiveRepository: 'Archivio di Stato di Reggio Calabria - Sezione Stato Civile Italiano',
     archiveCallNumber: 'Registro delle Nascite, Anno 1871, Parte I, Atto Numero 142',
-    imagePath: '/src/assets/images/archive_manuscript_plate_1793921471832.jpg',
+    imagePath: '/imagens/archive_manuscript_plate.jpg',
     imageAlt: 'High-resolution archival photograph of the 1871 Italian birth registration ledger with red municipal wax seal and sepia iron-gall ink handwriting',
     relatedPersonIds: ['suraci-fortunato-1871', 'suraci-antonino-1842', 'minniti-francesca-1845'],
     summary:
@@ -459,7 +459,7 @@ Having read this act to those present, the witnesses have signed it with me, the
     country: 'Italy',
     archiveRepository: 'Museu da Imigração do Estado de São Paulo / Arquivo Público do Estado de SP',
     archiveCallNumber: 'Livro de Vapores Chegados ao Porto de Santos, 1893, Livro 038, Folha 112',
-    imagePath: '/src/assets/images/migration_ship_plate_1793921472471.jpg',
+    imagePath: '/imagens/migration_ship_plate.jpg',
     imageAlt: 'Vintage archival photograph of late 19th century steamship packed with emigrants departing Mediterranean port for Brazil',
     relatedPersonIds: ['cardillo-giovanni-1869', 'esposito-rosa-1873'],
     summary:
@@ -520,7 +520,7 @@ Sanitary conditions at departure: examined by the Ship Surgeon and certified fre
     country: 'Brazil',
     archiveRepository: 'Museu da Imigração do Estado de São Paulo (Arquivo Histórico Digital)',
     archiveCallNumber: 'Livro de Matrícula de Imigrantes n. 044, Página 089, Registro n. 44.912',
-    imagePath: '/src/assets/images/archive_manuscript_plate_1793921471832.jpg',
+    imagePath: '/imagens/archive_manuscript_plate.jpg',
     imageAlt: 'Ledger page from the Hospedaria dos Imigrantes showing clerk entry and handwritten columns',
     relatedPersonIds: ['cardillo-giovanni-1869', 'esposito-rosa-1873'],
     summary:
@@ -588,7 +588,7 @@ Observations: Released with regular luggage and free railway transit pass paid b
     country: 'Brazil',
     archiveRepository: 'Cartório do Registro Civil do 2º Subdistrito da Mooca, São Paulo',
     archiveCallNumber: 'Livro B-04 de Casamentos, Fl. 78v, Termo n. 312',
-    imagePath: '/src/assets/images/archive_manuscript_plate_1793921471832.jpg',
+    imagePath: '/imagens/archive_manuscript_plate.jpg',
     imageAlt: 'Historical Brazilian civil marriage ledger entry from the Mooca district',
     relatedPersonIds: ['suraci-fortunato-1871', 'morabito-carmela-1875'],
     summary:
@@ -647,7 +647,7 @@ Present witnesses: Vincenzo Lofredo, tinsmith, and Giovanni Battista Rossi, tail
     country: 'Italy',
     archiveRepository: 'Archivio di Stato di Salerno - Sezione Stato Civile',
     archiveCallNumber: 'Comune di Castelnuovo Cilento, Registro Nati, Anno 1869, Atto n. 47',
-    imagePath: '/src/assets/images/archive_manuscript_plate_1793921471832.jpg',
+    imagePath: '/imagens/archive_manuscript_plate.jpg',
     imageAlt: '19th century Italian birth act ledger from Archivio di Stato di Salerno',
     relatedPersonIds: ['cardillo-giovanni-1869', 'cardillo-gennaro-1838', 'deluca-filomena-1842'],
     summary:
@@ -689,7 +689,7 @@ Witnesses: Antonio Di Matteo, tailor, and Pasquale Marotta, rural guard.`,
     country: 'Brazil',
     archiveRepository: 'Arquivo da Paróquia Nossa Senhora da Achiropita & Cartório da Bela Vista',
     archiveCallNumber: 'Livro Matrimonial 09, Fl. 142, Termo 876',
-    imagePath: '/src/assets/images/immigrant_family_portrait_1793921472772.jpg',
+    imagePath: '/imagens/immigrant_family_portrait.jpg',
     imageAlt: 'Historical studio portrait commemorating the Italian-Brazilian wedding in Bixiga',
     relatedPersonIds: ['sorage-paschoal-1904', 'cardillo-concetta-1908', 'sorage-renato-1938'],
     summary:

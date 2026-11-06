@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import PaginaDocumentos from '../../components/paginas/PaginaDocumentos';
+---
+
+<Base naoIndexar={true} titulo="Documentos" descricao="Os atos civis e paroquiais lidos na pesquisa — transcrições, notas de leitura e links para as imagens nos portais oficiais.">
+  <PaginaDocumentos client:load />
+</Base>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Calendar, MapPin, Anchor, Briefcase, FileText, User, ArrowRight } from 'lucide-react';
-import { Person, HistoricalRecord } from '../types/genealogy';
+import type { Person, HistoricalRecord } from '../types/genealogy';
 import { historicalRecordsDatabase, peopleDatabase } from '../data/genealogyData';
 import { RelationshipPathIndicator } from './RelationshipPathIndicator';
 

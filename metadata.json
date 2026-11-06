@@ -1,6 +1,0 @@
-{
-  "name": "Suraci & Cardillo: Genealogy Compendium",
-  "description": "An archival encyclopedia and research compendium chronicling the Italian-Brazilian migrations of the Suraci (Sorage) and Cardillo (Cardilo, Cardilho) lineages, featuring interactive lineage trees, documented historical records, paleographic notes, and quest logs.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

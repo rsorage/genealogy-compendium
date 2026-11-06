@@ -1,8 +1,19 @@
+# dependências e saída de build
 node_modules/
-build/
 dist/
-coverage/
+.astro/
+
+# python
+__pycache__/
+*.pyc
+
+# sistema e editores
 .DS_Store
 *.log
-.env*
-!.env.example
+npm-debug.log*
+.vscode/
+.idea/
+
+# ambiente local (não há segredos no projeto; o site é estático)
+.env
+.env.*

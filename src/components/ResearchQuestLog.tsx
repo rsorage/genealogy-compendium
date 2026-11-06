@@ -12,7 +12,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { questLogEntries } from '../data/genealogyData';
-import { QuestLogEntry, BranchId } from '../types/genealogy';
+import type { QuestLogEntry, BranchId } from '../types/genealogy';
 
 interface ResearchQuestLogProps {
   onOpenContactModal: (targetQuestCode?: string) => void;

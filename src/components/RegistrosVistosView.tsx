@@ -20,8 +20,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { consultedRecordsDatabase } from '../data/consultedRecordsData';
-import { ConsultedRecord, RecordCertaintyDegree, ConsultedRecordType } from '../types/genealogy';
-import { HistoricalRecord } from '../types/genealogy';
+import type { ConsultedRecord, RecordCertaintyDegree, ConsultedRecordType } from '../types/genealogy';
+import type { HistoricalRecord } from '../types/genealogy';
 import { historicalRecordsDatabase } from '../data/genealogyData';
 
 interface RegistrosVistosViewProps {

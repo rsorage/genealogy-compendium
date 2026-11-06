@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Anchor, ArrowRight, Compass, Ship, User, ChevronRight, Sparkles } from 'lucide-react';
-import { Person } from '../types/genealogy';
+import type { Person } from '../types/genealogy';
 import { peopleDatabase } from '../data/genealogyData';
 
 interface PathNode {

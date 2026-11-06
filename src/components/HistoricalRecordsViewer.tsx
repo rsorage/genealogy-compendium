@@ -14,7 +14,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { historicalRecordsDatabase } from '../data/genealogyData';
-import { HistoricalRecord, PaleographicCallout, BranchId } from '../types/genealogy';
+import type { HistoricalRecord, PaleographicCallout, BranchId } from '../types/genealogy';
 
 interface HistoricalRecordsViewerProps {
   initialRecord?: HistoricalRecord | null;

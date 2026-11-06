@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import PaginaArvore from '../../components/paginas/PaginaArvore';
+---
+
+<Base naoIndexar={true} titulo="Árvores de linhagem" descricao="As linhas Suraci → Sorage e Cardillo → Cardilo, geração a geração, com o grau de firmeza de cada ligação e o documento que a sustenta.">
+  <PaginaArvore client:load />
+</Base>

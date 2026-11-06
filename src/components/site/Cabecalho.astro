@@ -1,0 +1,63 @@
+---
+import { SECOES, secaoAtiva } from '../../lib/navegacao';
+import AcoesCabecalho from './AcoesCabecalho';
+
+const ativa = secaoAtiva(Astro.url.pathname);
+---
+
+<header class="sticky top-0 z-40 bg-[#FBF9F5]/95 backdrop-blur-md border-b border-[#E7E2D8] transition-colors">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Zona 1 (marca) — Zona 2 (navegação) — Zona 3 (busca + ação primária) -->
+    <div class="flex items-center justify-between gap-8 h-18">
+      <a href="/" class="text-left group shrink-0 focus:outline-none" aria-label="Sorage & Cardillo — página inicial">
+        <span
+          class="font-display text-2xl lg:text-3xl font-medium tracking-tight text-[#1C1917] group-hover:text-[#8C3A27] transition-colors whitespace-nowrap"
+        >
+          SORAGE &amp; CARDILLO
+        </span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-medium text-[#57534E]" aria-label="Seções do site">
+        {
+          SECOES.map((s) => (
+            <a
+              href={s.caminho}
+              aria-current={ativa === s.id ? 'page' : undefined}
+              class:list={[
+                'hover:text-[#1C1917] transition-colors whitespace-nowrap shrink-0 pb-1',
+                ativa === s.id
+                  ? 'text-[#1C1917] border-b-2 border-[#8C3A27] font-semibold'
+                  : 'hover:border-b-2 hover:border-[#D6CEBE]',
+              ]}
+            >
+              {s.rotulo}
+            </a>
+          ))
+        }
+      </nav>
+
+      <AcoesCabecalho client:load />
+    </div>
+
+    <!-- Navegação móvel -->
+    <nav
+      class="md:hidden flex items-center justify-between overflow-x-auto py-2.5 border-t border-[#E7E2D8] text-xs font-medium text-[#57534E] gap-3 scrollbar-none"
+      aria-label="Seções do site"
+    >
+      {
+        SECOES.map((s) => (
+          <a
+            href={s.caminho}
+            aria-current={ativa === s.id ? 'page' : undefined}
+            class:list={[
+              'whitespace-nowrap px-2 py-1 rounded',
+              ativa === s.id ? 'text-[#8C3A27] font-semibold bg-[#F3EFE6]' : '',
+            ]}
+          >
+            {s.rotuloCurto}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
