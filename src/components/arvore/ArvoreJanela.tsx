@@ -1,15 +1,22 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Anchor, ArrowUp, Briefcase, ChevronRight, MapPin, Search } from 'lucide-react';
 
 export type FirmezaT = 'certa' | 'declarada' | 'provavel' | 'duvidosa';
 export type TipoRel = 'pai' | 'mae' | 'conjuge' | 'irmao' | 'filho';
+
+export interface LugarNo {
+  nome: string;
+  /** «Reggio Calabria, Calábria, Itália» */
+  contexto: string;
+  incerto: boolean;
+}
 
 export interface NoJanela {
   id: string;
   nome: string;
   outros: string[];
   vida: string;
-  lugar: string;
+  lugar?: LugarNo;
   ocupacao: string;
   emigracao: string;
   linha: string;
@@ -33,11 +40,18 @@ interface Props {
   modos: Modo[];
 }
 
-const COR_F: Record<FirmezaT, string> = { certa: '#2A6F54', declarada: '#57534E', provavel: '#B07A1A', duvidosa: '#8C3A27' };
+// As mesmas cores e traços dos selos de firmeza dos dossiês (src/lib/pessoas.ts).
+const CLASSE_F: Record<FirmezaT, string> = {
+  certa: 'text-[#2A6F54] bg-[#EEF5F0] border-[#CFE2D6]',
+  declarada: 'text-[#1C1917] bg-[#F3EFE6] border-[#D6CEBE]',
+  provavel: 'text-[#8A5A14] bg-[#FBF4E6] border-[#EBD9B4]',
+  duvidosa: 'text-[#8C3A27] bg-[#FAF3F0] border-[#E8D9CE]',
+};
 const ESTILO_F: Record<FirmezaT, 'solid' | 'dashed' | 'dotted'> = { certa: 'solid', declarada: 'dashed', provavel: 'dashed', duvidosa: 'dotted' };
 const ROTULO_F: Record<FirmezaT, string> = { certa: 'certa', declarada: 'declarada', provavel: 'provável', duvidosa: 'duvidosa' };
-const COR_LINHA: Record<string, string> = { suraci: '#8C3A27', vecchia: '#8C3A27', cardillo: '#2B6CB0', marsicano: '#2B6CB0', rede: '#78716C' };
+const ORDEM_F: FirmezaT[] = ['certa', 'provavel', 'declarada', 'duvidosa'];
 const ROTULO_LINHA: Record<string, string> = { suraci: 'Suraci → Sorage', vecchia: 'Vecchia', cardillo: 'Cardillo → Cardilo', marsicano: 'Marsicano', rede: 'Rede' };
+const COR_TRACO = '#C9C1B2';
 
 function normalizar(v: string): string {
   return v
@@ -48,17 +62,80 @@ function normalizar(v: string): string {
 
 type Rel = NoJanela['relacoes'][number];
 
+/** A mais fraca de várias firmezas (a haste de um casal leva a pior das duas ligações). */
+function maisFraca(...fs: (FirmezaT | undefined)[]): FirmezaT | undefined {
+  const presentes = fs.filter((f): f is FirmezaT => !!f);
+  if (!presentes.length) return undefined;
+  return presentes.sort((a, b) => ORDEM_F.indexOf(b) - ORDEM_F.indexOf(a))[0];
+}
+
+function Fonte({ rel }: { rel: Rel }) {
+  return rel.documento ? (
+    <a href={`/documentos/${rel.documento}/`} className="text-[#8C3A27] hover:underline">
+      {rel.rotuloFonte} ↗
+    </a>
+  ) : (
+    <span className="italic">{rel.rotuloFonte}</span>
+  );
+}
+
+/**
+ * A frase da faixa de uma geração: de onde vem a ligação dos pais ao filho.
+ * «segundo X» quando pai e mãe vêm do mesmo ato; «pai segundo X; mãe segundo Y» quando não.
+ */
+function fraseFontes(pai?: Rel, mae?: Rel): ReactNode {
+  if (pai && mae && pai.rotuloFonte === mae.rotuloFonte && pai.documento === mae.documento) {
+    return (
+      <>
+        segundo <Fonte rel={pai} />
+      </>
+    );
+  }
+  const partes: ReactNode[] = [];
+  if (pai)
+    partes.push(
+      <span key="pai">
+        pai segundo <Fonte rel={pai} />
+      </span>,
+    );
+  if (mae)
+    partes.push(
+      <span key="mae">
+        mãe segundo <Fonte rel={mae} />
+      </span>,
+    );
+  return partes.flatMap((p, i) => (i ? ['; ', p] : [p]));
+}
+
+function Faixa({ rotulo, fontes }: { rotulo: string; fontes: { quem?: string; pai?: Rel; mae?: Rel }[] }) {
+  const comFonte = fontes.filter((f) => f.pai || f.mae);
+  return (
+    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-sans">
+      <span className="text-[10px] uppercase tracking-widest font-semibold text-[#78716C]">{rotulo}</span>
+      {comFonte.length > 0 && (
+        <span className="text-[11px] text-[#57534E]">
+          {comFonte.flatMap((f, i) => [
+            i ? <span key={`sep${i}`}> · </span> : null,
+            <span key={i}>
+              {f.quem ? `pais de ${f.quem} ` : ''}
+              {fraseFontes(f.pai, f.mae)}
+            </span>,
+          ])}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function Cartao({
   no,
   papel,
-  ligacao,
   destaque = false,
   temPais,
   aoSubir,
 }: {
   no: NoJanela;
   papel: string;
-  ligacao?: Rel;
   destaque?: boolean;
   temPais: boolean;
   aoSubir: (id: string) => void;
@@ -84,15 +161,21 @@ function Cartao({
         </div>
         <div className="space-y-1.5 text-xs text-[#57534E] font-sans pt-2 border-t border-[#F4EFE6] min-w-0">
           {no.lugar && (
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#A8A29E] shrink-0" />
-              <span className="text-[#292524] truncate">{no.lugar}</span>
+            <div className="flex items-start gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[#A8A29E] shrink-0 mt-0.5" />
+              <span className="min-w-0">
+                <span className="text-[#292524] font-medium">
+                  {no.lugar.nome}
+                  {no.lugar.incerto ? ' (?)' : ''}
+                </span>
+                {no.lugar.contexto && <span className="text-[#78716C]"> · {no.lugar.contexto}</span>}
+              </span>
             </div>
           )}
           {no.emigracao && (
-            <div className="flex items-center gap-1.5 text-[#8C3A27] font-medium">
-              <Anchor className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">{no.emigracao}</span>
+            <div className="flex items-start gap-1.5 text-[#8C3A27] font-medium">
+              <Anchor className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span className="min-w-0">{no.emigracao}</span>
             </div>
           )}
           {no.ocupacao && (
@@ -102,12 +185,6 @@ function Cartao({
             </div>
           )}
           {no.carecePesquisa && <div className="text-[11px] text-[#8A5A14] bg-[#FBF4E6] border border-[#EBD9B4] rounded px-2 py-0.5 inline-block">carece pesquisa</div>}
-          {ligacao && (
-            <div className="flex items-center gap-1.5 text-[11px]" style={{ color: COR_F[ligacao.firmeza] }} title={ligacao.rotuloFonte}>
-              <span aria-hidden="true" className="inline-block w-4 border-t-2" style={{ borderTopStyle: ESTILO_F[ligacao.firmeza], borderColor: COR_F[ligacao.firmeza] }} />
-              <span className="truncate">ligação {ROTULO_F[ligacao.firmeza]} · {ligacao.rotuloFonte}</span>
-            </div>
-          )}
         </div>
       </div>
       <div className="pt-3 mt-3 border-t border-[#F4EFE6] flex items-center justify-between text-[11px] font-sans">
@@ -138,31 +215,88 @@ function Vazio({ texto }: { texto: string }) {
   );
 }
 
-/** Barra de casamento entre dois cartões, com o ato ou a referência. */
-function Casamento({ a, b }: { a: NoJanela; b?: NoJanela }) {
-  if (!b) return null;
-  const rel = a.relacoes.find((r) => r.tipo === 'conjuge' && r.pessoa === b.id);
-  if (!rel) return <div className="h-5" />;
+/** A união de um casal: linha fina de um cartão ao outro, anel «∞» na junção e a legenda numa linha. */
+function Uniao({ a, b }: { a?: NoJanela; b?: NoJanela }) {
+  const rel = a && b ? a.relacoes.find((r) => r.tipo === 'conjuge' && r.pessoa === b.id) : undefined;
   return (
-    <div className="flex items-center justify-center gap-2 text-[11px] font-sans text-[#78716C] py-1.5">
-      <span aria-hidden="true" className="h-px w-8 border-t-2" style={{ borderTopStyle: ESTILO_F[rel.firmeza], borderColor: COR_F[rel.firmeza] }} />
-      <span>
-        ∞ casamento ·{' '}
-        {rel.documento ? (
-          <a href={`/documentos/${rel.documento}/`} className="text-[#8C3A27] hover:underline">
-            {rel.rotuloFonte}
-          </a>
+    <div className="flex flex-col items-center gap-1.5 -mt-px">
+      <div className="flex items-center w-full" aria-hidden="true">
+        <span className="flex-1 border-t" style={{ borderColor: COR_TRACO, borderTopStyle: rel ? ESTILO_F[rel.firmeza] : 'solid' }} />
+        <span
+          className="w-[22px] h-[22px] rounded-full border-[1.5px] border-[#8C3A27] text-[#8C3A27] bg-[#FBF9F5] flex items-center justify-center text-[11px] leading-none mx-2"
+          title={rel ? `Casamento (ligação ${ROTULO_F[rel.firmeza]})` : 'Casamento'}
+        >
+          ∞
+        </span>
+        <span className="flex-1 border-t" style={{ borderColor: COR_TRACO, borderTopStyle: rel ? ESTILO_F[rel.firmeza] : 'solid' }} />
+      </div>
+      <div className="text-[11px] leading-snug font-sans text-[#78716C] text-center px-2 min-h-[2.6em]">
+        {rel ? (
+          <>
+            Casamento · <Fonte rel={rel} />
+          </>
+        ) : a && b ? (
+          <span className="italic">casamento não documentado</span>
         ) : (
-          <span className="italic">{rel.rotuloFonte}</span>
+          <span>&nbsp;</span>
         )}
-      </span>
-      <span aria-hidden="true" className="h-px w-8 border-t-2" style={{ borderTopStyle: ESTILO_F[rel.firmeza], borderColor: COR_F[rel.firmeza] }} />
+      </div>
     </div>
   );
 }
 
-function Haste({ firmeza }: { firmeza?: FirmezaT }) {
-  return <div aria-hidden="true" className="mx-auto h-6 w-0 border-l-2" style={{ borderLeftStyle: firmeza ? ESTILO_F[firmeza] : 'dashed', borderColor: firmeza ? COR_F[firmeza] : '#D6CEBE' }} />;
+/** A haste do casal ao filho: traço fino com o selo da firmeza no meio. Respiro antes e depois. */
+function Haste({ firmeza, titulo }: { firmeza?: FirmezaT; titulo?: string }) {
+  const estilo = firmeza ? ESTILO_F[firmeza] : 'dashed';
+  return (
+    <div className="flex flex-col items-center pt-3" aria-hidden="true">
+      <span className="h-4 w-0 border-l" style={{ borderColor: COR_TRACO, borderLeftStyle: estilo }} />
+      {firmeza && (
+        <span
+          className={`inline-flex items-center gap-1 text-[10px] font-sans font-medium px-2 py-0.5 rounded border whitespace-nowrap my-1 ${CLASSE_F[firmeza]}`}
+          title={titulo}
+        >
+          <span className="inline-block w-3 border-t-2 border-current" style={{ borderTopStyle: estilo }} />
+          {ROTULO_F[firmeza]}
+        </span>
+      )}
+      <span className="h-4 w-0 border-l" style={{ borderColor: COR_TRACO, borderLeftStyle: estilo }} />
+    </div>
+  );
+}
+
+/** Um casal: dois cartões lado a lado, a união embaixo e a haste para o filho. */
+function Casal({
+  pai,
+  mae,
+  papelPai,
+  papelMae,
+  relPai,
+  relMae,
+  temPais,
+  aoSubir,
+}: {
+  pai?: NoJanela;
+  mae?: NoJanela;
+  papelPai: string;
+  papelMae: string;
+  relPai?: Rel;
+  relMae?: Rel;
+  temPais: (id: string) => boolean;
+  aoSubir: (id: string) => void;
+}) {
+  const firmeza = maisFraca(relPai?.firmeza, relMae?.firmeza);
+  const titulo = [relPai && `pai: ${relPai.rotuloFonte}`, relMae && `mãe: ${relMae.rotuloFonte}`].filter(Boolean).join(' · ');
+  return (
+    <div className="min-w-0 flex flex-col h-full">
+      <div className="grid grid-cols-2 gap-3 flex-1">
+        {pai ? <Cartao no={pai} papel={papelPai} temPais={temPais(pai.id)} aoSubir={aoSubir} /> : <Vazio texto={`${papelPai}: não documentado`} />}
+        {mae ? <Cartao no={mae} papel={papelMae} temPais={temPais(mae.id)} aoSubir={aoSubir} /> : <Vazio texto={`${papelMae}: não documentada`} />}
+      </div>
+      <Uniao a={pai} b={mae} />
+      {(pai || mae) && <Haste firmeza={firmeza} titulo={titulo} />}
+    </div>
+  );
 }
 
 export default function ArvoreJanela({ pessoas, modos }: Props) {
@@ -214,25 +348,19 @@ export default function ArvoreJanela({ pessoas, modos }: Props) {
   const sugestoes = useMemo(() => {
     const termos = normalizar(q).split(/\s+/).filter(Boolean);
     if (!termos.length) return [];
-    return pessoas.filter((p) => termos.every((t) => normalizar(`${p.nome} ${p.outros.join(' ')} ${p.vida} ${p.lugar}`).includes(t))).slice(0, 8);
+    return pessoas
+      .filter((p) => termos.every((t) => normalizar(`${p.nome} ${p.outros.join(' ')} ${p.vida} ${p.lugar?.nome ?? ''} ${p.lugar?.contexto ?? ''}`).includes(t)))
+      .slice(0, 8);
   }, [q, pessoas]);
 
   const modoAtivo = modos.find((m) => m.raiz.join() === raiz.join()) ?? modos.find((m) => raiz.length === 1 && m.linhas.includes(porId.get(raiz[0])!.linha));
   const casal = raiz.length === 2;
   const nos = raiz.map((id) => porId.get(id)!);
+  const primeiroNome = (n: NoJanela) => n.nome.split(' ')[0];
 
-  // Níveis acima da raiz: para um casal, só os pais (2 casais); para uma pessoa, pais e avós.
+  // Nível 1: os pais de cada pessoa da raiz. Nível 2 (só quando a raiz é uma pessoa): os pais de cada um dos pais.
   const nivel1 = nos.map((n) => ({ de: n, ...pais(n.id) }));
-  // nivel2[i]: avô/avó i (0 avô paterno, 1 avó paterna, 2 avô materno, 3 avó materna) com a ligação até o pai/mãe
-  const nivel2 = casal
-    ? []
-    : nivel1.flatMap((p) =>
-        [p.paiNo, p.maeNo].flatMap((x) => {
-          if (!x) return [null, null];
-          const g = pais(x.id);
-          return [g.paiNo ? { de: g.paiNo, ligacao: g.pai } : null, g.maeNo ? { de: g.maeNo, ligacao: g.mae } : null];
-        }),
-      );
+  const nivel2 = casal ? [] : [nivel1[0].paiNo, nivel1[0].maeNo].map((x) => (x ? { de: x, ...pais(x.id) } : undefined));
 
   return (
     <div className="space-y-6">
@@ -294,26 +422,26 @@ export default function ArvoreJanela({ pessoas, modos }: Props) {
 
       {/* Nível 2: avós (só quando a raiz é uma pessoa) */}
       {!casal && (
-        <section aria-label="Avós" className="space-y-1">
-          <div className="text-[10px] uppercase tracking-widest font-sans font-semibold text-[#78716C]">Avós</div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <section aria-label="Avós" className="space-y-2">
+          <Faixa
+            rotulo="Avós"
+            fontes={nivel2.map((g, i) => ({ quem: g ? `${primeiroNome(g.de)} (${i === 0 ? 'pai' : 'mãe'})` : undefined, pai: g?.pai, mae: g?.mae }))}
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 max-w-5xl mx-auto">
             {nivel2.map((g, i) => {
-              const lado = i < 2 ? 'paterno' : 'materno';
-              const papel = `${i % 2 === 0 ? 'Avô' : 'Avó'} ${lado}`;
-              if (!g) return <Vazio key={i} texto={`${papel}: não documentado`} />;
-              return <Cartao key={g.de.id} no={g.de} papel={papel} ligacao={g.ligacao} temPais={temPais(g.de.id)} aoSubir={subir} />;
-            })}
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[0, 1].map((lado) => {
-              const par = [nivel2[lado * 2], nivel2[lado * 2 + 1]];
-              const progenitor = lado === 0 ? nivel1[0] : nivel1[0];
-              const ligacao = lado === 0 ? progenitor.pai && pais(progenitor.pai.pessoa) : progenitor.mae && pais(progenitor.mae.pessoa);
+              const lado = i === 0 ? 'paterno' : 'materno';
               return (
-                <div key={lado}>
-                  {par[0] && par[1] ? <Casamento a={par[0].de} b={par[1].de} /> : <div className="h-5" />}
-                  {(par[0] || par[1]) && <Haste firmeza={ligacao?.pai?.firmeza ?? ligacao?.mae?.firmeza} />}
-                </div>
+                <Casal
+                  key={i}
+                  pai={g?.paiNo}
+                  mae={g?.maeNo}
+                  papelPai={`Avô ${lado}`}
+                  papelMae={`Avó ${lado === 'paterno' ? 'paterna' : 'materna'}`}
+                  relPai={g?.pai}
+                  relMae={g?.mae}
+                  temPais={temPais}
+                  aoSubir={subir}
+                />
               );
             })}
           </div>
@@ -321,66 +449,59 @@ export default function ArvoreJanela({ pessoas, modos }: Props) {
       )}
 
       {/* Nível 1: pais */}
-      <section aria-label="Pais" className="space-y-1">
-        <div className="text-[10px] uppercase tracking-widest font-sans font-semibold text-[#78716C]">{casal ? 'Os pais deles' : 'Pais'}</div>
-        <div className={`grid gap-3 ${casal ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto'}`}>
-          {nivel1.flatMap((p, i) =>
-            [
-              ['pai', p.paiNo, p.pai],
-              ['mae', p.maeNo, p.mae],
-            ].map(([tipo, no, rel], j) => {
-              const papel = tipo === 'pai' ? 'Pai' : 'Mãe';
-              const sufixo = casal ? ` de ${p.de.nome.split(' ')[0]}` : '';
-              return no ? (
-                <Cartao key={(no as NoJanela).id} no={no as NoJanela} papel={papel + sufixo} ligacao={rel as Rel} temPais={temPais((no as NoJanela).id)} aoSubir={subir} />
-              ) : (
-                <Vazio key={`${i}-${j}`} texto={`${papel}${sufixo}: não documentado`} />
-              );
-            }),
-          )}
-        </div>
-        <div className={`grid gap-3 ${casal ? 'grid-cols-2' : 'grid-cols-1 max-w-3xl mx-auto'}`}>
-          {nivel1.map((p) => (
-            <div key={p.de.id}>
-              {p.paiNo && p.maeNo ? <Casamento a={p.paiNo} b={p.maeNo} /> : <div className="h-5" />}
-              {(p.paiNo || p.maeNo) && <Haste firmeza={p.pai?.firmeza ?? p.mae?.firmeza} />}
-            </div>
-          ))}
+      <section aria-label="Pais" className="space-y-2">
+        <Faixa rotulo={casal ? 'Os pais deles' : 'Pais'} fontes={nivel1.map((p) => ({ quem: casal ? primeiroNome(p.de) : undefined, pai: p.pai, mae: p.mae }))} />
+        <div className={`grid gap-x-6 gap-y-6 ${casal ? 'grid-cols-1 lg:grid-cols-2 max-w-5xl' : 'grid-cols-1 max-w-3xl'} mx-auto`}>
+          {nivel1.map((p) => {
+            const sufixo = casal ? ` de ${primeiroNome(p.de)}` : '';
+            return (
+              <Casal
+                key={p.de.id}
+                pai={p.paiNo}
+                mae={p.maeNo}
+                papelPai={`Pai${sufixo}`}
+                papelMae={`Mãe${sufixo}`}
+                relPai={p.pai}
+                relMae={p.mae}
+                temPais={temPais}
+                aoSubir={subir}
+              />
+            );
+          })}
         </div>
       </section>
 
       {/* Nível 0: a raiz */}
       <section aria-label="Pé da árvore" className="space-y-1">
-        <div className={`grid gap-3 ${casal ? 'grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto' : 'grid-cols-1 max-w-md mx-auto'}`}>
+        <div className={`grid gap-3 ${casal ? 'grid-cols-2 max-w-3xl' : 'grid-cols-1 max-w-md'} mx-auto`}>
           {nos.map((n) => (
             <Cartao key={n.id} no={n} papel={n.ancora ?? (modoAtivo && modoAtivo.raiz.length === 1 && modoAtivo.raiz[0] === n.id ? 'Imigrante' : ROTULO_LINHA[n.linha] ?? n.linha)} destaque temPais={temPais(n.id)} aoSubir={subir} />
           ))}
         </div>
-        {casal && <Casamento a={nos[0]} b={nos[1]} />}
+        {casal && (
+          <div className="max-w-3xl mx-auto">
+            <Uniao a={nos[0]} b={nos[1]} />
+          </div>
+        )}
         {!casal &&
           nos[0].relacoes
             .filter((r) => r.tipo === 'conjuge' && porId.has(r.pessoa))
             .map((r) => (
-              <p key={r.pessoa} className="text-center text-xs font-sans text-[#78716C]">
-                ∞ casamento com{' '}
+              <p key={r.pessoa} className="text-center text-[11px] font-sans text-[#78716C] pt-2">
+                <span className="inline-flex items-center justify-center w-[18px] h-[18px] rounded-full border border-[#8C3A27] text-[#8C3A27] text-[10px] leading-none mr-1.5 align-middle">∞</span>
+                Casamento com{' '}
                 <button onClick={() => subir(r.pessoa)} className="text-[#8C3A27] hover:underline cursor-pointer">
                   {porId.get(r.pessoa)!.nome}
                 </button>{' '}
-                ·{' '}
-                {r.documento ? (
-                  <a href={`/documentos/${r.documento}/`} className="text-[#8C3A27] hover:underline">
-                    {r.rotuloFonte}
-                  </a>
-                ) : (
-                  <span className="italic">{r.rotuloFonte}</span>
-                )}
+                · <Fonte rel={r} />
               </p>
             ))}
       </section>
 
       <p className="text-[11px] font-sans text-[#78716C] border-t border-[#EFEAE0] pt-3">
-        Traço cheio: ligação certa; tracejado: declarada ou provável; pontilhado: duvidosa. «Subir» põe a pessoa no pé da árvore e mostra os pais e avós dela.
-        Documentos de depois de 1925 são citados, não publicados.
+        A haste entre um casal e o filho leva a firmeza da ligação (cheia: certa; tracejada: declarada ou provável; pontilhada: duvidosa) — e a faixa de
+        cada geração diz de que ato ela vem. «Subir» põe a pessoa no pé da árvore e mostra os pais e avós dela. Documentos de depois de 1925 são citados,
+        não publicados.
       </p>
     </div>
   );

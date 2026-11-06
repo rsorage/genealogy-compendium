@@ -3,25 +3,31 @@ import Base from '../../layouts/Base.astro';
 import ArvoreJanela, { type Modo, type NoJanela } from '../../components/arvore/ArvoreJanela';
 import { carregarAcervo } from '../../lib/pessoas-build';
 import { RAIZ_DA_LINHA, ROTULO_TIPO_DOC, dataAcervoLegivel, periodoVida, rotuloOcupacao } from '../../lib/pessoas';
+import { contextoDoLugar, lugarDe } from '../../lib/lugares';
 
 const { pessoas, documentoPorId } = await carregarAcervo();
 
-/** Rótulo curto da fonte de uma ligação: o ato publicado (lugar, data) ou a referência ao não publicado. */
-function rotuloFonte(docs: string[], referencia?: string): { rotulo: string; documento?: string } {
+/**
+ * Rótulo curto da fonte de uma ligação: o ato publicado (lugar, data) ou a referência ao não publicado.
+ * Para cônjuge prefere o ato de casamento; para pai/mãe, o de nascimento ou batismo; senão o primeiro listado.
+ */
+function rotuloFonte(tipo: string, docs: string[], referencia?: string): { rotulo: string; documento?: string } {
   const ds = docs.map((id) => documentoPorId.get(id)).filter((d): d is NonNullable<typeof d> => !!d);
-  const d = ds.find((x) => x.tipo === 'casamento' || x.tipo === 'matrimonio') ?? ds[0];
+  const preferidos = tipo === 'conjuge' ? ['casamento', 'matrimonio'] : tipo === 'pai' || tipo === 'mae' ? ['nascita', 'battesimo', 'nascimento'] : [];
+  const d = ds.find((x) => preferidos.includes(x.tipo)) ?? ds[0];
   if (d) return { rotulo: `${ROTULO_TIPO_DOC[d.tipo].toLowerCase()}, ${d.lugar}, ${dataAcervoLegivel(d.data_documento)}`, documento: d.id };
   return { rotulo: referencia ?? 'sem fonte' };
 }
 
 const nos: NoJanela[] = pessoas.map((p) => {
   const entrada = p.aparece_em.map((a) => documentoPorId.get(a.documento)!).find((d) => d.tipo === 'hospedaria' || d.tipo === 'lista_de_bordo');
+  const lugar = lugarDe(p.nascimento?.lugar);
   return {
     id: p.id,
     nome: p.nome_exibicao,
     outros: p.nomes_alternativos,
     vida: periodoVida(p),
-    lugar: p.nascimento?.lugar ?? '',
+    ...(lugar ? { lugar: { nome: lugar.nome, contexto: contextoDoLugar(lugar), incerto: lugar.incerto } } : {}),
     ocupacao: rotuloOcupacao(p.ocupacao),
     emigracao: entrada ? `Entrada no Brasil: ${entrada.ano} (${ROTULO_TIPO_DOC[entrada.tipo].toLowerCase()})` : '',
     linha: p.linha,
@@ -30,7 +36,7 @@ const nos: NoJanela[] = pessoas.map((p) => {
     semDossie: !!p.sem_dossie,
     carecePesquisa: !!p.carece_pesquisa,
     relacoes: p.relacoes.map((r) => {
-      const f = rotuloFonte(r.documentos, r.referencia);
+      const f = rotuloFonte(r.tipo, r.documentos, r.referencia);
       return { tipo: r.tipo, pessoa: r.pessoa, firmeza: r.firmeza, rotuloFonte: f.rotulo, ...(f.documento ? { documento: f.documento } : {}) };
     }),
   };

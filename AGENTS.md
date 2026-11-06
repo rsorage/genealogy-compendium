@@ -47,7 +47,7 @@ acervo privado (CSV, YAML, fichas)  ──exportador──▶  src/content/*.jso
 |---|---|---|
 | `/registros-vistos/` + `/registros-vistos/catalogo/…` | **real** | `01 Indice/registros-vistos/*.csv` via `exportar-registros.py` |
 | `/pessoas/` e `/pessoas/<id>/` | **real** — 243 dossiês | `persons.yaml` + fichas via `exportar-pessoas-documentos.py` |
-| `/arvore/` | **real** — janela 1+2+4 a partir dos meus avós, cartões com fonte e firmeza de cada ligação | idem (ilha `ArvoreJanela`) |
+| `/arvore/` | **real** — janela 1+2+4 a partir dos meus avós; a firmeza vai na haste casal→filho, a fonte na faixa da geração; lugares com província/região/país via `src/lib/lugares.ts` (comune fora da tabela derruba o build) | idem (ilha `ArvoreJanela`) |
 | `/documentos/` e `/documentos/<id>/` | **real** — 192 documentos, sem imagem | idem |
 | busca rápida (Ctrl+K) | **real** | `/busca/indice.json` |
 | `/` (compêndio) | casca com texto gerado (ficção), `noindex` | — |
