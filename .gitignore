@@ -17,3 +17,6 @@ npm-debug.log*
 # ambiente local (não há segredos no projeto; o site é estático)
 .env
 .env.*
+
+# pacotes git usados para transferir ramos sem push
+*.bundle
