@@ -9,6 +9,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-abatemarco-angela",
   "linha": "cardillo",
   "morte": {
@@ -81,6 +82,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-abatemarco-giuseppe",
   "linha": "rede",
   "nome_exibicao": "Giuseppe Abatemarco",
@@ -88,6 +90,89 @@
   "relacoes": [],
   "resumo": "",
   "sexo": "M"
+ },
+ {
+  "aparece_em": [],
+  "base_do_corte": "pai/mãe de Maria Annunciata de Albuquerque (pai/mãe de Maria Luzia Cardillo (nascimento em 1922))",
+  "carece_pesquisa": true,
+  "familysearch": "L6TR-J5H",
+  "id": "P-albuquerque-alipioaffonso",
+  "linha": "cardillo",
+  "morte": {
+   "base": "«Falecido» no perfil do FamilySearch (BR-CAR-007); sem data. Nasceu certamente antes de 1925: pai de Maria Annunciata, por sua vez mãe de Maria Luzia Cardillo, n. 1922",
+   "documentos": [],
+   "firmeza": "declarada"
+  },
+  "nome_exibicao": "Alípio Affonso de Albuquerque",
+  "nomes_alternativos": [
+   "Alipio Afonso de Albuquerque",
+   "Olipio Affonso de Albuquerque"
+  ],
+  "relacoes": [
+   {
+    "documentos": [],
+    "firmeza": "declarada",
+    "justificativa": "parentesco registado no perfil, sem fonte anexada; carece pesquisa (registro civil do Rio de Janeiro ou de Minas)",
+    "pessoa": "P-albuquerque-mariaannunciata",
+    "referencia": "árvore do FamilySearch (fonte secundária), Rio de Janeiro, RJ, 2026, não publicado",
+    "tipo": "filho"
+   }
+  ],
+  "resumo": "",
+  "sexo": "M"
+ },
+ {
+  "aparece_em": [],
+  "base_do_corte": "pai/mãe de Maria Luzia Cardillo (nascimento em 1922)",
+  "carece_pesquisa": true,
+  "familysearch": "G8GZ-P2D",
+  "id": "P-albuquerque-mariaannunciata",
+  "linha": "cardillo",
+  "morte": {
+   "base": "«Falecida» no perfil do FamilySearch (BR-CAR-007); sem data. Nasceu certamente antes de 1925: é mãe de Maria Luzia Cardillo, n. 1922 (BR-CAR-004)",
+   "documentos": [],
+   "firmeza": "declarada"
+  },
+  "nome_exibicao": "Maria Annunciata de Albuquerque",
+  "nomes_alternativos": [
+   "Maria Annunciata De Albuquerque",
+   "Maria Annunciata Albuquerque"
+  ],
+  "relacoes": [
+   {
+    "documentos": [],
+    "firmeza": "declarada",
+    "justificativa": "parentesco registado no perfil, sem fonte anexada; carece pesquisa (registro civil do Rio de Janeiro ou de Minas)",
+    "pessoa": "P-albuquerque-alipioaffonso",
+    "referencia": "árvore do FamilySearch (fonte secundária), Rio de Janeiro, RJ, 2026, não publicado",
+    "tipo": "pai"
+   },
+   {
+    "documentos": [],
+    "firmeza": "declarada",
+    "justificativa": "idem",
+    "pessoa": "P-bello-mariagiuseppa-1881",
+    "referencia": "árvore do FamilySearch (fonte secundária), Rio de Janeiro, RJ, 2026, não publicado",
+    "tipo": "mae"
+   },
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "justificativa": "o casamento de 1945 da filha (BR-CAR-004) já dá os dois como pais dela; o perfil só repete",
+    "pessoa": "P-cardillo-luigi-1892",
+    "referencia": "árvore do FamilySearch (fonte secundária), Rio de Janeiro, RJ, 2026, não publicado",
+    "tipo": "conjuge"
+   },
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "pessoa": "P-cardillo-marialuzia-1922",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "filho"
+   }
+  ],
+  "resumo": "",
+  "sexo": "F"
  },
  {
   "aparece_em": [
@@ -114,6 +199,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1788",
   "id": "P-arato-pasquale-1786",
   "linha": "rede",
   "nascimento": {
@@ -152,6 +238,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1783",
   "id": "P-arenella-antonio-1783",
   "linha": "rede",
   "nascimento": {
@@ -176,6 +263,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-arenella-margarita",
   "linha": "cardillo",
   "morte": {
@@ -244,6 +332,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1857",
   "familysearch": "P3S4-9HM",
   "id": "P-avati-arcangelo-1857",
   "linha": "suraci",
@@ -296,6 +385,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1827",
   "id": "P-bagnato-francesca",
   "linha": "suraci",
   "nascimento": {
@@ -441,6 +531,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1832",
   "familysearch": "GDGG-L4G",
   "id": "P-battaglia-paola-1832",
   "linha": "suraci",
@@ -565,6 +656,45 @@
   "sexo": "F"
  },
  {
+  "aparece_em": [],
+  "base_do_corte": "nascimento em 1881",
+  "carece_pesquisa": true,
+  "familysearch": "L6TR-JT3",
+  "id": "P-bello-mariagiuseppa-1881",
+  "linha": "cardillo",
+  "morte": {
+   "base": "perfil do FamilySearch (BR-CAR-007), sem fonte anexada ao evento; carece pesquisa no registro civil do Rio",
+   "data": "1951-03-18",
+   "documentos": [],
+   "firmeza": "declarada",
+   "lugar": "Rio de Janeiro (RJ)"
+  },
+  "nascimento": {
+   "base": "perfil do FamilySearch (BR-CAR-007), sem fonte anexada ao evento; carece pesquisa nos Nati de Vibonati de 1881",
+   "data": "1881-06-28",
+   "documentos": [],
+   "firmeza": "declarada",
+   "lugar": "Vibonati"
+  },
+  "nome_exibicao": "Maria Giuseppa Bello",
+  "nomes_alternativos": [
+   "Maria Josepha Bello de Albuquerque",
+   "Josepha Francisca Bello de Albuquerque"
+  ],
+  "relacoes": [
+   {
+    "documentos": [],
+    "firmeza": "declarada",
+    "justificativa": "idem",
+    "pessoa": "P-albuquerque-mariaannunciata",
+    "referencia": "árvore do FamilySearch (fonte secundária), Rio de Janeiro, RJ, 2026, não publicado",
+    "tipo": "filho"
+   }
+  ],
+  "resumo": "",
+  "sexo": "F"
+ },
+ {
   "aparece_em": [
    {
     "documento": "IT-CAR-037",
@@ -575,6 +705,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1721",
   "id": "P-bitetti-nena-1721",
   "linha": "cardillo",
   "nascimento": {
@@ -620,6 +751,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1806",
   "id": "P-buono-gesualda",
   "linha": "cardillo",
   "nascimento": {
@@ -681,6 +813,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-buono-vincenzo",
   "linha": "cardillo",
   "nome_exibicao": "Vincenzo Buono",
@@ -708,6 +841,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-calabrese-sicilia-1734",
   "linha": "suraci",
   "morte": {
@@ -746,6 +880,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-calabro-paola",
   "linha": "suraci",
   "nome_exibicao": "Paola Calabrò",
@@ -780,6 +915,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-calarco-bruno",
   "linha": "suraci",
   "morte": {
@@ -846,6 +982,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "familysearch": "G61G-975",
   "id": "P-calarco-domenico-1817",
   "linha": "suraci",
@@ -905,6 +1042,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1862",
   "id": "P-calarco-giovanna-1862",
   "linha": "suraci",
   "nascimento": {
@@ -978,6 +1116,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1820",
   "id": "P-calarco-michele-1820",
   "linha": "suraci",
   "morte": {
@@ -1141,6 +1280,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1817",
   "familysearch": "PMFK-XQP",
   "id": "P-calarco-teresa",
   "linha": "suraci",
@@ -1271,6 +1411,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-campigiano-felice",
   "linha": "cardillo",
   "nome_exibicao": "Felice Campegiano",
@@ -1310,6 +1451,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1832",
   "id": "P-cannizzaro-maria",
   "linha": "suraci",
   "morte": {
@@ -1367,6 +1509,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1741",
   "id": "P-cardello-agnese-1741",
   "linha": "cardillo",
   "nascimento": {
@@ -1413,6 +1556,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1717",
   "id": "P-cardello-donato-1717",
   "linha": "cardillo",
   "nascimento": {
@@ -1477,6 +1621,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1745",
   "id": "P-cardello-giuseppe-1745",
   "linha": "cardillo",
   "nascimento": {
@@ -1514,6 +1659,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1740",
   "id": "P-cardello-vito-1740",
   "linha": "cardillo",
   "nascimento": {
@@ -1569,6 +1715,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1705",
   "id": "P-cardiello-gennaro-1705",
   "linha": "cardillo",
   "nascimento": {
@@ -1649,6 +1796,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1733",
   "id": "P-cardiello-isabella-1733",
   "linha": "cardillo",
   "nascimento": {
@@ -1697,6 +1845,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1743",
   "id": "P-cardiello-lucido-1743",
   "linha": "cardillo",
   "nascimento": {
@@ -1738,6 +1887,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1731",
   "id": "P-cardiello-pascale-1731",
   "linha": "cardillo",
   "nascimento": {
@@ -1782,6 +1932,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1775",
   "id": "P-cardillo-angiolamaria-1775",
   "linha": "cardillo",
   "morte": {
@@ -1847,6 +1998,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1741",
   "id": "P-cardillo-angiolo-1741",
   "linha": "cardillo",
   "nascimento": {
@@ -1891,6 +2043,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1863",
   "familysearch": "PFG8-YSS",
   "id": "P-cardillo-anna-1863",
   "linha": "cardillo",
@@ -1945,6 +2098,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1871",
   "id": "P-cardillo-arcangela-1871",
   "linha": "cardillo",
   "morte": {
@@ -2034,6 +2188,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1820",
   "familysearch": "PFLV-DSK",
   "id": "P-cardillo-biagio-1820",
   "linha": "cardillo",
@@ -2140,6 +2295,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1736",
   "familysearch": "PSWQ-ND3",
   "id": "P-cardillo-biase",
   "linha": "cardillo",
@@ -2248,6 +2404,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1871",
   "id": "P-cardillo-biase-1871",
   "linha": "cardillo",
   "morte": {
@@ -2328,6 +2485,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1715",
   "id": "P-cardillo-domenico",
   "linha": "cardillo",
   "morte": {
@@ -2424,6 +2582,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1795",
   "familysearch": "PFLV-4LN",
   "id": "P-cardillo-eduvigia-1795",
   "linha": "cardillo",
@@ -2483,6 +2642,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1744",
   "id": "P-cardillo-elena-1744",
   "linha": "cardillo",
   "nascimento": {
@@ -2527,6 +2687,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1858",
   "familysearch": "PFGJ-ZM5",
   "id": "P-cardillo-eliaemiddiopietro-1858",
   "linha": "cardillo",
@@ -2586,6 +2747,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1894",
   "id": "P-cardillo-federico-1894",
   "linha": "cardillo",
   "nascimento": {
@@ -2731,6 +2893,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1774",
   "familysearch": "PFLF-9DV",
   "id": "P-cardillo-gennaro-1774",
   "linha": "cardillo",
@@ -2914,6 +3077,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1867",
   "familysearch": "G45D-JH8",
   "id": "P-cardillo-gennaro-1867",
   "linha": "cardillo",
@@ -3001,6 +3165,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1866",
   "id": "P-cardillo-giuseppa-1866",
   "linha": "cardillo",
   "morte": {
@@ -3052,6 +3217,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1829",
   "id": "P-cardillo-giuseppe-1829",
   "linha": "cardillo",
   "nascimento": {
@@ -3110,6 +3276,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1897",
   "id": "P-cardillo-giuseppe-1897",
   "linha": "cardillo",
   "nascimento": {
@@ -3194,6 +3361,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1801",
   "familysearch": "PFLV-67P",
   "id": "P-cardillo-leandra-1801",
   "linha": "cardillo",
@@ -3369,6 +3537,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1816",
   "familysearch": "PFLX-Q5R",
   "id": "P-cardillo-luigi-1816",
   "linha": "cardillo",
@@ -3501,6 +3670,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1892",
   "familysearch": "G45D-NGN",
   "id": "P-cardillo-luigi-1892",
   "linha": "cardillo",
@@ -3542,6 +3712,21 @@
     "justificativa": "Maternidade afirmada por um extrato de base de dados, não pelo documento; a mesma filiação é firmada pelo ato de nascimento. A base escreve «Marsicano Rosa».",
     "pessoa": "P-marsicano-rosa-1866",
     "tipo": "mae"
+   },
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "justificativa": "o casamento de 1945 da filha (BR-CAR-004) já dá os dois como pais dela; o perfil só repete",
+    "pessoa": "P-albuquerque-mariaannunciata",
+    "referencia": "árvore do FamilySearch (fonte secundária), Rio de Janeiro, RJ, 2026, não publicado",
+    "tipo": "conjuge"
+   },
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "pessoa": "P-cardillo-marialuzia-1922",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "filho"
    }
   ],
   "resumo": "",
@@ -3557,6 +3742,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1812",
   "id": "P-cardillo-mariacarmela-1812",
   "linha": "cardillo",
   "morte": {
@@ -3601,6 +3787,7 @@
  },
  {
   "aparece_em": [],
+  "base_do_corte": "nascimento em 1861",
   "familysearch": "PFG8-265",
   "id": "P-cardillo-mariaconcettafilomena-1861",
   "linha": "cardillo",
@@ -3629,6 +3816,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1770",
   "familysearch": "GZLX-L59",
   "id": "P-cardillo-mariagiuseppa-1770",
   "linha": "cardillo",
@@ -3691,6 +3879,60 @@
   "sexo": "F"
  },
  {
+  "ancora": {
+   "rotulo": "Minha avó"
+  },
+  "aparece_em": [],
+  "base_do_corte": "nascimento em 1922",
+  "id": "P-cardillo-marialuzia-1922",
+  "linha": "cardillo",
+  "morte": {
+   "base": "certidão de óbito, 11.ª Circunscrição, livro 2SC-00053, fl. 97 (BR-CAR-006, ficha ainda sem front-matter)",
+   "data": "2004-12-09",
+   "documentos": [],
+   "firmeza": "certa",
+   "lugar": "Rio de Janeiro (RJ)"
+  },
+  "nascimento": {
+   "base": "certidão de nascimento de inteiro teor, Livro A-13, fls. 124/124v, termo 95 (BR-CAR-005, ficha ainda sem front-matter); mesma data no casamento de 1945 (BR-CAR-004)",
+   "data": "1922-08-06",
+   "documentos": [],
+   "firmeza": "certa",
+   "lugar": "Patrocínio do Muriaé (MG)"
+  },
+  "nome_exibicao": "Maria Luzia Cardillo",
+  "nomes_alternativos": [
+   "Maria Luzia Cardilo",
+   "Maria Luzia Sorage"
+  ],
+  "relacoes": [
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "pessoa": "P-cardillo-luigi-1892",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "pai"
+   },
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "pessoa": "P-albuquerque-mariaannunciata",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "mae"
+   },
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "pessoa": "P-sorage-wolney-1918",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "conjuge"
+   }
+  ],
+  "resumo": "",
+  "sem_dossie": true,
+  "sexo": "F"
+ },
+ {
   "aparece_em": [
    {
     "documento": "IT-CAR-032",
@@ -3719,6 +3961,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1806",
   "id": "P-cardillo-michele-1803",
   "linha": "cardillo",
   "nascimento": {
@@ -3785,6 +4028,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-cardillo-micheleantonio",
   "linha": "cardillo",
   "nome_exibicao": "Michele Antonio Cardillo",
@@ -3831,6 +4075,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1761",
   "id": "P-cardillo-paolina-1761",
   "linha": "cardillo",
   "morte": {
@@ -3892,6 +4137,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-cardillo-pasquale",
   "linha": "cardillo",
   "morte": {
@@ -3928,6 +4174,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1748",
   "id": "P-cardillo-stanislao-1749",
   "linha": "cardillo",
   "nascimento": {
@@ -3976,6 +4223,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1858",
   "id": "P-cartella-francesco-1858",
   "linha": "suraci",
   "nascimento": {
@@ -4036,6 +4284,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-cartella-pietro",
   "linha": "suraci",
   "morte": {
@@ -4126,6 +4375,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1818",
   "familysearch": "PNJT-2SM",
   "id": "P-cartella-teresa",
   "linha": "suraci",
@@ -4202,6 +4452,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-casalnuovo-rosa",
   "linha": "cardillo",
   "morte": {
@@ -4252,6 +4503,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1792",
   "id": "P-cavoli-domenico-1792",
   "linha": "rede",
   "nascimento": {
@@ -4306,6 +4558,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-cavoli-raffaele",
   "linha": "rede",
   "nome_exibicao": "Raffaele Cavoli",
@@ -4324,6 +4577,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-ciuffo-filomena",
   "linha": "marsicano",
   "nome_exibicao": "Filomena Ciuffo",
@@ -4351,6 +4605,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-ciuffo-rosangela",
   "linha": "cardillo",
   "morte": {
@@ -4386,6 +4641,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-corigliano-rosa",
   "linha": "suraci",
   "nome_exibicao": "Rosa Corigliano",
@@ -4426,6 +4682,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1773",
   "id": "P-curcio-giuseppe-1773",
   "linha": "rede",
   "nascimento": {
@@ -4455,6 +4712,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-dagnanno-angela",
   "linha": "cardillo",
   "morte": {
@@ -4493,6 +4751,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-dagostino-andrea-1805",
   "linha": "suraci",
   "nome_exibicao": "Andrea D'Agostino",
@@ -4528,6 +4787,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-dagostino-antonino-1805",
   "linha": "suraci",
   "nome_exibicao": "Antonino D'Agostino",
@@ -4577,6 +4837,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "L1TR-K8L",
   "id": "P-dagostino-carmela",
   "linha": "suraci",
@@ -4628,6 +4889,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "G61L-VC3",
   "id": "P-dagostino-caterina",
   "linha": "suraci",
@@ -4672,6 +4934,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-dagostino-francesca-1734",
   "linha": "suraci",
   "morte": {
@@ -4716,6 +4979,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-damiani-onofrio",
   "linha": "rede",
   "nome_exibicao": "Onofrio Damiani",
@@ -4734,6 +4998,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-dangelone-michele",
   "linha": "cardillo",
   "morte": {
@@ -4769,6 +5034,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1821",
   "id": "P-declemente-angiolomaria-1821",
   "linha": "cardillo",
   "nascimento": {
@@ -4862,6 +5128,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1798",
   "familysearch": "PFLJ-BRD",
   "id": "P-declemente-crescenzo",
   "linha": "cardillo",
@@ -4954,6 +5221,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "PFGD-8K6",
   "id": "P-declemente-michele",
   "linha": "cardillo",
@@ -4999,6 +5267,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1821",
   "familysearch": "PFG6-6NZ",
   "id": "P-declemente-vincenza-1821",
   "linha": "cardillo",
@@ -5061,6 +5330,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1791",
   "id": "P-dellorto-agnese-1791",
   "linha": "rede",
   "nascimento": {
@@ -5143,6 +5413,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1783",
   "familysearch": "PFLN-FZF",
   "id": "P-dellorto-anna-1783",
   "linha": "cardillo",
@@ -5234,6 +5505,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1732",
   "id": "P-dellorto-carlo-1732",
   "linha": "cardillo",
   "nascimento": {
@@ -5280,6 +5552,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1731",
   "id": "P-dellorto-catarina-1731",
   "linha": "cardillo",
   "nascimento": {
@@ -5327,6 +5600,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1724",
   "id": "P-dellorto-domenico-1724",
   "linha": "cardillo",
   "nascimento": {
@@ -5423,6 +5697,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-deluca-maria",
   "linha": "marsicano",
   "morte": {
@@ -5514,6 +5789,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-demaio-domenico",
   "linha": "suraci",
   "morte": {
@@ -5579,6 +5855,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "KCCK-863",
   "id": "P-demajo-anna",
   "linha": "suraci",
@@ -5647,6 +5924,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1838",
   "id": "P-demartino-francescosaverio-1838",
   "linha": "rede",
   "nascimento": {
@@ -5674,6 +5952,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-disanza-pasquale",
   "linha": "rede",
   "nome_exibicao": "Pasquale di Sanza",
@@ -5701,6 +5980,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1724",
   "familysearch": "GW96-FQ2",
   "id": "P-distefano-verdeoliva-1724",
   "linha": "cardillo",
@@ -5796,6 +6076,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1833",
   "familysearch": "GY71-B1S",
   "id": "P-frisina-angiola",
   "linha": "suraci",
@@ -5874,6 +6155,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-furfari-margherita",
   "linha": "suraci",
   "morte": {
@@ -5929,6 +6211,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-garone-giuseppe",
   "linha": "rede",
   "nome_exibicao": "Giuseppe Garone",
@@ -5960,6 +6243,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-garone-michele",
   "linha": "rede",
   "nome_exibicao": "Michele Garone",
@@ -5986,6 +6270,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1883",
   "familysearch": "PNTV-C4C",
   "id": "P-giacobbe-angela-1883",
   "linha": "suraci",
@@ -6099,6 +6384,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1855",
   "familysearch": "GDGG-B1X",
   "id": "P-giacobbe-vincenzo-1855",
   "linha": "suraci",
@@ -6194,6 +6480,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1827",
   "familysearch": "GY71-1F1",
   "id": "P-giacobe-ferdinando",
   "linha": "suraci",
@@ -6252,6 +6539,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1856",
   "familysearch": "PNYD-HTL",
   "id": "P-giuffre-angelo-1856",
   "linha": "suraci",
@@ -6312,6 +6600,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1852",
   "familysearch": "PNYZ-PPB",
   "id": "P-giuffre-annamaria-1852",
   "linha": "suraci",
@@ -6367,6 +6656,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1845",
   "familysearch": "PNYD-KZ7",
   "id": "P-giuffre-fortunata-1845",
   "linha": "suraci",
@@ -6479,6 +6769,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1848",
   "familysearch": "PNJT-C42",
   "id": "P-giuffre-giuseppa-1848",
   "linha": "suraci",
@@ -6630,6 +6921,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1820",
   "familysearch": "PNJT-2VN",
   "id": "P-giuffre-salvatore",
   "linha": "suraci",
@@ -6710,6 +7002,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1834",
   "familysearch": "G8XY-MC3",
   "id": "P-granato-mariagiovanna",
   "linha": "marsicano",
@@ -6748,6 +7041,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1873",
   "id": "P-groia-pietroantonio-1873",
   "linha": "marsicano",
   "nascimento": {
@@ -6800,6 +7094,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-groia-saverio",
   "linha": "marsicano",
   "morte": {
@@ -6835,6 +7130,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-guariglia-francesca",
   "linha": "marsicano",
   "nome_exibicao": "Francesca Guariglia",
@@ -6863,6 +7159,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-hotaroberto-emerenzia",
   "linha": "rede",
   "nome_exibicao": "Emerenzia Hotaroberto [?]",
@@ -6881,6 +7178,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "P9NZ-XPP",
   "id": "P-ignoto-esilia",
   "linha": "marsicano",
@@ -6921,6 +7219,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1779",
   "id": "P-jannelli-micheleantonio-1779",
   "linha": "rede",
   "nascimento": {
@@ -6957,6 +7256,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1719",
   "id": "P-lentino-felice",
   "linha": "cardillo",
   "morte": {
@@ -7036,6 +7336,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1704",
   "id": "P-lento-laura-1704",
   "linha": "cardillo",
   "nascimento": {
@@ -7095,6 +7396,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1701",
   "id": "P-letino-costanza-1701",
   "linha": "cardillo",
   "morte": {
@@ -7151,6 +7453,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-limauro-antonio",
   "linha": "cardillo",
   "morte": {
@@ -7188,6 +7491,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1785",
   "id": "P-limauro-elia-1785",
   "linha": "cardillo",
   "morte": {
@@ -7251,6 +7555,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1813",
   "id": "P-limauro-gaetano-1813",
   "linha": "cardillo",
   "morte": {
@@ -7317,6 +7622,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1871",
   "familysearch": "GL99-NNT",
   "id": "P-marsicano-antonia-1871",
   "linha": "marsicano",
@@ -7372,6 +7678,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1862",
   "familysearch": "GDGS-CWF",
   "id": "P-marsicano-carmine-1862",
   "linha": "marsicano",
@@ -7479,6 +7786,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1832",
   "familysearch": "G8FS-PTQ",
   "id": "P-marsicano-federico-1832",
   "linha": "marsicano",
@@ -7600,6 +7908,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1864",
   "familysearch": "PFPV-WGC",
   "id": "P-marsicano-giuseppeantoniovittorio-1864",
   "linha": "marsicano",
@@ -7653,6 +7962,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1865",
   "familysearch": "PFPV-ZJC",
   "id": "P-marsicano-giuseppenicoladomenico-1865",
   "linha": "marsicano",
@@ -7712,6 +8022,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "P9NZ-621",
   "id": "P-marsicano-nicola",
   "linha": "marsicano",
@@ -7752,6 +8063,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1870",
   "familysearch": "G8FS-Y6V",
   "id": "P-marsicano-nicolafelice-1870",
   "linha": "marsicano",
@@ -7858,6 +8170,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1866",
   "familysearch": "G45D-8CB",
   "id": "P-marsicano-rosa-1866",
   "linha": "marsicano",
@@ -7958,6 +8271,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-martino-isabella",
   "linha": "cardillo",
   "morte": {
@@ -8006,6 +8320,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1847",
   "id": "P-menta-antonio-1847",
   "linha": "rede",
   "nascimento": {
@@ -8032,6 +8347,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-merola-giuseppe",
   "linha": "cardillo",
   "nome_exibicao": "Giuseppe Merola",
@@ -8091,6 +8407,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1857",
   "id": "P-messiroli-giuseppa-1857",
   "linha": "vecchia",
   "morte": {
@@ -8157,6 +8474,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-mobilia-francesca",
   "linha": "suraci",
   "nome_exibicao": "Francesca Mobilia[?]",
@@ -8186,6 +8504,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1865",
   "familysearch": "G8FS-PLK",
   "id": "P-montesano-angelamaria",
   "linha": "marsicano",
@@ -8273,6 +8592,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1865",
   "id": "P-montesano-francesco-1865",
   "linha": "marsicano",
   "nascimento": {
@@ -8303,6 +8623,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1829",
   "familysearch": "G8FS-LFJ",
   "id": "P-montesano-giovanni",
   "linha": "marsicano",
@@ -8358,6 +8679,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1730",
   "id": "P-mugno-carmosina",
   "linha": "cardillo",
   "morte": {
@@ -8458,6 +8780,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1742",
   "familysearch": "G2YS-JR7",
   "id": "P-mugno-dorotea",
   "linha": "cardillo",
@@ -8568,6 +8891,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1711",
   "familysearch": "G2Y9-2YL",
   "id": "P-mugnolo-antonio-1711",
   "linha": "cardillo",
@@ -8652,6 +8976,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1748",
   "familysearch": "G2Y9-T1K",
   "id": "P-mugnolo-crescenzio-1748",
   "linha": "cardillo",
@@ -8699,6 +9024,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1745",
   "id": "P-mugnolo-domenico-1745",
   "linha": "cardillo",
   "nascimento": {
@@ -8745,6 +9071,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1743",
   "id": "P-mugnolo-francesco-1743",
   "linha": "cardillo",
   "nascimento": {
@@ -8796,6 +9123,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-netti-michele",
   "linha": "rede",
   "nome_exibicao": "Michele Netti",
@@ -8831,6 +9159,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-nunnari-angela",
   "linha": "suraci",
   "nome_exibicao": "Angela Nunnari",
@@ -8879,6 +9208,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "familysearch": "G61L-GSC",
   "id": "P-nunnari-francesca-1817",
   "linha": "suraci",
@@ -8939,6 +9269,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1838",
   "id": "P-pascuzzo-carmine-1838",
   "linha": "rede",
   "nascimento": {
@@ -9000,6 +9331,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1839",
   "id": "P-petrosino-giuseppe-1839",
   "linha": "rede",
   "nascimento": {
@@ -9045,6 +9377,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-princi-anna",
   "linha": "suraci",
   "nome_exibicao": "Anna Princi",
@@ -9090,6 +9423,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-riccio-gennaro",
   "linha": "marsicano",
   "morte": {
@@ -9127,6 +9461,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1865",
   "id": "P-riccio-maria-1865",
   "linha": "marsicano",
   "nascimento": {
@@ -9179,6 +9514,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "PFG3-YBW",
   "id": "P-rinaldi-agnese",
   "linha": "cardillo",
@@ -9213,6 +9549,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-rinaldi-domenico",
   "linha": "cardillo",
   "morte": {
@@ -9332,6 +9669,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1827",
   "id": "P-rinaldi-maria-1827",
   "linha": "cardillo",
   "morte": {
@@ -9464,6 +9802,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "PNNC-5JC",
   "id": "P-ripepi-angelo",
   "linha": "suraci",
@@ -9501,6 +9840,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-ripepi-annamaria",
   "linha": "suraci",
   "morte": {
@@ -9551,6 +9891,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1890",
   "id": "P-ripepi-caterina-1890",
   "linha": "suraci",
   "nascimento": {
@@ -9618,6 +9959,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-ripepi-francesco",
   "linha": "suraci",
   "morte": {
@@ -9648,17 +9990,54 @@
   "aparece_em": [
    {
     "documento": "IT-CAR-041",
+    "nome_escrito": "Giuseppe",
+    "papeis": [
+     "avô/avó"
+    ]
+   }
+  ],
+  "base_do_corte": "pai/mãe de Luigia Robertuccio (adulto num documento até 1925)",
+  "id": "P-robertuccio-giuseppe",
+  "linha": "cardillo",
+  "nome_exibicao": "Giuseppe Robertuccio",
+  "nomes_alternativos": [],
+  "relacoes": [
+   {
+    "documentos": [
+     "IT-CAR-041"
+    ],
+    "firmeza": "certa",
+    "pessoa": "P-robertuccio-luigia",
+    "tipo": "filho"
+   }
+  ],
+  "resumo": "",
+  "sexo": "M"
+ },
+ {
+  "aparece_em": [
+   {
+    "documento": "IT-CAR-041",
     "nome_escrito": "Luigia Robertuccio",
     "papeis": [
      "mãe"
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-robertuccio-luigia",
   "linha": "cardillo",
   "nome_exibicao": "Luigia Robertuccio",
   "nomes_alternativos": [],
   "relacoes": [
+   {
+    "documentos": [
+     "IT-CAR-041"
+    ],
+    "firmeza": "certa",
+    "pessoa": "P-robertuccio-giuseppe",
+    "tipo": "pai"
+   },
    {
     "documentos": [
      "IT-CAR-041"
@@ -9713,6 +10092,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1784",
   "familysearch": "L1TR-JGD",
   "id": "P-romeo-angelo",
   "linha": "suraci",
@@ -9770,6 +10150,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-romeo-carmelo",
   "linha": "suraci",
   "morte": {
@@ -9950,6 +10331,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1813",
   "familysearch": "KHD1-MXT",
   "id": "P-romeo-grazia",
   "linha": "suraci",
@@ -10102,6 +10484,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1861",
   "id": "P-romeo-luigi-1861",
   "linha": "rede",
   "nascimento": {
@@ -10133,6 +10516,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1858",
   "id": "P-romeo-maria-1858",
   "linha": "suraci",
   "nascimento": {
@@ -10188,6 +10572,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1730",
   "id": "P-rotundo-gioacchino-1730",
   "linha": "cardillo",
   "morte": {
@@ -10252,6 +10637,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-rotundo-giuseppe",
   "linha": "cardillo",
   "nome_exibicao": "Giuseppe Rotundo",
@@ -10281,6 +10667,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1762",
   "id": "P-rotundo-vincenzo-1762",
   "linha": "rede",
   "nascimento": {
@@ -10308,6 +10695,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-salvato-barbara",
   "linha": "cardillo",
   "nome_exibicao": "Barbara Salvato",
@@ -10343,6 +10731,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-sarli-rosario",
   "linha": "cardillo",
   "nome_exibicao": "Rosario Sarli",
@@ -10386,6 +10775,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1766",
   "familysearch": "PFG6-7G9",
   "id": "P-sarli-vincenza",
   "linha": "cardillo",
@@ -10493,6 +10883,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1817",
   "id": "P-sidari-agostino",
   "linha": "suraci",
   "morte": {
@@ -10590,6 +10981,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "familysearch": "PNTV-24C",
   "id": "P-sidari-antonia-1838",
   "linha": "suraci",
@@ -10803,6 +11195,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1857",
   "id": "P-sidari-paola-1857",
   "linha": "suraci",
   "morte": {
@@ -10964,6 +11357,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-sidari-paola-1910",
   "linha": "suraci",
   "morte": {
@@ -11000,6 +11394,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1887",
   "id": "P-soraci-arturo-1887",
   "linha": "suraci",
   "nascimento": {
@@ -11055,6 +11450,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-soraci-domenico-1734",
   "linha": "suraci",
   "morte": {
@@ -11092,6 +11488,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1734",
   "id": "P-soraci-domenico-1748",
   "linha": "suraci",
   "nascimento": {
@@ -11166,6 +11563,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-soraci-domenico-1773",
   "linha": "suraci",
   "morte": {
@@ -11224,6 +11622,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-soraci-domenico-1784",
   "linha": "suraci",
   "nome_exibicao": "Domenico Soraci",
@@ -11251,6 +11650,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-soraci-domenico-1805",
   "linha": "suraci",
   "morte": {
@@ -11295,6 +11695,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1773",
   "familysearch": "MP6H-CMY",
   "id": "P-soraci-francesca-1773",
   "linha": "suraci",
@@ -11355,6 +11756,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-soraci-francesca-1805",
   "linha": "suraci",
   "nome_exibicao": "Francesca Soraci",
@@ -11390,6 +11792,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1784",
   "id": "P-soraci-francescaantonia-1784",
   "linha": "suraci",
   "nascimento": {
@@ -11442,6 +11845,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-soraci-giuseppe-1734",
   "linha": "suraci",
   "nome_exibicao": "Giuseppe Soraci",
@@ -11497,6 +11901,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1893",
   "id": "P-soraci-grazia-1893",
   "linha": "suraci",
   "nascimento": {
@@ -11541,6 +11946,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1884",
   "id": "P-soraci-rocco-1884",
   "linha": "suraci",
   "morte": {
@@ -11604,6 +12010,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1886",
   "id": "P-soraci-rocco-1886",
   "linha": "suraci",
   "morte": {
@@ -11661,6 +12068,76 @@
   "sexo": "M"
  },
  {
+  "ancora": {
+   "rotulo": "Meu avô"
+  },
+  "aparece_em": [
+   {
+    "documento": "BR-SOR-003",
+    "idade": 16,
+    "nome_escrito": "Wolney Sorage",
+    "papeis": [
+     "filho(a)"
+    ]
+   }
+  ],
+  "base_do_corte": "nascimento em 1918",
+  "familysearch": "GWJR-49R",
+  "id": "P-sorage-wolney-1918",
+  "linha": "suraci",
+  "morte": {
+   "base": "certidão de óbito, 7.ª Circunscrição, livro 279, fl. 193v, termo 12.253 (BR-SOR-005)",
+   "data": "1985-11-22",
+   "documentos": [],
+   "firmeza": "certa",
+   "lugar": "Rio de Janeiro (RJ)"
+  },
+  "nascimento": {
+   "base": "data e naturalidade no casamento de 1945 (BR-CAR-004); coerente com «66 anos e 11 meses» no óbito de 1985, declarado pelo filho (BR-SOR-005). O óbito do pai em 1936 dá 16 anos, um a menos (BR-SOR-003)",
+   "data": "1918-11-23",
+   "documentos": [
+    "BR-SOR-003"
+   ],
+   "firmeza": "certa",
+   "lugar": "Carangola (MG)"
+  },
+  "nome_exibicao": "Wolney Sorage",
+  "nomes_alternativos": [
+   "Worne",
+   "tio Worne"
+  ],
+  "relacoes": [
+   {
+    "documentos": [
+     "BR-SOR-003"
+    ],
+    "firmeza": "certa",
+    "pessoa": "P-suraci-luigi-1881",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "pai"
+   },
+   {
+    "documentos": [
+     "BR-SOR-003"
+    ],
+    "firmeza": "certa",
+    "pessoa": "P-vecchia-isolina-1884",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "mae"
+   },
+   {
+    "documentos": [],
+    "firmeza": "certa",
+    "pessoa": "P-cardillo-marialuzia-1922",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "conjuge"
+   }
+  ],
+  "resumo": "",
+  "sem_dossie": true,
+  "sexo": "M"
+ },
+ {
   "aparece_em": [
    {
     "documento": "IT-SOR-137",
@@ -11679,6 +12156,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1843",
   "familysearch": "PNYD-GFD",
   "id": "P-spadaro-antonio-1843",
   "linha": "suraci",
@@ -11727,6 +12205,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-spinelli-antonia",
   "linha": "cardillo",
   "nome_exibicao": "Antonia Spinelli",
@@ -11763,6 +12242,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1825",
   "familysearch": "PFLV-GFW",
   "id": "P-spinoso-antonia",
   "linha": "cardillo",
@@ -11810,6 +12290,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "PFGQ-9PH",
   "id": "P-spinoso-elia",
   "linha": "cardillo",
@@ -11850,6 +12331,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1801",
   "id": "P-stabile-giuseppe-1801",
   "linha": "rede",
   "nascimento": {
@@ -11904,6 +12386,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1848",
   "familysearch": "KHGS-P2D",
   "id": "P-surace-angelo",
   "linha": "suraci",
@@ -11970,6 +12453,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1892",
   "id": "P-surace-arturo-1892",
   "linha": "suraci",
   "morte": {
@@ -12025,6 +12509,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1878",
   "id": "P-surace-domenico-1878",
   "linha": "suraci",
   "nascimento": {
@@ -12078,6 +12563,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1841",
   "id": "P-suraci-alessio-1841",
   "linha": "suraci",
   "nascimento": {
@@ -12139,6 +12625,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1842",
   "familysearch": "MP6H-HJY",
   "id": "P-suraci-anna-1842",
   "linha": "suraci",
@@ -12203,6 +12690,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-suraci-anna-1877",
   "linha": "suraci",
   "nome_exibicao": "Anna Suraci",
@@ -12280,6 +12768,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1898",
   "id": "P-suraci-annamaria-1898",
   "linha": "suraci",
   "nascimento": {
@@ -12532,6 +13021,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1849",
   "familysearch": "GJZ3-P1C",
   "id": "P-suraci-antonio",
   "linha": "suraci",
@@ -12764,6 +13254,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1850",
   "id": "P-suraci-antonio-1851",
   "linha": "suraci",
   "morte": {
@@ -12835,6 +13326,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1921",
   "id": "P-suraci-antonio-1921",
   "linha": "suraci",
   "morte": {
@@ -12897,6 +13389,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1844",
   "familysearch": "MP6H-HLT",
   "id": "P-suraci-caterina-1844",
   "linha": "suraci",
@@ -13164,6 +13657,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1810",
   "familysearch": "KCNW-9KX",
   "id": "P-suraci-domenico",
   "linha": "suraci",
@@ -13323,6 +13817,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1871",
   "id": "P-suraci-domenico-1871",
   "linha": "suraci",
   "nascimento": {
@@ -13376,6 +13871,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "familysearch": "MP6H-H18",
   "id": "P-suraci-francesca-1837",
   "linha": "suraci",
@@ -13459,6 +13955,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1782",
   "id": "P-suraci-francesco-1810",
   "linha": "suraci",
   "morte": {
@@ -13538,6 +14035,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1782",
   "familysearch": "K4L6-KVQ",
   "id": "P-suraci-francesco-1822",
   "linha": "suraci",
@@ -13624,6 +14122,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1866",
   "id": "P-suraci-francesco-1866",
   "linha": "suraci",
   "nascimento": {
@@ -13713,6 +14212,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1897",
   "id": "P-suraci-giovanni-1897",
   "linha": "suraci",
   "nascimento": {
@@ -13822,6 +14322,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1854",
   "id": "P-suraci-giuseppe-1854",
   "linha": "suraci",
   "nascimento": {
@@ -13894,6 +14395,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1877",
   "familysearch": "PNJT-F4S",
   "id": "P-suraci-grazia-1877",
   "linha": "suraci",
@@ -13975,6 +14477,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1881",
   "familysearch": "GWJR-2HW",
   "id": "P-suraci-luigi-1881",
   "linha": "suraci",
@@ -14038,6 +14541,15 @@
     "firmeza": "certa",
     "pessoa": "P-vecchia-isolina-1884",
     "tipo": "conjuge"
+   },
+   {
+    "documentos": [
+     "BR-SOR-003"
+    ],
+    "firmeza": "certa",
+    "pessoa": "P-sorage-wolney-1918",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "filho"
    }
   ],
   "resumo": "",
@@ -14060,6 +14572,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1879",
   "familysearch": "PNFP-D7N",
   "id": "P-suraci-michele-1879",
   "linha": "suraci",
@@ -14112,6 +14625,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1838",
   "familysearch": "MP6H-CXD",
   "id": "P-suraci-stefano-1838",
   "linha": "suraci",
@@ -14157,6 +14671,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1890",
   "id": "P-suraci-teresa-1890",
   "linha": "suraci",
   "nascimento": {
@@ -14201,6 +14716,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-tepedino-michele",
   "linha": "cardillo",
   "nome_exibicao": "Michele Tepedino",
@@ -14239,6 +14755,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1891",
   "id": "P-vecchia-ernesto-1891",
   "linha": "vecchia",
   "nascimento": {
@@ -14329,6 +14846,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1884",
   "familysearch": "GWJR-64H",
   "id": "P-vecchia-isolina-1884",
   "linha": "vecchia",
@@ -14387,6 +14905,15 @@
     "firmeza": "certa",
     "pessoa": "P-suraci-luigi-1881",
     "tipo": "conjuge"
+   },
+   {
+    "documentos": [
+     "BR-SOR-003"
+    ],
+    "firmeza": "certa",
+    "pessoa": "P-sorage-wolney-1918",
+    "referencia": "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado",
+    "tipo": "filho"
    }
   ],
   "resumo": "",
@@ -14436,6 +14963,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1864",
   "id": "P-vecchia-lazzaro-1864",
   "linha": "vecchia",
   "morte": {
@@ -14523,6 +15051,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1889",
   "id": "P-versace-agostino-1889",
   "linha": "suraci",
   "nascimento": {
@@ -14603,6 +15132,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1860",
   "familysearch": "GBBP-Z5D",
   "id": "P-versace-antonia-1860",
   "linha": "suraci",
@@ -14667,6 +15197,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1839",
   "id": "P-versace-antonino-1839",
   "linha": "suraci",
   "nascimento": {
@@ -14711,6 +15242,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1874",
   "id": "P-versace-antonino-1874",
   "linha": "suraci",
   "nascimento": {
@@ -14762,6 +15294,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1857",
   "familysearch": "GDGG-RQ6",
   "id": "P-versace-carmela-1857",
   "linha": "suraci",
@@ -14817,6 +15350,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1894",
   "id": "P-versace-carmelo-1894",
   "linha": "suraci",
   "nascimento": {
@@ -15011,6 +15545,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1822",
   "familysearch": "GDGG-Z6Z",
   "id": "P-versace-giuseppe-1822",
   "linha": "suraci",
@@ -15172,6 +15707,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1855",
   "id": "P-versace-mariacarmela-1855",
   "linha": "suraci",
   "nascimento": {
@@ -15224,6 +15760,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1871",
   "familysearch": "PNY4-QD2",
   "id": "P-versace-michela-1871",
   "linha": "suraci",
@@ -15289,6 +15826,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1871",
   "familysearch": "GDGG-VQ5",
   "id": "P-versace-michele-1871",
   "linha": "suraci",
@@ -15377,6 +15915,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1867",
   "familysearch": "GDGG-V2D",
   "id": "P-versace-pasqualina-1867",
   "linha": "suraci",
@@ -15430,6 +15969,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1877",
   "familysearch": "GBBP-JX8",
   "id": "P-versace-rosa-1877",
   "linha": "suraci",
@@ -15489,6 +16029,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-versaci-angela",
   "linha": "suraci",
   "morte": {
@@ -15543,6 +16084,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1886",
   "id": "P-versaci-anna-1886",
   "linha": "suraci",
   "morte": {
@@ -15603,6 +16145,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1846",
   "familysearch": "PNTV-YYD",
   "id": "P-versaci-carmelamaria-1846",
   "linha": "suraci",
@@ -15661,6 +16204,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1825",
   "id": "P-versaci-domenico-1825",
   "linha": "suraci",
   "nascimento": {
@@ -15810,6 +16354,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1851",
   "familysearch": "GJZ3-5M7",
   "id": "P-versaci-francesca",
   "linha": "suraci",
@@ -16063,6 +16608,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1810",
   "familysearch": "GDGG-KSR",
   "id": "P-versaci-luigi",
   "linha": "suraci",
@@ -16193,6 +16739,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1884",
   "id": "P-versaci-luigi-1884",
   "linha": "suraci",
   "nascimento": {
@@ -16255,6 +16802,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1885",
   "id": "P-versaci-luigi-1885",
   "linha": "suraci",
   "morte": {
@@ -16322,6 +16870,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1841",
   "familysearch": "PNFX-YCG",
   "id": "P-versaci-mariarachiela-1841",
   "linha": "suraci",
@@ -16443,6 +16992,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1853",
   "familysearch": "GDGG-V35",
   "id": "P-versaci-mariateresa-1853",
   "linha": "suraci",
@@ -16585,6 +17135,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "familysearch": "GDGG-T35",
   "id": "P-versaci-michele-1838",
   "linha": "suraci",
@@ -16763,6 +17314,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1843",
   "familysearch": "PNTV-CTJ",
   "id": "P-versaci-michele-1843",
   "linha": "suraci",
@@ -16898,6 +17450,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1851",
   "id": "P-versaci-michele-1851",
   "linha": "suraci",
   "nascimento": {
@@ -16934,6 +17487,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1881",
   "id": "P-versaci-pietro-1881",
   "linha": "suraci",
   "nascimento": {
@@ -16979,6 +17533,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1861",
   "id": "P-versaci-rocco-1861",
   "linha": "suraci",
   "morte": {
@@ -17048,6 +17603,7 @@
     ]
    }
   ],
+  "base_do_corte": "nascimento em 1813",
   "familysearch": "GDGG-K3W",
   "id": "P-versaci-vincenzo-1813",
   "linha": "suraci",
@@ -17122,6 +17678,7 @@
     ]
    }
   ],
+  "base_do_corte": "adulto num documento até 1925",
   "id": "P-villabotte-carmine",
   "linha": "cardillo",
   "nome_exibicao": "Carmine Stillabotte",
@@ -17176,6 +17733,7 @@
     ]
    }
   ],
+  "base_do_corte": "morte registrada",
   "id": "P-vitetta-anna",
   "linha": "suraci",
   "morte": {

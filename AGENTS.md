@@ -47,7 +47,7 @@ acervo privado (CSV, YAML, fichas)  ──exportador──▶  src/content/*.jso
 |---|---|---|
 | `/registros-vistos/` + `/registros-vistos/catalogo/…` | **real** | `01 Indice/registros-vistos/*.csv` via `exportar-registros.py` |
 | `/pessoas/` e `/pessoas/<id>/` | **real** — 243 dossiês | `persons.yaml` + fichas via `exportar-pessoas-documentos.py` |
-| `/arvore/` | **real** — grafo com firmeza por ligação | idem (ilha `ArvoreExplorer`) |
+| `/arvore/` | **real** — janela 1+2+4 a partir dos meus avós, cartões com fonte e firmeza de cada ligação | idem (ilha `ArvoreJanela`) |
 | `/documentos/` e `/documentos/<id>/` | **real** — 192 documentos, sem imagem | idem |
 | busca rápida (Ctrl+K) | **real** | `/busca/indice.json` |
 | `/` (compêndio) | casca com texto gerado (ficção), `noindex` | — |
@@ -60,6 +60,13 @@ sem limite; nascidos no Brasil ficam para outra fase; casos indeterminados decid
 `01 Indice/publicacao-pessoas.json` (`publicar_pessoas` / `ocultar_pessoas` / `ocultar_documentos`).
 O texto de apresentação de cada pessoa é o campo `public_summary` do `persons.yaml` (escrito à mão);
 o `summary` interno nunca é exportado. A `line` de cada pessoa também vem do `persons.yaml`.
+
+**Âncoras (07/11/2026).** O casal em que as linhas se juntam (os avós de Ramon) entra nomeado, com rótulo
+(«Meu avô», «Minha avó»), sem dossiê, via `publicacao-pessoas.json` › `ancoras`. Regras que vieram com
+isso: (a) pai/mãe de alguém nascido até 1925 conta como nascido até 1925; (b) as ligações que chegam às
+âncoras e aos pais delas podem citar POR REFERÊNCIA (tipo, lugar, ano) um documento não publicado —
+nada mais sai desse documento; (c) `needs_research: true` no `persons.yaml` marca quem está no grafo
+só por fonte secundária, e o site mostra «carece pesquisa».
 
 `src/types/genealogy.ts` e `src/data/*.ts` são o que resta do modelo **gerado pelo Gemini**, usado só
 pelas três vistas ainda fictícias (compêndio, atlas, frentes). Tudo ali é inventado; não corrigir

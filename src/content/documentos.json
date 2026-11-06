@@ -199,6 +199,15 @@
      "cônjuge"
     ],
     "pessoa": "P-vecchia-isolina-1884"
+   },
+   {
+    "firmeza": "certa",
+    "idade": 16,
+    "nome_escrito": "Wolney Sorage",
+    "papeis": [
+     "filho(a)"
+    ],
+    "pessoa": "P-sorage-wolney-1918"
    }
   ],
   "referencia": "Obitos · ato n.º 2640 · fólio 65 · livro 24",
@@ -3906,6 +3915,14 @@
      "mãe"
     ],
     "pessoa": "P-robertuccio-luigia"
+   },
+   {
+    "firmeza": "certa",
+    "nome_escrito": "Giuseppe",
+    "papeis": [
+     "avô/avó"
+    ],
+    "pessoa": "P-robertuccio-giuseppe"
    },
    {
     "firmeza": "certa",

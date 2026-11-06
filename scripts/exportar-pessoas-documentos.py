@@ -12,7 +12,12 @@ dali para cima sem limite; quem nasceu no Brasil fica para outra fase.
 
 Privacidade (as mesmas regras do site, 14/10 e 26/10/2026):
 - ninguém nascido depois de 1925; sem data de nascimento, a pessoa só entra se
-  tiver morte registrada ou se aparecer como adulto num documento de até 1925;
+  tiver morte registrada, se aparecer como adulto num documento de até 1925, ou se
+  for pai/mãe de alguém que passa por uma destas regras (07/11/2026);
+- âncoras (07/11/2026): o casal em que as duas linhas se juntam, nomeado em
+  `publicacao-pessoas.json` › `ancoras`, entra com rótulo («Meu avô») e sem dossiê;
+  as ligações que chegam às âncoras e aos pais delas podem citar POR REFERÊNCIA um
+  documento não publicado (tipo, lugar, ano), sem página nem transcrição;
 - documentos: nascimentos e demais até 1925; óbitos até 1955, só de quem nasceu
   até 1925; transcrição integral só para documentos até 1925;
 - nenhuma imagem, nenhum caminho de arquivo, nenhum número de documento pessoal;
@@ -278,10 +283,30 @@ def evento_publico(ev: dict | None, onde: str, docs_publicados: set[str]) -> dic
     return saida
 
 
+TIPO_REFERENCIA = {"birth": "nascimento", "baptism": "batismo", "marriage": "casamento", "marriage_banns": "proclamas",
+                   "death": "óbito", "burial": "sepultamento", "census": "censo", "newspaper": "jornal", "other": ""}
+
+
+def referencia_nao_publicada(f: dict) -> str:
+    """Como se cita um documento que NÃO vai ao ar: só o tipo, o lugar e o ano."""
+    lugar = f.get("place") or {}
+    ano = ano_de(f.get("date_event") or f.get("date_recorded"))
+    tipo = TIPO_REFERENCIA.get(texto(f.get("record_type")), "")
+    if texto(f.get("record_type")) == "other":
+        raw = texto(f.get("record_type_raw")).casefold()
+        tipo = "árvore do FamilySearch (fonte secundária)" if "familysearch" in raw else "documento"
+    partes = [tipo, ", ".join(v for v in (texto(lugar.get("comune")), texto(lugar.get("province"))) if v), str(ano) if ano else "s.d."]
+    jur = JURISDICAO.get(texto(f.get("jurisdiction")), "")
+    return ", ".join(p for p in partes if p) + (f" — {jur.casefold()}" if jur else "") + ", não publicado"
+
+
 def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
     selecao = selecao or {}
-    if {k for k in selecao if not k.startswith("_")} - {"publicar_pessoas", "ocultar_pessoas", "ocultar_documentos"}:
+    if {k for k in selecao if not k.startswith("_")} - {"publicar_pessoas", "ocultar_pessoas", "ocultar_documentos", "ancoras"}:
         raise ValueError("Chave não reconhecida na seleção privada de publicação.")
+    ancoras: dict[str, dict] = selecao.get("ancoras") or {}
+    if not isinstance(ancoras, dict) or not all(isinstance(v, dict) and texto(v.get("rotulo")) for v in ancoras.values()):
+        raise ValueError("ancoras deve mapear id → {rotulo}.")
     pessoas_yaml, fichas = ler_acervo(acervo)
     por_id = {p["id"]: p for p in pessoas_yaml}
     if len(por_id) != len(pessoas_yaml):
@@ -293,6 +318,27 @@ def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
         for persona in f.get("personas") or []:
             if persona.get("same_as"):
                 aparicoes[persona["same_as"]].append((f, persona))
+
+    # pais de quem comprovadamente nasceu até 1925 nasceram antes ainda (07/11/2026); a propagação
+    # usa todos os asserts child_of, publicados ou não, porque é só uma inferência de idade.
+    pais_de: dict[str, set[str]] = defaultdict(set)
+    for f in fichas:
+        for a in f.get("asserts") or []:
+            if a.get("relation") == "child_of" and FIRMEZA.get(texto(a.get("confidence")) or "certain"):
+                pais_de[a.get("subject")].add(a.get("object"))
+    base_corte: dict[str, str] = {}
+    for p in pessoas_yaml:
+        ok, _ = passa_na_data(p, aparicoes.get(p["id"], []))
+        if ok:
+            nasc = ano_de((p.get("birth") or {}).get("date"))
+            base_corte[p["id"]] = f"nascimento em {nasc}" if nasc else ("morte registrada" if (p.get("death") or {}).get("date") else "adulto num documento até 1925")
+    fila = list(base_corte)
+    while fila:
+        filho = fila.pop()
+        for pai in pais_de.get(filho, ()):
+            if pai in por_id and pai not in base_corte:
+                base_corte[pai] = f"pai/mãe de {por_id[filho]['display_name']} ({base_corte[filho]})"
+                fila.append(pai)
 
     # 1) quem entra
     excluidas: dict[str, str] = {}
@@ -306,9 +352,8 @@ def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
         linha = texto(p.get("line"))
         if linha not in LINHAS:
             raise ValueError(f"{pid}: campo line ausente ou inválido ({linha!r}); valores: {sorted(LINHAS)}")
-        ok, motivo = passa_na_data(p, aparicoes.get(pid, []))
-        if not ok:
-            excluidas[pid] = motivo
+        if pid not in base_corte:
+            excluidas[pid] = passa_na_data(p, aparicoes.get(pid, []))[1]
             continue
         if pid not in selecao.get("publicar_pessoas", []):
             pais = pais_de_nascimento(p, aparicoes.get(pid, []))
@@ -425,13 +470,19 @@ def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
     # 4) montagem das pessoas
     pessoas = []
     relacoes_descartadas = 0
+    conjunto_ancora = set(ancoras)
+    for aid in list(ancoras):
+        conjunto_ancora |= {o for o in pais_de.get(aid, ()) if o in publicadas}
+    for aid in list(ancoras):
+        for o in pais_de.get(aid, ()):
+            conjunto_ancora |= {oo for oo in pais_de.get(o, ()) if oo in publicadas}
+    ficha_por_id = {f["id"]: f for f in fichas}
     asserts_por_pessoa: dict[str, list] = defaultdict(list)
     for f in fichas:
-        if f["id"] not in docs_pub:
-            continue
         for a in f.get("asserts") or []:
-            asserts_por_pessoa[a.get("subject")].append((f["id"], a))
-            asserts_por_pessoa[a.get("object")].append((f["id"], a))
+            if f["id"] in docs_pub or {a.get("subject"), a.get("object")} & conjunto_ancora:
+                asserts_por_pessoa[a.get("subject")].append((f["id"], a))
+                asserts_por_pessoa[a.get("object")].append((f["id"], a))
     for pid, p in sorted(publicadas.items()):
         relacoes = {}
         for fid, a in asserts_por_pessoa.get(pid, []):
@@ -456,11 +507,18 @@ def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
                 continue
             chave = (tipo, outro)
             atual = relacoes.get(chave)
-            entrada = {"tipo": tipo, "pessoa": outro, "firmeza": firmeza, "documentos": [fid]}
+            if fid in docs_pub:
+                entrada = {"tipo": tipo, "pessoa": outro, "firmeza": firmeza, "documentos": [fid]}
+            else:
+                # citação por referência: tipo, lugar e ano — sem página, sem transcrição, sem nomes
+                entrada = {"tipo": tipo, "pessoa": outro, "firmeza": firmeza, "documentos": [],
+                           "referencia": referencia_nao_publicada(ficha_por_id[fid])}
             if a.get("rationale"):
                 entrada["justificativa"] = publico(a["rationale"], f"{fid}/asserts")
             if atual:
-                atual["documentos"] = sorted(set(atual["documentos"]) | {fid})
+                atual["documentos"] = sorted(set(atual["documentos"]) | ({fid} if fid in docs_pub else set()))
+                if "referencia" in entrada and "referencia" not in atual:
+                    atual["referencia"] = entrada["referencia"]
                 # a firmeza publicada é a melhor que algum documento sustenta
                 ordem = ["certa", "declarada", "provavel", "duvidosa"]
                 if ordem.index(firmeza) < ordem.index(atual["firmeza"]):
@@ -494,6 +552,9 @@ def exportar(acervo: Path, selecao: dict | None = None) -> tuple[dict, dict]:
             **({"ocupacao": publico(p["occupation"], pid)} if p.get("occupation") else {}),
             **({"familysearch": texto(p["familysearch"])} if p.get("familysearch") else {}),
             "resumo": publico(resumo, pid),
+            "base_do_corte": base_corte[pid],
+            **({"carece_pesquisa": True} if p.get("needs_research") is True else {}),
+            **({"ancora": {"rotulo": publico(ancoras[pid]["rotulo"], pid)}, "sem_dossie": True} if pid in ancoras else {}),
             "relacoes": sorted(relacoes.values(), key=lambda r: (["pai", "mae", "conjuge", "irmao", "filho"].index(r["tipo"]), r["pessoa"])),
             "aparece_em": aparece,
         })

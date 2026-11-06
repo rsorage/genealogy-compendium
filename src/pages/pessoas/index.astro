@@ -6,7 +6,7 @@ import { DESCRICAO_LINHA, ORDEM_LINHAS, RAIZ_DA_LINHA, ROTULO_LINHA, caminhoPess
 
 const { pessoas, documentos } = await carregarAcervo();
 const porLinha = new Map<Linha, typeof pessoas>();
-for (const p of pessoas) porLinha.set(p.linha, [...(porLinha.get(p.linha) ?? []), p]);
+for (const p of pessoas) if (!p.sem_dossie) porLinha.set(p.linha, [...(porLinha.get(p.linha) ?? []), p]);
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 ---
 

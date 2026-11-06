@@ -20,7 +20,7 @@ import {
 
 export async function getStaticPaths() {
   const { pessoas } = await carregarAcervo();
-  return pessoas.map((p) => ({ params: { id: p.id }, props: { pessoa: p } }));
+  return pessoas.filter((p) => !p.sem_dossie).map((p) => ({ params: { id: p.id }, props: { pessoa: p } }));
 }
 
 interface Props {
@@ -102,6 +102,13 @@ const jsonLd = JSON.stringify({
           {pessoa.sexo !== '?' && <span class="text-[#A8A29E]">{pessoa.sexo === 'F' ? 'mulher' : 'homem'}</span>}
         </div>
         {pessoa.resumo && <p class="font-editorial text-lg text-[#292524] leading-relaxed pt-2 max-w-3xl">{pessoa.resumo}</p>}
+        {
+          pessoa.carece_pesquisa && (
+            <p class="text-xs font-sans bg-[#FBF4E6] border border-[#EBD9B4] text-[#8A5A14] rounded-md px-3 py-2 inline-block">
+              <strong>Carece pesquisa.</strong> Esta pessoa está no acervo só por fonte secundária (a Árvore Familiar do FamilySearch); nada foi conferido em documento.
+            </p>
+          )
+        }
       </div>
       <aside class="lg:col-span-4 bg-[#F5F1E8] border border-[#E5DFD3] p-5 rounded-lg space-y-3 text-xs font-sans">
         <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Ligações</div>
@@ -190,6 +197,7 @@ const jsonLd = JSON.stringify({
                                 {documentoPorId.get(id)?.titulo ?? id}
                               </a>
                             ))}
+                            {r.documentos.length === 0 && r.referencia && <span class="italic">{r.referencia}</span>}
                           </div>
                           {r.justificativa && <p class="text-xs font-sans text-[#57534E] leading-relaxed px-1">{r.justificativa}</p>}
                         </li>

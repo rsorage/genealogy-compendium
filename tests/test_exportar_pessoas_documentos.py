@@ -330,6 +330,116 @@ class Acervo(unittest.TestCase):
                          "https://www.familysearch.org/ark:/61903/3:1:3Q9M-C9YN-X3SG-M")
         self.assertIsNone(exportar.link_publico({"reference": "https://evil.example/ark:/12657/x"}))
 
+    def test_ancoras_pais_inferidos_e_citacao_por_referencia(self):
+        # Neta (n. 1922, falecida), filha de Luigi e de uma mulher sem data nenhuma, cujo pai também não tem data.
+        self.persons += """
+  - id: P-fictio-neta-1922
+    display_name: "Neta Fictio"
+    sex: F
+    line: suraci
+    birth: { date: "1922-08-06", place: "Carangola (MG)", confidence: certain, basis: "BR-FIC-003" }
+    death: { date: "2004-12-09", confidence: certain, basis: "certidão" }
+    summary: "interno"
+  - id: P-semdata-mae
+    display_name: "Mãe Semdata"
+    sex: F
+    line: rede
+    needs_research: true
+    summary: "interno"
+  - id: P-semdata-avo
+    display_name: "Avô Semdata"
+    sex: M
+    line: rede
+    summary: "interno"
+"""
+        self.fichas["g.md"] = """---
+id: BR-FIC-003
+record_type: marriage
+jurisdiction: civil
+place: { comune: "Patrocínio do Muriaé", province: MG, country: BR }
+register: { series: "Casamentos", year: 1945, act: 7 }
+date_event: 1945-06-27
+source: { repository: cartorio, reference: "livro 9" }
+personas:
+  - { id: p1, name_as_written: "Neta Fictio", roles: [subject, spouse], declares: { sex: F, birth_date: 1922-08-06 }, same_as: P-fictio-neta-1922, confidence: certain }
+  - { id: p2, name_as_written: "Luiz Fictio", roles: [father], declares: { sex: M }, same_as: P-fictio-luigi-1881, confidence: certain }
+  - { id: p3, name_as_written: "Mãe Semdata", roles: [mother], declares: { sex: F }, same_as: P-semdata-mae, confidence: certain }
+  - { id: p4, name_as_written: "Pessoa Viva", roles: [witness], declares: { sex: M } }
+asserts:
+  - { subject: P-fictio-neta-1922, relation: child_of, object: P-fictio-luigi-1881, confidence: certain }
+  - { subject: P-fictio-neta-1922, relation: child_of, object: P-semdata-mae, confidence: certain }
+  - { subject: P-semdata-mae, relation: spouse_of, object: P-fictio-luigi-1881, confidence: certain }
+---
+
+# BR-FIC-003 — casamento de 1945
+"""
+        self.fichas["h.md"] = """---
+id: BR-FIC-004
+record_type: other
+record_type_raw: "perfis da Árvore Familiar do FamilySearch"
+jurisdiction: other
+jurisdiction_raw: "árvore colaborativa"
+place: { comune: "Rio de Janeiro", province: RJ, country: BR }
+date_recorded: 2026-11-07
+source: { repository: familysearch, reference: "perfil X" }
+personas:
+  - { id: p1, name_as_written: "Mãe Semdata", roles: [subject], declares: { sex: F }, same_as: P-semdata-mae, confidence: certain }
+  - { id: p2, name_as_written: "Avô Semdata", roles: [father], declares: { sex: M }, same_as: P-semdata-avo, confidence: stated }
+asserts:
+  - { subject: P-semdata-mae, relation: child_of, object: P-semdata-avo, confidence: stated }
+---
+
+# BR-FIC-004 — árvore
+"""
+        selecao = {"publicar_pessoas": ["P-fictio-neta-1922", "P-semdata-mae", "P-semdata-avo"],
+                   "ancoras": {"P-fictio-neta-1922": {"rotulo": "Minha avó"}}}
+        dados, rel = self.exportar(selecao)
+        ids = {p["id"] for p in dados["pessoas"]}
+        self.assertIn("P-semdata-mae", ids)   # mãe de alguém nascido em 1922
+        self.assertIn("P-semdata-avo", ids)   # pai da mãe — propagação
+        neta = self.pessoa(dados, "P-fictio-neta-1922")
+        self.assertEqual(neta["ancora"], {"rotulo": "Minha avó"})
+        self.assertTrue(neta["sem_dossie"])
+        self.assertEqual(neta["base_do_corte"], "nascimento em 1922")
+        mae = self.pessoa(dados, "P-semdata-mae")
+        self.assertTrue(mae["carece_pesquisa"])
+        self.assertIn("pai/mãe de Neta Fictio", mae["base_do_corte"])
+        # os documentos de 1945 e de 2026 NÃO são publicados…
+        self.assertNotIn("BR-FIC-003", {d["id"] for d in dados["documentos"]})
+        self.assertNotIn("BR-FIC-004", {d["id"] for d in dados["documentos"]})
+        # …mas as ligações até a âncora e aos pais dela citam-nos por referência
+        pai = next(r for r in neta["relacoes"] if r["tipo"] == "pai")
+        self.assertEqual(pai["documentos"], [])
+        self.assertEqual(pai["referencia"], "casamento, Patrocínio do Muriaé, MG, 1945 — registro civil, não publicado")
+        avo = next(r for r in mae["relacoes"] if r["tipo"] == "pai")
+        self.assertIn("árvore do FamilySearch (fonte secundária), Rio de Janeiro, RJ, 2026", avo["referencia"])
+        self.assertNotIn("Pessoa Viva", json.dumps(dados, ensure_ascii=False))
+        # a relação Luigi→neta aparece dos dois lados
+        luigi = self.pessoa(dados, "P-fictio-luigi-1881")
+        self.assertIn("P-fictio-neta-1922", [r["pessoa"] for r in luigi["relacoes"] if r["tipo"] == "filho"])
+
+    def test_sem_ancora_documento_nao_publicado_nao_e_citado(self):
+        self.fichas["g.md"] = """---
+id: BR-FIC-005
+record_type: death
+jurisdiction: civil
+place: { comune: "Carangola", province: MG, country: BR }
+date_event: 1960-01-01
+source: { repository: cartorio, reference: "x" }
+personas:
+  - { id: p1, name_as_written: "Giuseppe Testemunha", roles: [subject], declares: { sex: M, age: 100 }, same_as: P-testemunha-giuseppe, confidence: certain }
+  - { id: p2, name_as_written: "Antonio Fictio", roles: [father], declares: { sex: M }, same_as: P-fictio-antonio-1849, confidence: certain }
+asserts:
+  - { subject: P-testemunha-giuseppe, relation: child_of, object: P-fictio-antonio-1849, confidence: certain }
+---
+
+# BR-FIC-005
+"""
+        # o documento brasileiro torna o país de Giuseppe indeterminado; entra pela seleção, mas sem âncora nada o cita
+        dados, _ = self.exportar({"publicar_pessoas": ["P-testemunha-giuseppe"]})
+        giuseppe = self.pessoa(dados, "P-testemunha-giuseppe")
+        self.assertEqual(giuseppe["relacoes"], [])
+
     def test_acervo_nao_e_alterado(self):
         self.exportar()
         antes = {p: p.read_bytes() for p in self.raiz.rglob("*") if p.is_file()}

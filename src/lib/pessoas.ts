@@ -128,7 +128,7 @@ export function anoCurto(data: string | undefined): string {
   if (data.startsWith('>')) return `depois de ${m[1]}`;
   if (data.includes('/')) {
     const f = data.split('/')[1]?.match(/(\d{4})/);
-    return f && f[1] !== m[1] ? `${m[1]}–${f[1]}` : m[1];
+    return f && f[1] !== m[1] ? `${m[1]}/${f[1]}` : m[1];
   }
   return m[1];
 }

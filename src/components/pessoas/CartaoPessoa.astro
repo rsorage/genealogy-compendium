@@ -9,13 +9,15 @@ interface Props {
 }
 const { pessoa, rotulo, compacto = false } = Astro.props;
 const vida = periodoVida(pessoa);
+const Tag = pessoa.sem_dossie ? 'div' : 'a';
 const lugar = pessoa.nascimento?.lugar ?? pessoa.morte?.lugar ?? '';
 ---
 
-<a
-  href={caminhoPessoa(pessoa.id)}
+<Tag
+  href={pessoa.sem_dossie ? undefined : caminhoPessoa(pessoa.id)}
   class:list={[
-    'group block bg-white border border-[#E7E2D8] hover:border-[#8C3A27] rounded-lg transition-colors',
+    'group block bg-white border border-[#E7E2D8] rounded-lg transition-colors',
+    pessoa.sem_dossie ? '' : 'hover:border-[#8C3A27]',
     compacto ? 'px-3 py-2' : 'p-4',
   ]}
 >
@@ -23,7 +25,7 @@ const lugar = pessoa.nascimento?.lugar ?? pessoa.morte?.lugar ?? '';
     <span class:list={['font-display font-semibold text-[#1C1917] group-hover:text-[#8C3A27] leading-snug', compacto ? 'text-base' : 'text-lg']}>
       {pessoa.nome_exibicao}
     </span>
-    {rotulo && <span class="text-[10px] uppercase tracking-wider font-sans text-[#78716C] shrink-0">{rotulo}</span>}
+    {(rotulo || pessoa.ancora) && <span class="text-[10px] uppercase tracking-wider font-sans text-[#78716C] shrink-0">{rotulo ?? pessoa.ancora?.rotulo}</span>}
   </div>
   {
     (vida || lugar) && (
@@ -35,4 +37,5 @@ const lugar = pessoa.nascimento?.lugar ?? pessoa.morte?.lugar ?? '';
     )
   }
   {!compacto && pessoa.ocupacao && <div class="text-xs font-sans text-[#78716C] mt-0.5">{rotuloOcupacao(pessoa.ocupacao)}</div>}
-</a>
+  {pessoa.carece_pesquisa && <div class="text-[10px] font-sans text-[#8A5A14] mt-1">carece pesquisa</div>}
+</Tag>

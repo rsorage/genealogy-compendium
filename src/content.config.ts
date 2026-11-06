@@ -194,16 +194,22 @@ const evento = z
   })
   .strict();
 
-/** Aresta do grafo de evidências: pai, mãe, cônjuge, irmão ou filho, segundo quais atos. */
+/**
+ * Aresta do grafo de evidências: pai, mãe, cônjuge, irmão ou filho, segundo quais atos.
+ * Sem documento publicado, só com `referencia` (tipo, lugar, ano de um documento não publicado):
+ * permitido apenas nas ligações que chegam às âncoras e aos pais delas (07/11/2026).
+ */
 const relacao = z
   .object({
     tipo: z.enum(['pai', 'mae', 'conjuge', 'irmao', 'filho']),
     pessoa: idPessoa,
     firmeza: Firmeza,
-    documentos: z.array(idDocumento).min(1),
+    documentos: z.array(idDocumento),
+    referencia: textoPublico.regex(/não publicad[oa]$/, 'uma referência tem de dizer que o documento não é publicado').optional(),
     justificativa: textoPublico.optional(),
   })
-  .strict();
+  .strict()
+  .refine((r) => r.documentos.length > 0 || !!r.referencia, { message: 'ligação sem documento publicado e sem referência' });
 
 /** O que um ato escreveu sobre a pessoa: nome como está no papel, papel no ato, idade, ofício, se assina. */
 const aparicao = z
@@ -232,15 +238,19 @@ const pessoas = defineCollection({
       familysearch: z.string().regex(/^[A-Z0-9]{4}-[A-Z0-9]{3}$/).optional(),
       /** O `public_summary` do persons.yaml; vazio quando ainda não foi escrito. O `summary` interno nunca chega aqui. */
       resumo: textoPublico,
+      /** Por que a pessoa passa no corte de 1925 (nascimento, morte, aparição adulta, ou pai/mãe de quem passa). */
+      base_do_corte: textoPublico.min(1),
+      /** Está no grafo só por fonte secundária (árvore do FamilySearch); o site mostra «carece pesquisa». */
+      carece_pesquisa: z.literal(true).optional(),
+      /** O casal em que as linhas se juntam: nomeado, com rótulo («Meu avô»), sem dossiê. */
+      ancora: z.object({ rotulo: textoPublico.min(1) }).strict().optional(),
+      sem_dossie: z.literal(true).optional(),
       relacoes: z.array(relacao),
       aparece_em: z.array(aparicao),
     })
     .strict()
     // Ninguém nascido depois de 1925 — a última barreira, depois do exportador.
-    .refine((p) => (anoDe(p.nascimento?.data) ?? 0) <= CORTE_GERAL, { message: 'pessoa nascida depois do corte de 1925' })
-    .refine((p) => p.nascimento?.data || p.morte?.data || p.aparece_em.length > 0, {
-      message: 'pessoa sem data e sem documento: impossível aplicar o corte',
-    }),
+    .refine((p) => (anoDe(p.nascimento?.data) ?? 0) <= CORTE_GERAL, { message: 'pessoa nascida depois do corte de 1925' }),
 });
 
 const TIPOS_DOCUMENTO = [
