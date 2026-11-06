@@ -39,7 +39,7 @@ export const AcoesCabecalho: React.FC = () => {
         aria-label="Enviar uma pista"
       >
         <Mail className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">Enviar uma pista</span>
+        <span className="hidden sm:inline lg:hidden xl:inline">Enviar uma pista</span>
       </button>
 
       <SearchDialog

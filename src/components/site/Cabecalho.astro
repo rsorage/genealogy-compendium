@@ -11,13 +11,13 @@ const ativa = secaoAtiva(Astro.url.pathname);
     <div class="flex items-center justify-between gap-4 lg:gap-6 h-18">
       <a href="/" class="text-left group shrink-0 focus:outline-none" aria-label="Sorage & Cardillo — página inicial">
         <span
-          class="font-display text-xl sm:text-2xl xl:text-3xl font-medium tracking-tight text-[#1C1917] group-hover:text-[#8C3A27] transition-colors whitespace-nowrap"
+          class="font-display text-xl sm:text-2xl font-medium tracking-tight text-[#1C1917] group-hover:text-[#8C3A27] transition-colors whitespace-nowrap"
         >
           SORAGE &amp; CARDILLO
         </span>
       </a>
 
-      <nav class="hidden lg:flex items-center gap-5 2xl:gap-7 text-sm font-medium text-[#57534E] min-w-0" aria-label="Seções do site">
+      <nav class="hidden lg:flex items-center gap-5 xl:gap-6 text-sm font-medium text-[#57534E]" aria-label="Seções do site">
         {
           SECOES.map((s) => (
             <a
@@ -30,8 +30,7 @@ const ativa = secaoAtiva(Astro.url.pathname);
                   : 'hover:border-b-2 hover:border-[#D6CEBE]',
               ]}
             >
-              <span class="2xl:hidden">{s.rotuloCurto}</span>
-              <span class="hidden 2xl:inline">{s.rotulo}</span>
+              {s.rotuloCurto}
             </a>
           ))
         }
