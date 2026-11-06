@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Calendar, MapPin, Anchor, Briefcase, FileText, User, ArrowRight } from 'lucide-react';
 import { Person, HistoricalRecord } from '../types/genealogy';
 import { historicalRecordsDatabase, peopleDatabase } from '../data/genealogyData';
+import { RelationshipPathIndicator } from './RelationshipPathIndicator';
 
 interface AncestorDossierModalProps {
   person: Person | null;
@@ -74,6 +75,12 @@ export const AncestorDossierModal: React.FC<AncestorDossierModalProps> = ({
               </p>
             )}
           </div>
+
+          {/* Persistent Relationship Path Indicator */}
+          <RelationshipPathIndicator
+            person={person}
+            onSelectPersonById={onSelectPersonById}
+          />
 
           {/* Quick Vital Metadata Strip */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 rounded-xl border border-[#E7E2D8] text-xs font-sans">

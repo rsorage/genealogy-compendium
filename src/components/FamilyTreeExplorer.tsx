@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Compass, Users, Sparkles, FileText, ChevronRight, Anchor, Heart } from 'lucide-react';
+import { Compass, Users, Sparkles, FileText, ChevronRight, Anchor, Heart, ArrowRight } from 'lucide-react';
 import { peopleDatabase, historicalRecordsDatabase } from '../data/genealogyData';
 import { Person, BranchId } from '../types/genealogy';
+import { RelationshipPathIndicator } from './RelationshipPathIndicator';
 
 interface FamilyTreeExplorerProps {
   onSelectPerson: (person: Person) => void;
@@ -10,6 +11,9 @@ interface FamilyTreeExplorerProps {
 export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelectPerson }) => {
   const [activeBranch, setActiveBranch] = useState<BranchId>('unified');
   const [generationFilter, setGenerationFilter] = useState<number | 'all'>('all');
+  const [focusedPerson, setFocusedPerson] = useState<Person>(
+    peopleDatabase.find((p) => p.id === 'sorage-paschoal-1904') || peopleDatabase[0]
+  );
 
   // Filter people according to branch & generation
   const filteredPeople = peopleDatabase.filter((person) => {
@@ -34,8 +38,15 @@ export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelect
     return <span className="text-[#78350F] font-medium">Unified Italo-Brasilian</span>;
   };
 
+  const handleFocusById = (id: string) => {
+    const found = peopleDatabase.find((p) => p.id === id);
+    if (found) {
+      setFocusedPerson(found);
+    }
+  };
+
   return (
-    <div className="space-y-10 py-6">
+    <div className="space-y-8 py-6">
       {/* Title & Curatorial Subtitle */}
       <div className="border-b border-[#E7E2D8] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -121,6 +132,28 @@ export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelect
         </div>
       </div>
 
+      {/* PERSISTENT RELATIONSHIP PATH INDICATOR */}
+      {focusedPerson && (
+        <div className="sticky top-18 z-20 shadow-xs">
+          <div className="relative">
+            <RelationshipPathIndicator
+              person={focusedPerson}
+              onSelectPersonById={handleFocusById}
+            />
+            {/* Quick Button to open full biographical dossier */}
+            <div className="absolute top-4 right-4 hidden sm:flex items-center gap-2">
+              <button
+                onClick={() => onSelectPerson(focusedPerson)}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-[#1C1917] hover:bg-[#342F2C] rounded-md transition-colors shadow-2xs cursor-pointer"
+              >
+                <span>Open Full Dossier</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Union Callout Box when Unified Branch is viewed */}
       {activeBranch === 'unified' && generationFilter === 'all' && (
         <div className="bg-[#FAF7F0] border border-[#E5DFD3] rounded-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -160,7 +193,14 @@ export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelect
               {filteredPeople
                 .filter((p) => p.generation === 1)
                 .map((person) => (
-                  <PersonCard key={person.id} person={person} onSelectPerson={onSelectPerson} getBranchBadge={getBranchBadge} />
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    isFocused={focusedPerson.id === person.id}
+                    onFocusPerson={() => setFocusedPerson(person)}
+                    onSelectPerson={onSelectPerson}
+                    getBranchBadge={getBranchBadge}
+                  />
                 ))}
             </div>
           </div>
@@ -183,7 +223,15 @@ export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelect
               {filteredPeople
                 .filter((p) => p.generation === 2)
                 .map((person) => (
-                  <PersonCard key={person.id} person={person} onSelectPerson={onSelectPerson} getBranchBadge={getBranchBadge} isEmigrant />
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    isFocused={focusedPerson.id === person.id}
+                    onFocusPerson={() => setFocusedPerson(person)}
+                    onSelectPerson={onSelectPerson}
+                    getBranchBadge={getBranchBadge}
+                    isEmigrant
+                  />
                 ))}
             </div>
           </div>
@@ -206,7 +254,14 @@ export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelect
               {filteredPeople
                 .filter((p) => p.generation === 3)
                 .map((person) => (
-                  <PersonCard key={person.id} person={person} onSelectPerson={onSelectPerson} getBranchBadge={getBranchBadge} />
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    isFocused={focusedPerson.id === person.id}
+                    onFocusPerson={() => setFocusedPerson(person)}
+                    onSelectPerson={onSelectPerson}
+                    getBranchBadge={getBranchBadge}
+                  />
                 ))}
             </div>
           </div>
@@ -229,7 +284,14 @@ export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelect
               {filteredPeople
                 .filter((p) => p.generation === 4)
                 .map((person) => (
-                  <PersonCard key={person.id} person={person} onSelectPerson={onSelectPerson} getBranchBadge={getBranchBadge} />
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    isFocused={focusedPerson.id === person.id}
+                    onFocusPerson={() => setFocusedPerson(person)}
+                    onSelectPerson={onSelectPerson}
+                    getBranchBadge={getBranchBadge}
+                  />
                 ))}
             </div>
           </div>
@@ -241,6 +303,8 @@ export const FamilyTreeExplorer: React.FC<FamilyTreeExplorerProps> = ({ onSelect
 
 interface PersonCardProps {
   person: Person;
+  isFocused: boolean;
+  onFocusPerson: () => void;
   onSelectPerson: (person: Person) => void;
   getBranchBadge: (person: Person) => React.ReactNode;
   isEmigrant?: boolean;
@@ -248,14 +312,20 @@ interface PersonCardProps {
 
 const PersonCard: React.FC<PersonCardProps> = ({
   person,
+  isFocused,
+  onFocusPerson,
   onSelectPerson,
   getBranchBadge,
   isEmigrant,
 }) => {
   return (
     <div
-      onClick={() => onSelectPerson(person)}
-      className="bg-white border border-[#E7E2D8] hover:border-[#8C3A27] hover:shadow-md transition-all duration-200 rounded-lg p-4 flex flex-col justify-between cursor-pointer group relative"
+      onClick={onFocusPerson}
+      className={`border transition-all duration-200 rounded-xl p-4 flex flex-col justify-between cursor-pointer group relative ${
+        isFocused
+          ? 'bg-white border-[#8C3A27] ring-2 ring-[#8C3A27]/25 shadow-md'
+          : 'bg-white border-[#E7E2D8] hover:border-[#8C3A27] hover:shadow-sm'
+      }`}
     >
       <div className="space-y-3">
         {/* Top Meta Line: Unboxed, clean metadata */}
@@ -307,13 +377,27 @@ const PersonCard: React.FC<PersonCardProps> = ({
 
       {/* Footer Strip */}
       <div className="pt-3 mt-3 border-t border-[#F4EFE6] flex items-center justify-between text-[11px] text-[#78716C]">
-        <div className="flex items-center gap-1">
-          <FileText className="w-3 h-3 text-[#A8A29E]" />
-          <span>{person.recordsCount} Primary Records</span>
+        <div className="flex items-center gap-1 text-[11px] text-[#8C3A27] font-medium">
+          {isFocused ? (
+            <span className="flex items-center gap-1 text-emerald-800 font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              Path Active
+            </span>
+          ) : (
+            <span className="group-hover:text-[#8C3A27]">Trace Path</span>
+          )}
         </div>
-        <span className="text-[#8C3A27] font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center">
-          Dossier <ChevronRight className="w-3 h-3" />
-        </span>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectPerson(person);
+          }}
+          className="text-[#8C3A27] font-medium hover:underline inline-flex items-center gap-0.5 cursor-pointer"
+        >
+          <span>Dossier</span>
+          <ChevronRight className="w-3 h-3" />
+        </button>
       </div>
     </div>
   );
