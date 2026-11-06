@@ -40,13 +40,7 @@ interface Props {
   modos: Modo[];
 }
 
-// As mesmas cores e traços dos selos de firmeza dos dossiês (src/lib/pessoas.ts).
-const CLASSE_F: Record<FirmezaT, string> = {
-  certa: 'text-[#2A6F54] bg-[#EEF5F0] border-[#CFE2D6]',
-  declarada: 'text-[#1C1917] bg-[#F3EFE6] border-[#D6CEBE]',
-  provavel: 'text-[#8A5A14] bg-[#FBF4E6] border-[#EBD9B4]',
-  duvidosa: 'text-[#8C3A27] bg-[#FAF3F0] border-[#E8D9CE]',
-};
+// Os mesmos traços dos selos de firmeza dos dossiês (src/lib/pessoas.ts).
 const ESTILO_F: Record<FirmezaT, 'solid' | 'dashed' | 'dotted'> = { certa: 'solid', declarada: 'dashed', provavel: 'dashed', duvidosa: 'dotted' };
 const ROTULO_F: Record<FirmezaT, string> = { certa: 'certa', declarada: 'declarada', provavel: 'provável', duvidosa: 'duvidosa' };
 const ORDEM_F: FirmezaT[] = ['certa', 'provavel', 'declarada', 'duvidosa'];
@@ -245,22 +239,11 @@ function Uniao({ a, b }: { a?: NoJanela; b?: NoJanela }) {
   );
 }
 
-/** A haste do casal ao filho: traço fino com o selo da firmeza no meio. Respiro antes e depois. */
+/** A haste do casal ao filho: traço fino, cujo estilo (cheio, tracejado, pontilhado) leva a firmeza da ligação. */
 function Haste({ firmeza, titulo }: { firmeza?: FirmezaT; titulo?: string }) {
-  const estilo = firmeza ? ESTILO_F[firmeza] : 'dashed';
   return (
-    <div className="flex flex-col items-center pt-3" aria-hidden="true">
-      <span className="h-4 w-0 border-l" style={{ borderColor: COR_TRACO, borderLeftStyle: estilo }} />
-      {firmeza && (
-        <span
-          className={`inline-flex items-center gap-1 text-[10px] font-sans font-medium px-2 py-0.5 rounded border whitespace-nowrap my-1 ${CLASSE_F[firmeza]}`}
-          title={titulo}
-        >
-          <span className="inline-block w-3 border-t-2 border-current" style={{ borderTopStyle: estilo }} />
-          {ROTULO_F[firmeza]}
-        </span>
-      )}
-      <span className="h-4 w-0 border-l" style={{ borderColor: COR_TRACO, borderLeftStyle: estilo }} />
+    <div className="flex flex-col items-center pt-3" aria-hidden="true" title={titulo}>
+      <span className="h-10 w-0 border-l" style={{ borderColor: COR_TRACO, borderLeftStyle: firmeza ? ESTILO_F[firmeza] : 'dashed' }} />
     </div>
   );
 }
@@ -427,7 +410,7 @@ export default function ArvoreJanela({ pessoas, modos }: Props) {
             rotulo="Avós"
             fontes={nivel2.map((g, i) => ({ quem: g ? `${primeiroNome(g.de)} (${i === 0 ? 'pai' : 'mãe'})` : undefined, pai: g?.pai, mae: g?.mae }))}
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
             {nivel2.map((g, i) => {
               const lado = i === 0 ? 'paterno' : 'materno';
               return (
@@ -451,7 +434,7 @@ export default function ArvoreJanela({ pessoas, modos }: Props) {
       {/* Nível 1: pais */}
       <section aria-label="Pais" className="space-y-2">
         <Faixa rotulo={casal ? 'Os pais deles' : 'Pais'} fontes={nivel1.map((p) => ({ quem: casal ? primeiroNome(p.de) : undefined, pai: p.pai, mae: p.mae }))} />
-        <div className={`grid gap-x-6 gap-y-6 ${casal ? 'grid-cols-1 lg:grid-cols-2 max-w-5xl' : 'grid-cols-1 max-w-3xl'} mx-auto`}>
+        <div className={`grid gap-x-6 gap-y-6 ${casal ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 max-w-3xl mx-auto'}`}>
           {nivel1.map((p) => {
             const sufixo = casal ? ` de ${primeiroNome(p.de)}` : '';
             return (
