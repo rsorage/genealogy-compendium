@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Anchor, ArrowUp, Briefcase, ChevronRight, MapPin, Search } from 'lucide-react';
+import { Anchor, ArrowUp, Briefcase, ChevronRight, MapPin, Search, Users } from 'lucide-react';
 
 export type Confidence = 'certain' | 'stated' | 'probable' | 'doubtful';
 export type RelationType = 'father' | 'mother' | 'spouse' | 'sibling' | 'child';
@@ -64,10 +64,10 @@ function weakest(...cs: (Confidence | undefined)[]): Confidence | undefined {
   return present.sort((a, b) => CONFIDENCE_ORDER.indexOf(b) - CONFIDENCE_ORDER.indexOf(a))[0];
 }
 
-function Source({ relation }: { relation: Relation }) {
+function Source({ relation, muted = false }: { relation: Relation; muted?: boolean }) {
   return relation.document ? (
-    <a href={`/documentos/${relation.document}/`} className="text-[#8C3A27] hover:underline">
-      {relation.sourceLabel} ↗
+    <a href={`/documentos/${relation.document}/`} className={muted ? 'text-[#57534E] hover:text-[#8C3A27] hover:underline' : 'text-[#8C3A27] hover:underline'}>
+      {relation.sourceLabel}&nbsp;↗
     </a>
   ) : (
     <span className="italic">{relation.sourceLabel}</span>
@@ -75,14 +75,17 @@ function Source({ relation }: { relation: Relation }) {
 }
 
 /**
- * The sentence of a generation's rail: where the link from the parents to the child comes from.
- * «segundo X» when father and mother come from the same act; «pai segundo X; mãe segundo Y» otherwise.
+ * The filiation line of a card: where this person's link to their parents comes from.
+ * «Pais: X» when father and mother come from the same act; «Pai: X · Mãe: Y» otherwise.
  */
-function sourcesSentence(father?: Relation, mother?: Relation): ReactNode {
+function filiationLine(node: TreeNode): ReactNode {
+  const father = node.relations.find((r) => r.type === 'father');
+  const mother = node.relations.find((r) => r.type === 'mother');
+  if (!father && !mother) return null;
   if (father && mother && father.sourceLabel === mother.sourceLabel && father.document === mother.document) {
     return (
       <>
-        segundo <Source relation={father} />
+        Pais: <Source relation={father} muted />
       </>
     );
   }
@@ -90,36 +93,20 @@ function sourcesSentence(father?: Relation, mother?: Relation): ReactNode {
   if (father)
     parts.push(
       <span key="father">
-        pai segundo <Source relation={father} />
+        Pai: <Source relation={father} muted />
       </span>,
     );
   if (mother)
     parts.push(
       <span key="mother">
-        mãe segundo <Source relation={mother} />
+        Mãe: <Source relation={mother} muted />
       </span>,
     );
-  return parts.flatMap((p, i) => (i ? ['; ', p] : [p]));
+  return parts.flatMap((p, i) => (i ? [' · ', p] : [p]));
 }
 
-function Rail({ label, sources }: { label: string; sources: { who?: string; father?: Relation; mother?: Relation }[] }) {
-  const withSource = sources.filter((s) => s.father || s.mother);
-  return (
-    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-sans">
-      <span className="text-[10px] uppercase tracking-widest font-semibold text-[#78716C]">{label}</span>
-      {withSource.length > 0 && (
-        <span className="text-[11px] text-[#57534E]">
-          {withSource.flatMap((s, i) => [
-            i ? <span key={`sep${i}`}> · </span> : null,
-            <span key={i}>
-              {s.who ? `pais de ${s.who} ` : ''}
-              {sourcesSentence(s.father, s.mother)}
-            </span>,
-          ])}
-        </span>
-      )}
-    </div>
-  );
+function Rail({ label }: { label: string }) {
+  return <div className="text-[10px] uppercase tracking-widest font-sans font-semibold text-[#78716C]">{label}</div>;
 }
 
 function Card({
@@ -135,6 +122,7 @@ function Card({
   hasParents: boolean;
   onClimb: (id: string) => void;
 }) {
+  const filiation = filiationLine(node);
   return (
     <article
       className={`bg-white border rounded-xl p-4 flex flex-col justify-between min-w-0 ${
@@ -174,6 +162,12 @@ function Card({
             <div className="flex items-center gap-1.5 text-[#78716C]">
               <Briefcase className="w-3.5 h-3.5 text-[#A8A29E] shrink-0" />
               <span className="truncate">{node.occupation}</span>
+            </div>
+          )}
+          {filiation && (
+            <div className="flex items-start gap-1.5 text-[11px] text-[#78716C]">
+              <Users className="w-3.5 h-3.5 text-[#A8A29E] shrink-0 mt-0.5" />
+              <span className="min-w-0">{filiation}</span>
             </div>
           )}
           {node.needsResearch && <div className="text-[11px] text-[#8A5A14] bg-[#FBF4E6] border border-[#EBD9B4] rounded px-2 py-0.5 inline-block">carece pesquisa</div>}
@@ -404,10 +398,7 @@ export default function TreeWindow({ persons, modes }: Props) {
       {/* Level 2: grandparents (only when the root is one person) */}
       {!couple && (
         <section aria-label="Avós" className="space-y-2">
-          <Rail
-            label="Avós"
-            sources={level2.map((g, i) => ({ who: g ? `${firstName(g.of)} (${i === 0 ? 'pai' : 'mãe'})` : undefined, father: g?.father, mother: g?.mother }))}
-          />
+          <Rail label="Avós" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
             {level2.map((g, i) => {
               const side = i === 0 ? 'paterno' : 'materno';
@@ -431,7 +422,7 @@ export default function TreeWindow({ persons, modes }: Props) {
 
       {/* Level 1: parents */}
       <section aria-label="Pais" className="space-y-2">
-        <Rail label={couple ? 'Os pais deles' : 'Pais'} sources={level1.map((p) => ({ who: couple ? firstName(p.of) : undefined, father: p.father, mother: p.mother }))} />
+        <Rail label={couple ? 'Os pais deles' : 'Pais'} />
         <div className={`grid gap-x-6 gap-y-6 ${couple ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 max-w-3xl mx-auto'}`}>
           {level1.map((p) => {
             const suffix = couple ? ` de ${firstName(p.of)}` : '';
@@ -480,8 +471,8 @@ export default function TreeWindow({ persons, modes }: Props) {
       </section>
 
       <p className="text-[11px] font-sans text-[#78716C] border-t border-[#EFEAE0] pt-3">
-        A haste entre um casal e o filho leva a firmeza da ligação (cheia: certa; tracejada: declarada ou provável; pontilhada: duvidosa) — e a faixa de
-        cada geração diz de que ato ela vem. «Subir» põe a pessoa no pé da árvore e mostra os pais e avós dela. Documentos de depois de 1925 são citados,
+        A haste entre um casal e o filho leva a firmeza da ligação (cheia: certa; tracejada: declarada ou provável; pontilhada: duvidosa); cada
+        cartão diz de que ato vem a sua filiação. «Subir» põe a pessoa no pé da árvore e mostra os pais e avós dela. Documentos de depois de 1925 são citados,
         não publicados.
       </p>
     </div>
