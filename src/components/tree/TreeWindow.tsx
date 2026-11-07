@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Anchor, ArrowUp, Briefcase, ChevronRight, MapPin, Search, Users } from 'lucide-react';
 
 export type Confidence = 'certain' | 'stated' | 'probable' | 'doubtful';
@@ -9,6 +9,13 @@ export interface NodePlace {
   name: string;
   /** «Reggio Calabria, Calábria, Itália» */
   context: string;
+}
+
+export interface FiliationSource {
+  /** «Registro civil», «Registro paroquial»; empty when the jurisdiction has no short name */
+  kind: string;
+  label: string;
+  document?: string;
 }
 
 /** One person as the tree needs it (a subset of the exported person, serialised as island props). */
@@ -25,7 +32,16 @@ export interface TreeNode {
   anchor?: string;
   noDossier: boolean;
   needsResearch: boolean;
-  relations: { type: RelationType; person: string; confidence: Confidence; sourceLabel: string; document?: string }[];
+  relations: {
+    type: RelationType;
+    person: string;
+    confidence: Confidence;
+    /** the main source, for the union legend and tooltips */
+    sourceLabel: string;
+    document?: string;
+    /** the acts that support this link, civil first, then parish; a reference to an unpublished document has no `document` */
+    sources: FiliationSource[];
+  }[];
 }
 
 export interface Mode {
@@ -64,45 +80,31 @@ function weakest(...cs: (Confidence | undefined)[]): Confidence | undefined {
   return present.sort((a, b) => CONFIDENCE_ORDER.indexOf(b) - CONFIDENCE_ORDER.indexOf(a))[0];
 }
 
-function Source({ relation, muted = false }: { relation: Relation; muted?: boolean }) {
-  return relation.document ? (
-    <a href={`/documentos/${relation.document}/`} className={muted ? 'text-[#57534E] hover:text-[#8C3A27] hover:underline' : 'text-[#8C3A27] hover:underline'}>
-      {relation.sourceLabel}&nbsp;↗
+function Source({ label, document, muted = false }: { label: string; document?: string; muted?: boolean }) {
+  return document ? (
+    <a href={`/documentos/${document}/`} className={muted ? 'text-[#57534E] hover:text-[#8C3A27] hover:underline' : 'text-[#8C3A27] hover:underline'}>
+      {label}&nbsp;↗
     </a>
   ) : (
-    <span className="italic">{relation.sourceLabel}</span>
+    <span className="italic">{label}</span>
   );
 }
 
 /**
- * The filiation line of a card: where this person's link to their parents comes from.
- * «Pais: X» when father and mother come from the same act; «Pai: X · Mãe: Y» otherwise.
+ * The filiation lines of a card: the acts that establish this person's parents, one line per record
+ * («Registro civil · atto di nascita…», «Registro paroquial · battesimo…»), at most two.
  */
-function filiationLine(node: TreeNode): ReactNode {
-  const father = node.relations.find((r) => r.type === 'father');
-  const mother = node.relations.find((r) => r.type === 'mother');
-  if (!father && !mother) return null;
-  if (father && mother && father.sourceLabel === mother.sourceLabel && father.document === mother.document) {
-    return (
-      <>
-        Pais: <Source relation={father} muted />
-      </>
-    );
+function filiationSources(node: TreeNode): FiliationSource[] {
+  // one line per record kind (civil, parish…): the first act of each kind, as the build ordered them
+  const out: FiliationSource[] = [];
+  for (const r of node.relations) {
+    if (r.type !== 'father' && r.type !== 'mother') continue;
+    for (const src of r.sources) {
+      if (!out.some((o) => o.kind === src.kind)) out.push(src);
+    }
   }
-  const parts: ReactNode[] = [];
-  if (father)
-    parts.push(
-      <span key="father">
-        Pai: <Source relation={father} muted />
-      </span>,
-    );
-  if (mother)
-    parts.push(
-      <span key="mother">
-        Mãe: <Source relation={mother} muted />
-      </span>,
-    );
-  return parts.flatMap((p, i) => (i ? [' · ', p] : [p]));
+  const rank = (k: string) => (k === 'Registro civil' ? 0 : k === 'Registro paroquial' ? 1 : 2);
+  return out.sort((a, b) => rank(a.kind) - rank(b.kind)).slice(0, 2);
 }
 
 function Rail({ label }: { label: string }) {
@@ -122,7 +124,7 @@ function Card({
   hasParents: boolean;
   onClimb: (id: string) => void;
 }) {
-  const filiation = filiationLine(node);
+  const filiation = filiationSources(node);
   return (
     <article
       className={`bg-white border rounded-xl p-4 flex flex-col justify-between min-w-0 ${
@@ -164,12 +166,15 @@ function Card({
               <span className="truncate">{node.occupation}</span>
             </div>
           )}
-          {filiation && (
-            <div className="flex items-start gap-1.5 text-[11px] text-[#78716C]">
+          {filiation.map((src) => (
+            <div key={src.label} className="flex items-start gap-1.5 text-[11px] text-[#78716C]" title="Registro que estabelece a filiação">
               <Users className="w-3.5 h-3.5 text-[#A8A29E] shrink-0 mt-0.5" />
-              <span className="min-w-0">{filiation}</span>
+              <span className="min-w-0">
+                {src.kind ? `${src.kind} · ` : ''}
+                <Source label={src.label} document={src.document} muted />
+              </span>
             </div>
-          )}
+          ))}
           {node.needsResearch && <div className="text-[11px] text-[#8A5A14] bg-[#FBF4E6] border border-[#EBD9B4] rounded px-2 py-0.5 inline-block">carece pesquisa</div>}
         </div>
       </div>
@@ -219,7 +224,7 @@ function Union({ a, b }: { a?: TreeNode; b?: TreeNode }) {
       <div className="text-[11px] leading-snug font-sans text-[#78716C] text-center px-2 min-h-[2.6em]">
         {relation ? (
           <>
-            Casamento · <Source relation={relation} />
+            Casamento · <Source label={relation.sourceLabel} document={relation.document} />
           </>
         ) : a && b ? (
           <span className="italic">casamento não documentado</span>
@@ -465,7 +470,7 @@ export default function TreeWindow({ persons, modes }: Props) {
                 <button onClick={() => climb(r.person)} className="text-[#8C3A27] hover:underline cursor-pointer">
                   {byId.get(r.person)!.name}
                 </button>{' '}
-                · <Source relation={r} />
+                · <Source label={r.sourceLabel} document={r.document} />
               </p>
             ))}
       </section>

@@ -1,22 +1,29 @@
 ---
 import Base from '../../layouts/Base.astro';
-import TreeWindow, { type Mode, type TreeNode } from '../../components/tree/TreeWindow';
+import TreeWindow, { type FiliationSource, type Mode, type TreeNode } from '../../components/tree/TreeWindow';
 import { loadArchive } from '../../lib/persons-build';
 import { LINE_ROOT, documentTypeLabel, readableArchiveDate, lifeSpan, occupationLabel } from '../../lib/persons';
 import { placeContext, placeName, placeOf } from '../../lib/places';
 
 const { persons, documentById } = await loadArchive();
 
+/** Short name of a document's jurisdiction for the card lines; empty when there is no short name. */
+const RECORD_KIND: Record<string, string> = { 'Registro civil': 'Registro civil', 'Arquivo paroquial': 'Registro paroquial', Catasto: 'Catasto', 'Leva militar': 'Leva militar' };
+const KIND_RANK = (k: string) => (k === 'Registro civil' ? 0 : k === 'Registro paroquial' ? 1 : 2);
+
 /**
- * Short label of a relation's source: the published act (place, date) or the reference to the unpublished one.
- * For a spouse prefers the marriage act; for a parent, the birth or baptism act; otherwise the first listed.
+ * The sources of a relation: the published acts (place, date), civil first, then parish — for a spouse the
+ * marriage act first, for a parent the birth/baptism act first — or the reference to the unpublished one.
  */
-function sourceLabel(type: string, documents: string[], reference?: string): { label: string; document?: string } {
+function relationSources(type: string, documents: string[], reference?: string): FiliationSource[] {
   const docs = documents.map((id) => documentById.get(id)).filter((d): d is NonNullable<typeof d> => !!d);
   const preferred = type === 'spouse' ? ['marriage', 'parish_marriage'] : type === 'father' || type === 'mother' ? ['birth', 'baptism'] : [];
-  const d = docs.find((x) => preferred.includes(x.type)) ?? docs[0];
-  if (d) return { label: `${documentTypeLabel(d).toLowerCase()}, ${d.place}, ${readableArchiveDate(d.date)}`, document: d.id };
-  return { label: reference ?? 'sem fonte' };
+  const sorted = [...docs].sort(
+    (a, b) => Number(!preferred.includes(a.type)) - Number(!preferred.includes(b.type)) || KIND_RANK(RECORD_KIND[a.jurisdiction] ?? '') - KIND_RANK(RECORD_KIND[b.jurisdiction] ?? ''),
+  );
+  if (sorted.length)
+    return sorted.map((d) => ({ kind: RECORD_KIND[d.jurisdiction] ?? '', label: `${documentTypeLabel(d).toLowerCase()}, ${d.place}, ${readableArchiveDate(d.date)}`, document: d.id }));
+  return [{ kind: '', label: reference ?? 'sem fonte' }];
 }
 
 const nodes: TreeNode[] = persons.map((p) => {
@@ -36,8 +43,8 @@ const nodes: TreeNode[] = persons.map((p) => {
     noDossier: !!p.no_dossier,
     needsResearch: !!p.needs_research,
     relations: p.relations.map((r) => {
-      const s = sourceLabel(r.type, r.documents, r.reference);
-      return { type: r.type, person: r.person, confidence: r.confidence, sourceLabel: s.label, ...(s.document ? { document: s.document } : {}) };
+      const sources = relationSources(r.type, r.documents, r.reference);
+      return { type: r.type, person: r.person, confidence: r.confidence, sourceLabel: sources[0].label, ...(sources[0].document ? { document: sources[0].document } : {}), sources };
     }),
   };
 });
