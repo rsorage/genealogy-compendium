@@ -1,0 +1,30 @@
+---
+/** Navigation trail (breadcrumbs); the matching JSON-LD comes from breadcrumbsJsonLd(). */
+interface Item {
+  name: string;
+  path: string;
+}
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<nav class="text-xs font-sans text-[#78716C] flex flex-wrap items-center gap-2" aria-label="Caminho">
+  {
+    items.map((item, i) => (
+      <>
+        {i > 0 && <span aria-hidden="true">/</span>}
+        {i < items.length - 1 ? (
+          <a href={item.path} class="text-[#8C3A27] hover:underline">
+            {item.name}
+          </a>
+        ) : (
+          <span aria-current="page" class="text-[#57534E]">
+            {item.name}
+          </span>
+        )}
+      </>
+    ))
+  }
+</nav>

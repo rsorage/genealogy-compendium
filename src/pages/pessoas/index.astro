@@ -1,18 +1,18 @@
 ---
 import Base from '../../layouts/Base.astro';
-import CartaoPessoa from '../../components/pessoas/CartaoPessoa.astro';
-import { carregarAcervo } from '../../lib/pessoas-build';
-import { DESCRICAO_LINHA, ORDEM_LINHAS, RAIZ_DA_LINHA, ROTULO_LINHA, caminhoPessoa, type Linha } from '../../lib/pessoas';
+import PersonCard from '../../components/persons/PersonCard.astro';
+import { loadArchive } from '../../lib/persons-build';
+import { LINE_DESCRIPTION, LINE_ORDER, LINE_ROOT, LINE_LABEL, type Line } from '../../lib/persons';
 
-const { pessoas, documentos } = await carregarAcervo();
-const porLinha = new Map<Linha, typeof pessoas>();
-for (const p of pessoas) if (!p.sem_dossie) porLinha.set(p.linha, [...(porLinha.get(p.linha) ?? []), p]);
+const { persons, documents } = await loadArchive();
+const byLine = new Map<Line, typeof persons>();
+for (const p of persons) if (!p.no_dossier) byLine.set(p.line, [...(byLine.get(p.line) ?? []), p]);
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 ---
 
 <Base
-  titulo="Pessoas"
-  descricao={`${fmt(pessoas.length)} pessoas das linhas Suraci, Cardillo, Marsicano e Vecchia, nascidas na Itália, com datas, firmeza de cada fato e os ${fmt(documentos.length)} documentos que as sustentam.`}
+  title="Pessoas"
+  description={`${fmt(persons.length)} pessoas das linhas Suraci, Cardillo, Marsicano e Vecchia, nascidas na Itália, com datas, firmeza de cada fato e os ${fmt(documents.length)} documentos que as sustentam.`}
 >
   <div class="space-y-12 py-8">
     <section class="border-b border-[#E7E2D8] pb-8">
@@ -34,15 +34,15 @@ const fmt = (n: number) => n.toLocaleString('pt-BR');
           <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
           <dl class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-[#57534E]">
             {
-              ORDEM_LINHAS.filter((l) => porLinha.has(l)).map((l) => (
+              LINE_ORDER.filter((l) => byLine.has(l)).map((l) => (
                 <>
-                  <dt>{ROTULO_LINHA[l]}</dt>
-                  <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{porLinha.get(l)!.length}</dd>
+                  <dt>{LINE_LABEL[l]}</dt>
+                  <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{byLine.get(l)!.length}</dd>
                 </>
               ))
             }
             <dt class="pt-1 border-t border-[#E5DFD3]">Documentos</dt>
-            <dd class="pt-1 border-t border-[#E5DFD3] font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(documentos.length)}</dd>
+            <dd class="pt-1 border-t border-[#E5DFD3] font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(documents.length)}</dd>
           </dl>
           <p class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
             Ninguém nascido depois de 1925. Os nomes seguem a grafia do ato de nascimento; outras grafias ficam como nomes alternativos.
@@ -52,28 +52,28 @@ const fmt = (n: number) => n.toLocaleString('pt-BR');
     </section>
 
     {
-      ORDEM_LINHAS.filter((l) => porLinha.has(l)).map((linha) => {
-        const lista = porLinha.get(linha)!;
-        const raiz = RAIZ_DA_LINHA[linha];
+      LINE_ORDER.filter((l) => byLine.has(l)).map((line) => {
+        const list = byLine.get(line)!;
+        const root = LINE_ROOT[line];
         return (
-          <section id={linha} class="space-y-5 scroll-mt-24">
+          <section id={line} class="space-y-5 scroll-mt-24">
             <div class="border-b border-[#E7E2D8] pb-3 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
               <div>
-                <h2 class="font-display text-3xl font-medium text-[#1C1917]">{ROTULO_LINHA[linha]}</h2>
-                <p class="font-editorial text-sm text-[#57534E] mt-1 max-w-2xl">{DESCRICAO_LINHA[linha]}</p>
+                <h2 class="font-display text-3xl font-medium text-[#1C1917]">{LINE_LABEL[line]}</h2>
+                <p class="font-editorial text-sm text-[#57534E] mt-1 max-w-2xl">{LINE_DESCRIPTION[line]}</p>
               </div>
               <div class="flex items-center gap-4 text-xs font-sans whitespace-nowrap">
-                <span class="text-[#78716C]">{lista.length} pessoas</span>
-                {raiz && (
-                  <a href={`/arvore/?pessoa=${raiz}`} class="text-[#8C3A27] font-semibold hover:underline">
+                <span class="text-[#78716C]">{list.length} pessoas</span>
+                {root && (
+                  <a href={`/arvore/?pessoa=${root}`} class="text-[#8C3A27] font-semibold hover:underline">
                     Ver na árvore →
                   </a>
                 )}
               </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {lista.map((p) => (
-                <CartaoPessoa pessoa={p} />
+              {list.map((p) => (
+                <PersonCard person={p} />
               ))}
             </div>
           </section>

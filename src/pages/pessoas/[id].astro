@@ -1,109 +1,112 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Trilha from '../../components/registros/Trilha.astro';
-import SeloFirmeza from '../../components/pessoas/SeloFirmeza.astro';
-import CartaoPessoa from '../../components/pessoas/CartaoPessoa.astro';
-import { carregarAcervo } from '../../lib/pessoas-build';
-import { jsonLdTrilha } from '../../lib/registros';
+import Breadcrumbs from '../../components/site/Breadcrumbs.astro';
+import ConfidenceBadge from '../../components/persons/ConfidenceBadge.astro';
+import PersonCard from '../../components/persons/PersonCard.astro';
+import { loadArchive } from '../../lib/persons-build';
+import { breadcrumbsJsonLd } from '../../lib/records';
+import { placeLabel } from '../../lib/places';
 import {
-  ROTULO_LINHA,
-  ROTULO_RELACAO,
-  ROTULO_TIPO_DOC,
-  caminhoDocumento,
-  caminhoPessoa,
-  dataAcervoLegivel,
-  periodoVida,
-  rotuloOcupacao,
-  rotuloPapeis,
-  type Pessoa,
-} from '../../lib/pessoas';
+  LINE_LABEL,
+  RELATION_LABEL,
+  RELATION_ORDER,
+  documentTypeLabel,
+  documentPath,
+  personPath,
+  readableArchiveDate,
+  lifeSpan,
+  occupationLabel,
+  rolesLabel,
+  type Person,
+} from '../../lib/persons';
 
 export async function getStaticPaths() {
-  const { pessoas } = await carregarAcervo();
-  return pessoas.filter((p) => !p.sem_dossie).map((p) => ({ params: { id: p.id }, props: { pessoa: p } }));
+  const { persons } = await loadArchive();
+  return persons.filter((p) => !p.no_dossier).map((p) => ({ params: { id: p.id }, props: { person: p } }));
 }
 
 interface Props {
-  pessoa: Pessoa;
+  person: Person;
 }
-const { pessoa } = Astro.props;
-const { pessoaPorId, documentoPorId } = await carregarAcervo();
+const { person } = Astro.props;
+const { personById, documentById } = await loadArchive();
 
-const vida = periodoVida(pessoa);
-const grupos = (['pai', 'mae', 'conjuge', 'irmao', 'filho'] as const).map((tipo) => ({
-  tipo,
-  itens: pessoa.relacoes.filter((r) => r.tipo === tipo),
+const life = lifeSpan(person);
+const groups = RELATION_ORDER.map((type) => ({
+  type,
+  items: person.relations.filter((r) => r.type === type),
 }));
-const temFamilia = pessoa.relacoes.length > 0;
-type Evento = NonNullable<Pessoa['nascimento']>;
-const eventos: [string, Evento][] = [];
-if (pessoa.nascimento) eventos.push(['Nascimento', pessoa.nascimento]);
-if (pessoa.morte) eventos.push(['Morte', pessoa.morte]);
-const aparicoes = pessoa.aparece_em
-  .map((a) => ({ ...a, doc: documentoPorId.get(a.documento)! }))
-  .sort((a, b) => a.doc.data_documento.localeCompare(b.doc.data_documento));
-const documentouNoBrasil = aparicoes.some((a) => a.doc.pais === 'BR');
-const trilha = [
-  { nome: 'Pessoas', caminho: '/pessoas/' },
-  { nome: ROTULO_LINHA[pessoa.linha], caminho: `/pessoas/#${pessoa.linha}` },
-  { nome: pessoa.nome_exibicao, caminho: caminhoPessoa(pessoa.id) },
+const hasFamily = person.relations.length > 0;
+type Event = NonNullable<Person['birth']>;
+const events: [string, Event][] = [];
+if (person.birth) events.push(['Nascimento', person.birth]);
+if (person.death) events.push(['Morte', person.death]);
+const appearances = person.appearances
+  .map((a) => ({ ...a, doc: documentById.get(a.document)! }))
+  .sort((a, b) => a.doc.date.localeCompare(b.doc.date));
+const documentedInBrazil = appearances.some((a) => a.doc.country === 'BR');
+const trail = [
+  { name: 'Pessoas', path: '/pessoas/' },
+  { name: LINE_LABEL[person.line], path: `/pessoas/#${person.line}` },
+  { name: person.display_name, path: personPath(person.id) },
 ];
-const descricao = [
-  pessoa.nome_exibicao,
-  vida ? `(${vida})` : '',
-  pessoa.nascimento?.lugar ? `, ${pessoa.nascimento.lugar}` : '',
+const description = [
+  person.display_name,
+  life ? `(${life})` : '',
+  person.birth?.place ? `, ${placeLabel(person.birth.place)}` : '',
   ' — ',
-  pessoa.resumo || `o que ${aparicoes.length} ${aparicoes.length === 1 ? 'documento diz' : 'documentos dizem'} sobre esta pessoa, com a firmeza de cada fato e de cada parentesco.`,
+  person.public_summary || `o que ${appearances.length} ${appearances.length === 1 ? 'documento diz' : 'documentos dizem'} sobre esta pessoa, com a firmeza de cada fato e de cada parentesco.`,
 ].join('');
 
 const iso = (d?: string) => (d && /^\d{4}(-\d{2}(-\d{2})?)?$/.test(d) ? d : undefined);
+const personRef = (id: string) => ({ '@type': 'Person', name: personById.get(id)?.display_name, url: `https://genealogia.rsorage.com${personPath(id)}` });
 const jsonLd = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: pessoa.nome_exibicao,
-  alternateName: pessoa.nomes_alternativos,
-  url: `https://genealogia.rsorage.com${caminhoPessoa(pessoa.id)}`,
-  ...(iso(pessoa.nascimento?.data) ? { birthDate: iso(pessoa.nascimento?.data) } : {}),
-  ...(iso(pessoa.morte?.data) ? { deathDate: iso(pessoa.morte?.data) } : {}),
-  ...(pessoa.nascimento?.lugar ? { birthPlace: pessoa.nascimento.lugar } : {}),
-  ...(pessoa.morte?.lugar ? { deathPlace: pessoa.morte.lugar } : {}),
-  ...(pessoa.ocupacao ? { jobTitle: rotuloOcupacao(pessoa.ocupacao) } : {}),
-  parent: pessoa.relacoes.filter((r) => r.tipo === 'pai' || r.tipo === 'mae').map((r) => ({ '@type': 'Person', name: pessoaPorId.get(r.pessoa)?.nome_exibicao, url: `https://genealogia.rsorage.com${caminhoPessoa(r.pessoa)}` })),
-  spouse: pessoa.relacoes.filter((r) => r.tipo === 'conjuge').map((r) => ({ '@type': 'Person', name: pessoaPorId.get(r.pessoa)?.nome_exibicao, url: `https://genealogia.rsorage.com${caminhoPessoa(r.pessoa)}` })),
-  children: pessoa.relacoes.filter((r) => r.tipo === 'filho').map((r) => ({ '@type': 'Person', name: pessoaPorId.get(r.pessoa)?.nome_exibicao, url: `https://genealogia.rsorage.com${caminhoPessoa(r.pessoa)}` })),
+  name: person.display_name,
+  alternateName: person.aliases,
+  url: `https://genealogia.rsorage.com${personPath(person.id)}`,
+  ...(iso(person.birth?.date) ? { birthDate: iso(person.birth?.date) } : {}),
+  ...(iso(person.death?.date) ? { deathDate: iso(person.death?.date) } : {}),
+  ...(person.birth?.place ? { birthPlace: placeLabel(person.birth.place) } : {}),
+  ...(person.death?.place ? { deathPlace: placeLabel(person.death.place) } : {}),
+  ...(person.occupation ? { jobTitle: occupationLabel(person.occupation) } : {}),
+  parent: person.relations.filter((r) => r.type === 'father' || r.type === 'mother').map((r) => personRef(r.person)),
+  spouse: person.relations.filter((r) => r.type === 'spouse').map((r) => personRef(r.person)),
+  children: person.relations.filter((r) => r.type === 'child').map((r) => personRef(r.person)),
 }).replace(/</g, '\\u003c');
 ---
 
-<Base titulo={pessoa.nome_exibicao} descricao={descricao} caminho={caminhoPessoa(pessoa.id)} jsonLd={[jsonLd, jsonLdTrilha(trilha)]}>
+<Base title={person.display_name} description={description} path={personPath(person.id)} jsonLd={[jsonLd, breadcrumbsJsonLd(trail)]}>
   <div class="space-y-10 py-8">
-    <Trilha itens={trilha} />
+    <Breadcrumbs items={trail} />
 
-    <!-- Cabeçalho -->
+    <!-- Header -->
     <section class="border-b border-[#E7E2D8] pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <div class="lg:col-span-8 space-y-3">
-        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">{ROTULO_LINHA[pessoa.linha]}</div>
-        <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">{pessoa.nome_exibicao}</h1>
+        <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">{LINE_LABEL[person.line]}</div>
+        <h1 class="font-display text-4xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">{person.display_name}</h1>
         {
-          pessoa.nomes_alternativos.length > 0 && (
+          person.aliases.length > 0 && (
             <p class="font-editorial text-base text-[#57534E]">
               Também escrito{' '}
-              {pessoa.nomes_alternativos.map((n, i) => (
+              {person.aliases.map((n, i) => (
                 <>
                   <span class="text-[#1C1917]">{n}</span>
-                  {i < pessoa.nomes_alternativos.length - 1 ? ', ' : ''}
+                  {i < person.aliases.length - 1 ? ', ' : ''}
                 </>
               ))}
             </p>
           )
         }
         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-sans text-[#57534E]">
-          {vida && <span class="font-mono tabular-nums text-[#8C3A27] font-semibold">{vida}</span>}
-          {pessoa.ocupacao && <span>{rotuloOcupacao(pessoa.ocupacao)}</span>}
-          {pessoa.sexo !== '?' && <span class="text-[#A8A29E]">{pessoa.sexo === 'F' ? 'mulher' : 'homem'}</span>}
+          {life && <span class="font-mono tabular-nums text-[#8C3A27] font-semibold">{life}</span>}
+          {person.occupation && <span>{occupationLabel(person.occupation)}</span>}
+          {person.sex !== '?' && <span class="text-[#A8A29E]">{person.sex === 'F' ? 'mulher' : 'homem'}</span>}
         </div>
-        {pessoa.resumo && <p class="font-editorial text-lg text-[#292524] leading-relaxed pt-2 max-w-3xl">{pessoa.resumo}</p>}
+        {person.public_summary && <p class="font-editorial text-lg text-[#292524] leading-relaxed pt-2 max-w-3xl">{person.public_summary}</p>}
         {
-          pessoa.carece_pesquisa && (
+          person.needs_research && (
             <p class="text-xs font-sans bg-[#FBF4E6] border border-[#EBD9B4] text-[#8A5A14] rounded-md px-3 py-2 inline-block">
               <strong>Carece pesquisa.</strong> Esta pessoa está no acervo só por fonte secundária (a Árvore Familiar do FamilySearch); nada foi conferido em documento.
             </p>
@@ -114,18 +117,18 @@ const jsonLd = JSON.stringify({
         <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Ligações</div>
         <ul class="space-y-1.5">
           <li>
-            <a href={`/arvore/?pessoa=${pessoa.id}`} class="text-[#1C1917] font-semibold hover:text-[#8C3A27] hover:underline">Ver na árvore →</a>
+            <a href={`/arvore/?pessoa=${person.id}`} class="text-[#1C1917] font-semibold hover:text-[#8C3A27] hover:underline">Ver na árvore →</a>
           </li>
           {
-            pessoa.familysearch && (
+            person.familysearch && (
               <li>
-                <a href={`https://www.familysearch.org/tree/person/details/${pessoa.familysearch}`} target="_blank" rel="noopener noreferrer" class="text-[#57534E] hover:text-[#8C3A27] hover:underline">
-                  Árvore Familiar do FamilySearch ({pessoa.familysearch}) ↗
+                <a href={`https://www.familysearch.org/tree/person/details/${person.familysearch}`} target="_blank" rel="noopener noreferrer" class="text-[#57534E] hover:text-[#8C3A27] hover:underline">
+                  Árvore Familiar do FamilySearch ({person.familysearch}) ↗
                 </a>
               </li>
             )
           }
-          <li class="text-[#78716C]">{aparicoes.length} {aparicoes.length === 1 ? 'documento a nomeia' : 'documentos a nomeiam'} · {pessoa.relacoes.length} {pessoa.relacoes.length === 1 ? 'parentesco' : 'parentescos'} documentados</li>
+          <li class="text-[#78716C]">{appearances.length} {appearances.length === 1 ? 'documento a nomeia' : 'documentos a nomeiam'} · {person.relations.length} {person.relations.length === 1 ? 'parentesco' : 'parentescos'} documentados</li>
         </ul>
         <p class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
           Cada fato traz a sua firmeza (certa, declarada, provável, duvidosa) e a base que o sustenta. Conclusão sem evidência não entra.
@@ -133,30 +136,30 @@ const jsonLd = JSON.stringify({
       </aside>
     </section>
 
-    <!-- Fatos -->
+    <!-- Facts -->
     {
-      (pessoa.nascimento || pessoa.morte) && (
+      (person.birth || person.death) && (
         <section class="space-y-4" aria-labelledby="fatos">
           <h2 id="fatos" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">O que se sabe, e com que firmeza</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {eventos.map(([rotulo, ev]) => (
+            {events.map(([label, ev]) => (
                 <article class="bg-white border border-[#E7E2D8] rounded-xl p-5 space-y-3">
                   <div class="flex items-center justify-between gap-3">
-                    <h3 class="font-display text-xl font-semibold text-[#1C1917]">{rotulo}</h3>
-                    <SeloFirmeza firmeza={ev.firmeza} />
+                    <h3 class="font-display text-xl font-semibold text-[#1C1917]">{label}</h3>
+                    <ConfidenceBadge confidence={ev.confidence} />
                   </div>
                   <p class="font-editorial text-lg text-[#292524]">
-                    {ev.data ? dataAcervoLegivel(ev.data) : <span class="text-[#78716C]">data não conhecida</span>}
-                    {ev.lugar && <span class="text-[#57534E]"> · {ev.lugar}</span>}
+                    {ev.date ? readableArchiveDate(ev.date) : <span class="text-[#78716C]">data não conhecida</span>}
+                    {ev.place && <span class="text-[#57534E]"> · {placeLabel(ev.place)}</span>}
                   </p>
                   <div class="bg-[#FAF7F2] border border-[#E7E0D2] rounded-lg p-3.5 space-y-2">
                     <div class="text-[10px] uppercase tracking-widest font-sans font-semibold text-[#78716C]">Base</div>
-                    <p class="font-sans text-xs text-[#44403C] leading-relaxed">{ev.base}</p>
-                    {ev.documentos.length > 0 && (
+                    <p class="font-sans text-xs text-[#44403C] leading-relaxed">{ev.basis}</p>
+                    {ev.documents.length > 0 && (
                       <p class="flex flex-wrap gap-x-3 gap-y-1 text-xs font-sans pt-1">
-                        {ev.documentos.map((id) => (
-                          <a href={caminhoDocumento(id)} class="text-[#8C3A27] font-semibold hover:underline">
-                            {documentoPorId.get(id)?.titulo ?? id}
+                        {ev.documents.map((id) => (
+                          <a href={documentPath(id)} class="text-[#8C3A27] font-semibold hover:underline">
+                            {documentById.get(id)?.title ?? id}
                           </a>
                         ))}
                       </p>
@@ -169,37 +172,37 @@ const jsonLd = JSON.stringify({
       )
     }
 
-    <!-- Família -->
+    <!-- Family -->
     <section class="space-y-4" aria-labelledby="familia">
       <h2 id="familia" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Família</h2>
       {
-        temFamilia ? (
+        hasFamily ? (
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {grupos
-              .filter((g) => g.itens.length > 0)
+            {groups
+              .filter((g) => g.items.length > 0)
               .map((g) => (
                 <div class="space-y-2">
                   <h3 class="text-xs uppercase tracking-widest font-sans font-semibold text-[#78716C]">
-                    {ROTULO_RELACAO[g.tipo]}
-                    {g.itens.length > 1 && g.tipo !== 'pai' && g.tipo !== 'mae' ? ` (${g.itens.length})` : ''}
+                    {RELATION_LABEL[g.type]}
+                    {g.items.length > 1 && g.type !== 'father' && g.type !== 'mother' ? ` (${g.items.length})` : ''}
                   </h3>
                   <ul class="space-y-2">
-                    {g.itens.map((r) => {
-                      const outro = pessoaPorId.get(r.pessoa)!;
+                    {g.items.map((r) => {
+                      const other = personById.get(r.person)!;
                       return (
                         <li class="space-y-1">
-                          <CartaoPessoa pessoa={outro} compacto />
+                          <PersonCard person={other} compact />
                           <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-sans text-[#78716C] px-1">
-                            <SeloFirmeza firmeza={r.firmeza} />
+                            <ConfidenceBadge confidence={r.confidence} />
                             <span>segundo</span>
-                            {r.documentos.map((id) => (
-                              <a href={caminhoDocumento(id)} class="text-[#8C3A27] hover:underline">
-                                {documentoPorId.get(id)?.titulo ?? id}
+                            {r.documents.map((id) => (
+                              <a href={documentPath(id)} class="text-[#8C3A27] hover:underline">
+                                {documentById.get(id)?.title ?? id}
                               </a>
                             ))}
-                            {r.documentos.length === 0 && r.referencia && <span class="italic">{r.referencia}</span>}
+                            {r.documents.length === 0 && r.reference && <span class="italic">{r.reference}</span>}
                           </div>
-                          {r.justificativa && <p class="text-xs font-sans text-[#57534E] leading-relaxed px-1">{r.justificativa}</p>}
+                          {r.rationale && <p class="text-xs font-sans text-[#57534E] leading-relaxed px-1">{r.rationale}</p>}
                         </li>
                       );
                     })}
@@ -212,7 +215,7 @@ const jsonLd = JSON.stringify({
         )
       }
       {
-        documentouNoBrasil && (
+        documentedInBrazil && (
           <p class="text-xs font-sans text-[#78716C] border-t border-[#EFEAE0] pt-3">
             Parentes nascidos no Brasil ainda não estão publicados: nesta fase o site cobre as pessoas nascidas na Itália.
           </p>
@@ -220,7 +223,7 @@ const jsonLd = JSON.stringify({
       }
     </section>
 
-    <!-- Nos documentos -->
+    <!-- In the documents -->
     <section class="space-y-4" aria-labelledby="documentos">
       <div>
         <h2 id="documentos" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Nos documentos</h2>
@@ -229,24 +232,24 @@ const jsonLd = JSON.stringify({
         </p>
       </div>
       {
-        aparicoes.length > 0 ? (
+        appearances.length > 0 ? (
           <ol class="divide-y divide-[#EFEAE0] border-y border-[#E7E2D8]">
-            {aparicoes.map((a) => (
+            {appearances.map((a) => (
               <li class="py-4 grid grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)] gap-x-6 gap-y-1">
-                <div class="font-mono text-sm tabular-nums text-[#8C3A27]">{dataAcervoLegivel(a.doc.data_documento)}</div>
+                <div class="font-mono text-sm tabular-nums text-[#8C3A27]">{readableArchiveDate(a.doc.date)}</div>
                 <div class="space-y-1">
-                  <a href={caminhoDocumento(a.doc.id)} class="font-display text-lg font-semibold text-[#1C1917] hover:text-[#8C3A27] leading-snug">
-                    {a.doc.titulo}
+                  <a href={documentPath(a.doc.id)} class="font-display text-lg font-semibold text-[#1C1917] hover:text-[#8C3A27] leading-snug">
+                    {a.doc.title}
                   </a>
                   <div class="text-xs font-sans text-[#57534E]">
-                    {ROTULO_TIPO_DOC[a.doc.tipo]} · {a.doc.lugar}
+                    {documentTypeLabel(a.doc)} · {a.doc.place}
                   </div>
                   <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-sans">
-                    <span class="font-medium px-2 py-0.5 rounded bg-[#FAF7F0] border border-[#E7E0D2] text-[#57534E]">{rotuloPapeis(a.papeis)}</span>
-                    <span class="font-editorial italic text-[#292524]">«{a.nome_escrito}»</span>
-                    {a.idade !== undefined && <span class="text-[#78716C]">{a.idade} anos declarados</span>}
-                    {a.oficio && <span class="text-[#78716C]">{a.oficio}</span>}
-                    {a.assina !== undefined && <span class="text-[#78716C]">{a.assina ? 'assina' : 'não sabe escrever'}</span>}
+                    <span class="font-medium px-2 py-0.5 rounded bg-[#FAF7F0] border border-[#E7E0D2] text-[#57534E]">{rolesLabel(a.roles)}</span>
+                    <span class="font-editorial italic text-[#292524]">«{a.name_as_written}»</span>
+                    {a.age !== undefined && <span class="text-[#78716C]">{a.age} anos declarados</span>}
+                    {a.occupation && <span class="text-[#78716C]">{a.occupation}</span>}
+                    {a.literate !== undefined && <span class="text-[#78716C]">{a.literate ? 'assina' : 'não sabe escrever'}</span>}
                   </div>
                 </div>
               </li>

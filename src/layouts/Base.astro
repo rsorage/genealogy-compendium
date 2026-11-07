@@ -1,38 +1,38 @@
 ---
 import '../styles/global.css';
-import Cabecalho from '../components/site/Cabecalho.astro';
-import Rodape from '../components/site/Rodape.astro';
+import Header from '../components/site/Header.astro';
+import Footer from '../components/site/Footer.astro';
 
 interface Props {
-  titulo: string;
-  descricao: string;
-  /** Caminho canônico (com barra final). Padrão: a URL da página. */
-  caminho?: string;
-  /** Imagem de compartilhamento, relativa à raiz do site. */
-  imagemOg?: string;
-  /** Marca a página para não ser indexada (ex.: rascunhos). */
-  naoIndexar?: boolean;
-  /** JSON-LD adicional (já serializado); um ou vários blocos. */
+  title: string;
+  description: string;
+  /** Canonical path (with trailing slash). Default: the page URL. */
+  path?: string;
+  /** Sharing image, relative to the site root. */
+  ogImage?: string;
+  /** Marks the page as not to be indexed (e.g. drafts). */
+  noindex?: boolean;
+  /** Additional JSON-LD (already serialised); one or several blocks. */
   jsonLd?: string | string[];
-  /** Largura máxima do conteúdo. */
-  largura?: 'normal' | 'larga';
+  /** Maximum content width. */
+  width?: 'normal' | 'wide';
 }
 
-const SITE_NOME = 'Sorage & Cardillo';
+const SITE_NAME = 'Sorage & Cardillo';
 const {
-  titulo,
-  descricao,
-  caminho = Astro.url.pathname,
-  imagemOg = '/og/portal.jpg',
-  naoIndexar = false,
+  title,
+  description,
+  path = Astro.url.pathname,
+  ogImage = '/og/portal.jpg',
+  noindex = false,
   jsonLd,
-  largura = 'normal',
+  width = 'normal',
 } = Astro.props;
 
 const site = Astro.site ?? new URL('https://genealogia.rsorage.com');
-const canonico = new URL(caminho, site).toString();
-const og = new URL(imagemOg, site).toString();
-const tituloCompleto = caminho === '/' ? `${SITE_NOME} · Compêndio genealógico` : `${titulo} | ${SITE_NOME}`;
+const canonical = new URL(path, site).toString();
+const og = new URL(ogImage, site).toString();
+const fullTitle = path === '/' ? `${SITE_NAME} · Compêndio genealógico` : `${title} | ${SITE_NAME}`;
 ---
 
 <!doctype html>
@@ -40,23 +40,23 @@ const tituloCompleto = caminho === '/' ? `${SITE_NOME} · Compêndio genealógic
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{tituloCompleto}</title>
-    <meta name="description" content={descricao} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
     <meta name="author" content="Ramon Sorage" />
     <meta name="theme-color" content="#fbf9f5" />
-    <link rel="canonical" href={canonico} />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    {naoIndexar && <meta name="robots" content="noindex, nofollow" />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
-    <meta property="og:site_name" content={SITE_NOME} />
-    <meta property="og:title" content={tituloCompleto} />
-    <meta property="og:description" content={descricao} />
-    <meta property="og:url" content={canonico} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:image" content={og} />
     <meta name="twitter:card" content="summary_large_image" />
-    {jsonLd && (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((bloco) => <script type="application/ld+json" set:html={bloco} />)}
+    {jsonLd && (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((block) => <script type="application/ld+json" set:html={block} />)}
   </head>
   <body class="bg-[#FBF9F5] text-[#1C1917] antialiased selection:bg-[#E2D9CC] selection:text-[#1C1917]">
     <a
@@ -65,17 +65,17 @@ const tituloCompleto = caminho === '/' ? `${SITE_NOME} · Compêndio genealógic
       >Ir para o conteúdo</a
     >
     <div class="min-h-screen flex flex-col">
-      <Cabecalho />
+      <Header />
       <main
         id="conteudo"
         class:list={[
           'flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8',
-          largura === 'larga' ? 'max-w-[90rem]' : 'max-w-7xl',
+          width === 'wide' ? 'max-w-[90rem]' : 'max-w-7xl',
         ]}
       >
         <slot />
       </main>
-      <Rodape />
+      <Footer />
     </div>
   </body>
 </html>

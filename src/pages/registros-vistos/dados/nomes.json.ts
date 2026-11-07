@@ -1,11 +1,11 @@
 import type { APIRoute } from 'astro';
-import { carregarRegistros } from '../../../lib/registros-build';
+import { loadRecords } from '../../../lib/records-build';
 
-/** Dados da aba «Nomes transcritos», carregados pela ilha de busca. Já validados pelo build. */
+/** Data of the «Nomes transcritos» tab, loaded by the search island. Already validated by the build. */
 export const GET: APIRoute = async () => {
-  const { meta, recortes } = await carregarRegistros();
-  const nomes = recortes.flatMap((r) => r.linhas);
-  return new Response(JSON.stringify({ meta, nomes }), {
+  const { meta, slices } = await loadRecords();
+  const names = slices.flatMap((s) => s.rows);
+  return new Response(JSON.stringify({ meta, names }), {
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
   });
 };

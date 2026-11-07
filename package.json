@@ -1,5 +1,5 @@
 {
-  "name": "genealogia-compendium",
+  "name": "genealogy-compendium",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,8 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "exportar": "python3 scripts/exportar-registros.py && python3 scripts/exportar-pessoas-documentos.py",
-    "exportar:verificar": "python3 scripts/exportar-registros.py --verificar && python3 scripts/exportar-pessoas-documentos.py --verificar",
+    "export": "python3 scripts/export_records.py && python3 scripts/export_persons_documents.py",
+    "export:check": "python3 scripts/export_records.py --check && python3 scripts/export_persons_documents.py --check",
     "test:py": "python3 -m unittest discover -s tests -p 'test_*.py'"
   },
   "dependencies": {

@@ -1,58 +1,58 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ArvoreJanela, { type Modo, type NoJanela } from '../../components/arvore/ArvoreJanela';
-import { carregarAcervo } from '../../lib/pessoas-build';
-import { RAIZ_DA_LINHA, ROTULO_TIPO_DOC, dataAcervoLegivel, periodoVida, rotuloOcupacao } from '../../lib/pessoas';
-import { contextoDoLugar, lugarDe } from '../../lib/lugares';
+import TreeWindow, { type Mode, type TreeNode } from '../../components/tree/TreeWindow';
+import { loadArchive } from '../../lib/persons-build';
+import { LINE_ROOT, documentTypeLabel, readableArchiveDate, lifeSpan, occupationLabel } from '../../lib/persons';
+import { placeContext, placeName, placeOf } from '../../lib/places';
 
-const { pessoas, documentoPorId } = await carregarAcervo();
+const { persons, documentById } = await loadArchive();
 
 /**
- * Rótulo curto da fonte de uma ligação: o ato publicado (lugar, data) ou a referência ao não publicado.
- * Para cônjuge prefere o ato de casamento; para pai/mãe, o de nascimento ou batismo; senão o primeiro listado.
+ * Short label of a relation's source: the published act (place, date) or the reference to the unpublished one.
+ * For a spouse prefers the marriage act; for a parent, the birth or baptism act; otherwise the first listed.
  */
-function rotuloFonte(tipo: string, docs: string[], referencia?: string): { rotulo: string; documento?: string } {
-  const ds = docs.map((id) => documentoPorId.get(id)).filter((d): d is NonNullable<typeof d> => !!d);
-  const preferidos = tipo === 'conjuge' ? ['casamento', 'matrimonio'] : tipo === 'pai' || tipo === 'mae' ? ['nascita', 'battesimo', 'nascimento'] : [];
-  const d = ds.find((x) => preferidos.includes(x.tipo)) ?? ds[0];
-  if (d) return { rotulo: `${ROTULO_TIPO_DOC[d.tipo].toLowerCase()}, ${d.lugar}, ${dataAcervoLegivel(d.data_documento)}`, documento: d.id };
-  return { rotulo: referencia ?? 'sem fonte' };
+function sourceLabel(type: string, documents: string[], reference?: string): { label: string; document?: string } {
+  const docs = documents.map((id) => documentById.get(id)).filter((d): d is NonNullable<typeof d> => !!d);
+  const preferred = type === 'spouse' ? ['marriage', 'parish_marriage'] : type === 'father' || type === 'mother' ? ['birth', 'baptism'] : [];
+  const d = docs.find((x) => preferred.includes(x.type)) ?? docs[0];
+  if (d) return { label: `${documentTypeLabel(d).toLowerCase()}, ${d.place}, ${readableArchiveDate(d.date)}`, document: d.id };
+  return { label: reference ?? 'sem fonte' };
 }
 
-const nos: NoJanela[] = pessoas.map((p) => {
-  const entrada = p.aparece_em.map((a) => documentoPorId.get(a.documento)!).find((d) => d.tipo === 'hospedaria' || d.tipo === 'lista_de_bordo');
-  const lugar = lugarDe(p.nascimento?.lugar);
+const nodes: TreeNode[] = persons.map((p) => {
+  const arrival = p.appearances.map((a) => documentById.get(a.document)!).find((d) => d.type === 'passenger_list');
+  const place = placeOf(p.birth?.place);
   return {
     id: p.id,
-    nome: p.nome_exibicao,
-    outros: p.nomes_alternativos,
-    vida: periodoVida(p),
-    ...(lugar ? { lugar: { nome: lugar.nome, contexto: contextoDoLugar(lugar), incerto: lugar.incerto } } : {}),
-    ocupacao: rotuloOcupacao(p.ocupacao),
-    emigracao: entrada ? `Entrada no Brasil: ${entrada.ano} (${ROTULO_TIPO_DOC[entrada.tipo].toLowerCase()})` : '',
-    linha: p.linha,
-    sexo: p.sexo,
-    ...(p.ancora ? { ancora: p.ancora.rotulo } : {}),
-    semDossie: !!p.sem_dossie,
-    carecePesquisa: !!p.carece_pesquisa,
-    relacoes: p.relacoes.map((r) => {
-      const f = rotuloFonte(r.tipo, r.documentos, r.referencia);
-      return { tipo: r.tipo, pessoa: r.pessoa, firmeza: r.firmeza, rotuloFonte: f.rotulo, ...(f.documento ? { documento: f.documento } : {}) };
+    name: p.display_name,
+    aliases: p.aliases,
+    life: lifeSpan(p),
+    ...(place ? { place: { name: placeName(place), context: placeContext(place) } } : {}),
+    occupation: occupationLabel(p.occupation),
+    emigration: arrival ? `Entrada no Brasil: ${arrival.year} (${documentTypeLabel(arrival).toLowerCase()})` : '',
+    line: p.line,
+    sex: p.sex,
+    ...(p.anchor ? { anchor: p.anchor.label } : {}),
+    noDossier: !!p.no_dossier,
+    needsResearch: !!p.needs_research,
+    relations: p.relations.map((r) => {
+      const s = sourceLabel(r.type, r.documents, r.reference);
+      return { type: r.type, person: r.person, confidence: r.confidence, sourceLabel: s.label, ...(s.document ? { document: s.document } : {}) };
     }),
   };
 });
-const existe = (id?: string) => !!id && nos.some((n) => n.id === id);
-const avos = ['P-sorage-wolney-1918', 'P-cardillo-marialuzia-1922'];
-const modos: Modo[] = [
-  ...(avos.every(existe) ? [{ id: 'avos', rotulo: 'Meus avós', raiz: avos, linhas: [] }] : []),
-  ...(existe(RAIZ_DA_LINHA.suraci) ? [{ id: 'suraci', rotulo: 'Suraci → Sorage', raiz: [RAIZ_DA_LINHA.suraci!], linhas: ['suraci', 'vecchia'] }] : []),
-  ...(existe(RAIZ_DA_LINHA.cardillo) ? [{ id: 'cardillo', rotulo: 'Cardillo → Cardilo', raiz: [RAIZ_DA_LINHA.cardillo!], linhas: ['cardillo', 'marsicano'] }] : []),
+const exists = (id?: string) => !!id && nodes.some((n) => n.id === id);
+const grandparents = ['P-sorage-wolney-1918', 'P-cardillo-marialuzia-1922'];
+const modes: Mode[] = [
+  ...(grandparents.every(exists) ? [{ id: 'grandparents', label: 'Meus avós', root: grandparents, lines: [] }] : []),
+  ...(exists(LINE_ROOT.suraci) ? [{ id: 'suraci', label: 'Suraci → Sorage', root: [LINE_ROOT.suraci!], lines: ['suraci', 'vecchia'] }] : []),
+  ...(exists(LINE_ROOT.cardillo) ? [{ id: 'cardillo', label: 'Cardillo → Cardilo', root: [LINE_ROOT.cardillo!], lines: ['cardillo', 'marsicano'] }] : []),
 ];
 ---
 
 <Base
-  titulo="Árvore"
-  descricao="A ascendência das famílias Sorage (Suraci) e Cardillo a partir dos meus avós: pais, avós e bisavós, uma janela de cada vez, com o documento e a firmeza de cada ligação."
+  title="Árvore"
+  description="A ascendência das famílias Sorage (Suraci) e Cardillo a partir dos meus avós: pais, avós e bisavós, uma janela de cada vez, com o documento e a firmeza de cada ligação."
 >
   <div class="space-y-8 py-8">
     <section class="border-b border-[#E7E2D8] pb-6">
@@ -66,6 +66,6 @@ const modos: Modo[] = [
       </p>
     </section>
 
-    <ArvoreJanela client:load pessoas={nos} modos={modos} />
+    <TreeWindow client:load persons={nodes} modes={modes} />
   </div>
 </Base>

@@ -1,59 +1,60 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Trilha from '../../components/registros/Trilha.astro';
-import SeloFirmeza from '../../components/pessoas/SeloFirmeza.astro';
-import { carregarAcervo } from '../../lib/pessoas-build';
-import { jsonLdTrilha } from '../../lib/registros';
+import Breadcrumbs from '../../components/site/Breadcrumbs.astro';
+import ConfidenceBadge from '../../components/persons/ConfidenceBadge.astro';
+import { loadArchive } from '../../lib/persons-build';
+import { breadcrumbsJsonLd } from '../../lib/records';
 import {
-  ROTULO_LINHA,
-  ROTULO_TIPO_DOC,
-  caminhoDocumento,
-  caminhoPessoa,
-  dataAcervoLegivel,
-  rotuloPapeis,
-  rotuloRepositorio,
-  type Documento,
-} from '../../lib/pessoas';
+  LINE_LABEL,
+  documentTypeLabel,
+  documentPath,
+  personPath,
+  readableArchiveDate,
+  rolesLabel,
+  repositoryLabel,
+  type Document,
+} from '../../lib/persons';
 
 export async function getStaticPaths() {
-  const { documentos } = await carregarAcervo();
-  return documentos.map((d) => ({ params: { id: d.id }, props: { documento: d } }));
+  const { documents } = await loadArchive();
+  return documents.map((d) => ({ params: { id: d.id }, props: { document: d } }));
 }
 
 interface Props {
-  documento: Documento;
+  document: Document;
 }
-const { documento: d } = Astro.props;
-const { pessoaPorId } = await carregarAcervo();
-const trilha = [
-  { nome: 'Documentos', caminho: '/documentos/' },
-  { nome: d.titulo, caminho: caminhoDocumento(d.id) },
+const { document: d } = Astro.props;
+const { personById } = await loadArchive();
+const typeLabel = documentTypeLabel(d);
+const trail = [
+  { name: 'Documentos', path: '/documentos/' },
+  { name: d.title, path: documentPath(d.id) },
 ];
-const descricao = `${ROTULO_TIPO_DOC[d.tipo]}, ${d.lugar}, ${dataAcervoLegivel(d.data_documento)}: quem aparece no ato, a transcrição e o link para a imagem no ${d.portal ?? 'arquivo de origem'}.`;
+const description = `${typeLabel}, ${d.place}, ${readableArchiveDate(d.date)}: quem aparece no ato, a transcrição e o link para a imagem no ${d.portal ?? 'arquivo de origem'}.`;
 const meta: [string, string][] = [
-  ['Tipo', ROTULO_TIPO_DOC[d.tipo] + (d.tipo_original ? ` (${d.tipo_original})` : '')],
-  ['Data', dataAcervoLegivel(d.data_documento)],
-  ['Lugar', d.lugar],
-  ['Jurisdição', d.jurisdicao],
-  ['Repositório', rotuloRepositorio(d.repositorio)],
-  ['Referência', d.referencia],
+  ['Tipo', typeLabel + (d.type_raw ? ` (${d.type_raw})` : '')],
+  ['Data', readableArchiveDate(d.date)],
+  ['Lugar', d.place],
+  ['Jurisdição', d.jurisdiction],
+  ['Repositório', repositoryLabel(d.repository)],
+  ['Referência', d.reference],
   ['Identificador no acervo', d.id],
 ];
-const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+const caveatParagraphs = d.caveats.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 ---
 
-<Base titulo={d.titulo} descricao={descricao} caminho={caminhoDocumento(d.id)} jsonLd={jsonLdTrilha(trilha)}>
+<Base title={d.title} description={description} path={documentPath(d.id)} jsonLd={breadcrumbsJsonLd(trail)}>
   <div class="space-y-10 py-8">
-    <Trilha itens={trilha} />
+    <Breadcrumbs items={trail} />
 
     <section class="border-b border-[#E7E2D8] pb-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <div class="lg:col-span-7 space-y-3">
         <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27]">
-          {ROTULO_TIPO_DOC[d.tipo]} · {d.lugar} · {d.ano}
+          {typeLabel} · {d.place} · {d.year}
         </div>
-        <h1 class="font-display text-3xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">{d.titulo}</h1>
+        <h1 class="font-display text-3xl sm:text-5xl font-medium tracking-tight text-[#1C1917] leading-[1.1]">{d.title}</h1>
         <p class="text-xs font-sans text-[#78716C]">
-          {d.linhas.map((l) => ROTULO_LINHA[l]).join(' · ')}
+          {d.lines.map((l) => LINE_LABEL[l]).join(' · ')}
         </p>
         {
           d.url ? (
@@ -81,7 +82,7 @@ const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).fi
       </dl>
     </section>
 
-    <!-- Quem está no ato -->
+    <!-- Who is in the act -->
     <section class="space-y-4" aria-labelledby="pessoas">
       <div>
         <h2 id="pessoas" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Quem está no ato</h2>
@@ -103,21 +104,21 @@ const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).fi
           </thead>
           <tbody class="divide-y divide-[#EFEAE0]">
             {
-              d.pessoas.map((p) => {
-                const pessoa = pessoaPorId.get(p.pessoa);
+              d.persons.map((p) => {
+                const person = personById.get(p.person);
                 return (
                   <tr>
-                    <td class="py-2.5 px-4 sm:px-2 font-editorial italic text-[#292524]">«{p.nome_escrito}»</td>
-                    <td class="py-2.5 px-2 text-[#57534E]">{rotuloPapeis(p.papeis)}</td>
-                    <td class="py-2.5 px-2 font-mono tabular-nums text-[#57534E]">{p.idade ?? ''}</td>
-                    <td class="py-2.5 px-2 text-[#57534E]">{p.oficio ?? ''}</td>
-                    <td class="py-2.5 px-2 text-[#57534E]">{p.assina === undefined ? '' : p.assina ? 'sim' : 'não'}</td>
+                    <td class="py-2.5 px-4 sm:px-2 font-editorial italic text-[#292524]">«{p.name_as_written}»</td>
+                    <td class="py-2.5 px-2 text-[#57534E]">{rolesLabel(p.roles)}</td>
+                    <td class="py-2.5 px-2 font-mono tabular-nums text-[#57534E]">{p.age ?? ''}</td>
+                    <td class="py-2.5 px-2 text-[#57534E]">{p.occupation ?? ''}</td>
+                    <td class="py-2.5 px-2 text-[#57534E]">{p.literate === undefined ? '' : p.literate ? 'sim' : 'não'}</td>
                     <td class="py-2.5 px-2">
                       <div class="flex flex-wrap items-center gap-2">
-                        <a href={caminhoPessoa(p.pessoa)} class="text-[#8C3A27] font-semibold hover:underline">
-                          {pessoa?.nome_exibicao ?? p.pessoa}
+                        <a href={personPath(p.person)} class="text-[#8C3A27] font-semibold hover:underline">
+                          {person?.display_name ?? p.person}
                         </a>
-                        <SeloFirmeza firmeza={p.firmeza} />
+                        <ConfidenceBadge confidence={p.confidence} />
                       </div>
                     </td>
                   </tr>
@@ -125,13 +126,13 @@ const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).fi
               })
             }
             {
-              d.nomes_transcritos.map((n) => (
+              d.transcribed_names.map((n) => (
                 <tr class="text-[#57534E]">
-                  <td class="py-2.5 px-4 sm:px-2 font-editorial italic">«{n.nome_escrito}»</td>
-                  <td class="py-2.5 px-2">{rotuloPapeis(n.papeis)}</td>
-                  <td class="py-2.5 px-2 font-mono tabular-nums">{n.idade ?? ''}</td>
-                  <td class="py-2.5 px-2">{n.oficio ?? ''}</td>
-                  <td class="py-2.5 px-2">{n.assina === undefined ? '' : n.assina ? 'sim' : 'não'}</td>
+                  <td class="py-2.5 px-4 sm:px-2 font-editorial italic">«{n.name_as_written}»</td>
+                  <td class="py-2.5 px-2">{rolesLabel(n.roles)}</td>
+                  <td class="py-2.5 px-2 font-mono tabular-nums">{n.age ?? ''}</td>
+                  <td class="py-2.5 px-2">{n.occupation ?? ''}</td>
+                  <td class="py-2.5 px-2">{n.literate === undefined ? '' : n.literate ? 'sim' : 'não'}</td>
                   <td class="py-2.5 px-2 text-[#A8A29E]">—</td>
                 </tr>
               ))
@@ -140,7 +141,7 @@ const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).fi
         </table>
       </div>
       {
-        d.nomes_transcritos.length > 0 && (
+        d.transcribed_names.length > 0 && (
           <p class="text-xs font-sans text-[#78716C]">
             As linhas sem pessoa são nomes transcritos do ato (testemunhas, oficiais, parteiras) que não têm página própria. A presença no mesmo ato não estabelece parentesco.
           </p>
@@ -148,9 +149,9 @@ const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).fi
       }
     </section>
 
-    <!-- Transcrição -->
+    <!-- Transcription -->
     {
-      d.transcricao && (
+      d.transcription && (
         <section class="space-y-4" aria-labelledby="transcricao">
           <div>
             <h2 id="transcricao" class="font-display text-2xl sm:text-3xl font-medium text-[#1C1917]">Transcrição</h2>
@@ -159,18 +160,18 @@ const paragrafosRessalvas = d.ressalvas.split(/\n\s*\n/).map((p) => p.trim()).fi
             </p>
           </div>
           <div class="paper-grain border border-[#E5DFD3] rounded-xl p-5 sm:p-8">
-            <pre class="font-editorial text-base sm:text-lg leading-relaxed text-[#292524] whitespace-pre-wrap break-words">{d.transcricao}</pre>
+            <pre class="font-editorial text-base sm:text-lg leading-relaxed text-[#292524] whitespace-pre-wrap break-words">{d.transcription}</pre>
           </div>
         </section>
       )
     }
 
     {
-      paragrafosRessalvas.length > 0 && (
+      caveatParagraphs.length > 0 && (
         <section class="space-y-3" aria-labelledby="ressalvas">
           <h2 id="ressalvas" class="font-display text-2xl font-medium text-[#1C1917]">Ressalvas de leitura</h2>
           <div class="bg-[#FAF7F2] border border-[#E7E0D2] rounded-lg p-5 space-y-3 font-sans text-sm text-[#44403C] leading-relaxed">
-            {paragrafosRessalvas.map((p) => (
+            {caveatParagraphs.map((p) => (
               <p>{p}</p>
             ))}
           </div>

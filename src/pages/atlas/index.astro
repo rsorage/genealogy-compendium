@@ -1,8 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
-import PaginaAtlas from '../../components/paginas/PaginaAtlas';
+import AtlasPage from '../../components/pages/AtlasPage';
 ---
 
-<Base naoIndexar={true} titulo="Atlas da migração" descricao="O caminho das famílias entre a Calábria, a Campânia e Minas Gerais, com o que está documentado e o que ainda é hipótese.">
-  <PaginaAtlas client:load />
+<Base noindex={true} title="Atlas da migração" description="O caminho das famílias entre a Calábria, a Campânia e Minas Gerais, com o que está documentado e o que ainda é hipótese.">
+  <AtlasPage client:load />
 </Base>

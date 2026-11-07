@@ -1,33 +1,33 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ListaDocumentos, { type ResumoDocumento } from '../../components/documentos/ListaDocumentos';
-import { carregarAcervo } from '../../lib/pessoas-build';
-import { ROTULO_LINHA, ROTULO_TIPO_DOC, caminhoDocumento, dataAcervoLegivel } from '../../lib/pessoas';
+import DocumentList, { type DocumentSummary } from '../../components/documents/DocumentList';
+import { loadArchive } from '../../lib/persons-build';
+import { LINE_LABEL, documentTypeLabel, documentPath, readableArchiveDate } from '../../lib/persons';
 
-const { documentos, pessoaPorId } = await carregarAcervo();
-const resumos: ResumoDocumento[] = documentos.map((d) => ({
+const { documents, personById } = await loadArchive();
+const summaries: DocumentSummary[] = documents.map((d) => ({
   id: d.id,
-  titulo: d.titulo,
-  tipoRotulo: ROTULO_TIPO_DOC[d.tipo],
-  ano: d.ano,
-  dataLegivel: dataAcervoLegivel(d.data_documento),
-  lugar: d.lugar,
-  linhas: d.linhas,
-  linhasRotulo: d.linhas.map((l) => ROTULO_LINHA[l].split(' (')[0]).join(' · '),
-  pessoas: d.pessoas.map((p) => pessoaPorId.get(p.pessoa)?.nome_exibicao ?? p.pessoa),
-  temLink: !!d.url,
-  temTranscricao: !!d.transcricao,
-  caminho: caminhoDocumento(d.id),
+  title: d.title,
+  typeLabel: documentTypeLabel(d),
+  year: d.year,
+  readableDate: readableArchiveDate(d.date),
+  place: d.place,
+  lines: d.lines,
+  linesLabel: d.lines.map((l) => LINE_LABEL[l].split(' (')[0]).join(' · '),
+  persons: d.persons.map((p) => personById.get(p.person)?.display_name ?? p.person),
+  hasLink: !!d.url,
+  hasTranscription: !!d.transcription,
+  path: documentPath(d.id),
 }));
-const comLink = documentos.filter((d) => d.url).length;
-const comTranscricao = documentos.filter((d) => d.transcricao).length;
-const lugares = new Set(documentos.map((d) => d.lugar)).size;
+const withLink = documents.filter((d) => d.url).length;
+const withTranscription = documents.filter((d) => d.transcription).length;
+const places = new Set(documents.map((d) => d.place)).size;
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 ---
 
 <Base
-  titulo="Documentos"
-  descricao={`${fmt(documentos.length)} atos civis e paroquiais, catasti e certidões lidos na pesquisa das famílias Suraci e Cardillo, com quem aparece em cada um, a transcrição e o link para a imagem no portal de origem.`}
+  title="Documentos"
+  description={`${fmt(documents.length)} atos civis e paroquiais, catasti e certidões lidos na pesquisa das famílias Suraci e Cardillo, com quem aparece em cada um, a transcrição e o link para a imagem no portal de origem.`}
 >
   <div class="space-y-10 py-8">
     <section class="border-b border-[#E7E2D8] pb-8">
@@ -49,18 +49,18 @@ const fmt = (n: number) => n.toLocaleString('pt-BR');
           <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
           <dl class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 text-[#57534E]">
             <dt>Documentos</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(documentos.length)}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(documents.length)}</dd>
             <dt>Com imagem em portal público</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(comLink)}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(withLink)}</dd>
             <dt>Com transcrição</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(comTranscricao)}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(withTranscription)}</dd>
             <dt>Lugares</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{lugares}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{places}</dd>
           </dl>
         </aside>
       </div>
     </section>
 
-    <ListaDocumentos client:load documentos={resumos} rotulosLinha={ROTULO_LINHA} />
+    <DocumentList client:load documents={summaries} lineLabels={LINE_LABEL} />
   </div>
 </Base>

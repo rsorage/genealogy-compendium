@@ -1,0 +1,16 @@
+{
+ "records": {
+  "cutoffs": {
+   "births_and_others": 1925,
+   "born_by": 1925,
+   "deaths": 1955
+  },
+  "generated_on": "2026-11-06",
+  "last_consulted": "2026-11-04",
+  "totals": {
+   "names": 2291,
+   "pages": 3084
+  },
+  "version": 1
+ }
+}

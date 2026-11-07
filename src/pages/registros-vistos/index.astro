@@ -1,13 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro';
-import BuscaRegistros from '../../components/registros/BuscaRegistros';
-import ListagensPorLocalidade from '../../components/registros/ListagensPorLocalidade.astro';
-import { carregarRegistros } from '../../lib/registros-build';
-import { dataLegivel } from '../../lib/registros';
+import RecordsSearch from '../../components/records/RecordsSearch';
+import ListingsByPlace from '../../components/records/ListingsByPlace.astro';
+import { loadRecords } from '../../lib/records-build';
+import { readableDate } from '../../lib/records';
 
-const { meta, recortes } = await carregarRegistros();
-const localidades = new Set(recortes.map((r) => r.comune)).size;
-const totais = meta.totais;
+const { meta, slices } = await loadRecords();
+const places = new Set(slices.map((s) => s.comune)).size;
+const totals = meta.totals;
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 
 const jsonLd = JSON.stringify({
@@ -18,18 +18,18 @@ const jsonLd = JSON.stringify({
     'Nomes lidos em registros civis e paroquiais italianos (e em algumas fontes brasileiras e uruguaias) durante a pesquisa das famílias Sorage/Suraci e Cardillo, com o grau de leitura e o link para a imagem no portal de origem.',
   url: 'https://genealogia.rsorage.com/registros-vistos/',
   creator: { '@type': 'Person', name: 'Ramon Sorage' },
-  temporalCoverage: `../${meta.cortes.obitos}`,
+  temporalCoverage: `../${meta.cutoffs.deaths}`,
   isAccessibleForFree: true,
 }).replace(/</g, '\\u003c');
 ---
 
 <Base
-  titulo="Registros vistos"
-  descricao={`Busca por nomes em ${fmt(totais.nomes)} ocorrências transcritas e ${fmt(totais.paginas)} páginas consultadas de registros civis e paroquiais, com grau de leitura e link para a imagem original.`}
+  title="Registros vistos"
+  description={`Busca por nomes em ${fmt(totals.names)} ocorrências transcritas e ${fmt(totals.pages)} páginas consultadas de registros civis e paroquiais, com grau de leitura e link para a imagem original.`}
   jsonLd={jsonLd}
 >
   <div class="space-y-10 py-8">
-    <!-- Cabeçalho editorial -->
+    <!-- Editorial header -->
     <section class="border-b border-[#E7E2D8] pb-8">
       <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27] mb-2">
         Índice de trabalho · publicado para quem pesquisa os mesmos livros
@@ -54,28 +54,28 @@ const jsonLd = JSON.stringify({
           <div class="uppercase tracking-widest font-semibold text-[#8C3A27]">Nesta exportação</div>
           <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-[#57534E]">
             <dt>Ocorrências</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(totais.nomes)}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(totals.names)}</dd>
             <dt>Páginas consultadas</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(totais.paginas)}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{fmt(totals.pages)}</dd>
             <dt>Localidades</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{localidades}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{places}</dd>
             <dt>Recortes (localidade · série · ano)</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{recortes.length}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] font-semibold text-right">{slices.length}</dd>
             <dt>Última consulta registrada</dt>
-            <dd class="font-mono tabular-nums text-[#1C1917] text-right">{dataLegivel(meta.ultima_consulta)}</dd>
+            <dd class="font-mono tabular-nums text-[#1C1917] text-right">{readableDate(meta.last_consulted)}</dd>
           </dl>
           <div class="pt-2 border-t border-[#E5DFD3] text-[#78716C] leading-relaxed">
-            <Fragment set:html={`Cortes de publicação: nascimentos e demais registros até ${meta.cortes.nascimentos_e_demais}; óbitos até ${meta.cortes.obitos}, só de quem nasceu até ${meta.cortes.nascidos_ate}. Ninguém nascido depois de ${meta.cortes.nascidos_ate} aparece aqui.`} />
+            <Fragment set:html={`Cortes de publicação: nascimentos e demais registros até ${meta.cutoffs.births_and_others}; óbitos até ${meta.cutoffs.deaths}, só de quem nasceu até ${meta.cutoffs.born_by}. Ninguém nascido depois de ${meta.cutoffs.born_by} aparece aqui.`} />
           </div>
         </aside>
       </div>
     </section>
 
-    <BuscaRegistros client:load totais={totais} />
+    <RecordsSearch client:load totals={totals} />
 
-    <ListagensPorLocalidade recortes={recortes} />
+    <ListingsByPlace slices={slices} />
 
-    <!-- Limites da lista -->
+    <!-- Limits of the list -->
     <section id="sobre" class="bg-[#FAF7F0] border border-[#E5DFD3] rounded-xl p-6 sm:p-8 space-y-5 scroll-mt-24">
       <div>
         <div class="text-xs uppercase tracking-widest font-sans font-semibold text-[#8C3A27] mb-1">Sobre esta lista</div>
@@ -106,7 +106,7 @@ const jsonLd = JSON.stringify({
           </p>
           <p>
             <strong class="text-[#1C1917]">Privacidade.</strong>
-            <Fragment set:html={`Publicamos nascimentos e demais registros até ${meta.cortes.nascimentos_e_demais} e óbitos até ${meta.cortes.obitos}, estes só de pessoas com nascimento comprovado até ${meta.cortes.nascidos_ate}.`} />
+            <Fragment set:html={`Publicamos nascimentos e demais registros até ${meta.cutoffs.births_and_others} e óbitos até ${meta.cutoffs.deaths}, estes só de pessoas com nascimento comprovado até ${meta.cutoffs.born_by}.`} />
             O filtro é aplicado duas vezes: na exportação a partir do acervo e de novo na geração do site, que recusa publicar
             qualquer linha fora da regra.
           </p>

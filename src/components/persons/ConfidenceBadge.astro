@@ -1,0 +1,17 @@
+---
+import { CONFIDENCE_CLASS, CONFIDENCE_EXPLANATION, CONFIDENCE_LABEL, CONFIDENCE_STROKE, type Confidence } from '../../lib/persons';
+
+interface Props {
+  confidence: Confidence;
+  prefix?: string;
+}
+const { confidence, prefix = '' } = Astro.props;
+---
+
+<span
+  class:list={['inline-flex items-center gap-1 text-[11px] font-sans font-medium px-2 py-0.5 rounded border whitespace-nowrap', CONFIDENCE_CLASS[confidence]]}
+  title={CONFIDENCE_EXPLANATION[confidence]}
+>
+  <span aria-hidden="true" class="inline-block w-3 border-t-2 border-current" style={`border-top-style: ${CONFIDENCE_STROKE[confidence]}`}></span>
+  {prefix}{CONFIDENCE_LABEL[confidence]}
+</span>

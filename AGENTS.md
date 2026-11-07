@@ -23,7 +23,7 @@ site e os dados já filtrados pelo exportador.
    dos esquemas. Jurisdição sempre a vigente na data do evento.
 6. O histórico do git é permanente: um arquivo que entre aqui não sai mais. Na dúvida, não commitar.
 
-Estas regras são aplicadas **duas vezes**: no exportador (`scripts/exportar-registros.py`) e nos
+Estas regras são aplicadas **duas vezes**: nos exportadores (`scripts/export_*.py`) e nos
 esquemas zod de `src/content.config.ts`, que derrubam o `astro build` se um dado as violar.
 
 ## Como o conteúdo chega aqui
@@ -32,11 +32,11 @@ esquemas zod de `src/content.config.ts`, que derrubam o `astro build` se um dado
 acervo privado (CSV, YAML, fichas)  ──exportador──▶  src/content/*.json  ──astro build──▶  dist/
 ```
 
-- `npm run exportar` lê o acervo (padrão `../family-research`, ou `--acervo /caminho`) e grava
-  `src/content/registros-vistos/{nomes,paginas,meta}.json`, `src/content/pessoas.json` e
-  `src/content/documentos.json`. Os relatórios detalhados (exclusões e motivos) vão para o acervo
+- `npm run export` lê o acervo (padrão `../family-research`, ou `--archive /caminho`) e grava
+  `src/content/records/{names,pages,meta}.json`, `src/content/persons.json` e
+  `src/content/documents.json`. Os relatórios detalhados (exclusões e motivos) vão para o acervo
   (`01 Indice/`), não para cá.
-- `npm run exportar:verificar` confere se os JSON estão atualizados (sai com 1 se não).
+- `npm run export:check` confere se os JSON estão atualizados (sai com 1 se não).
 - `npm run test:py` roda os testes do exportador (dados fictícios).
 - `npm run build` valida e gera o site; `npm run check` faz a checagem de tipos.
 - Ninguém edita `src/content/` à mão.
@@ -45,9 +45,9 @@ acervo privado (CSV, YAML, fichas)  ──exportador──▶  src/content/*.jso
 
 | rota | estado | fonte |
 |---|---|---|
-| `/registros-vistos/` + `/registros-vistos/catalogo/…` | **real** | `01 Indice/registros-vistos/*.csv` via `exportar-registros.py` |
-| `/pessoas/` e `/pessoas/<id>/` | **real** — 243 dossiês | `persons.yaml` + fichas via `exportar-pessoas-documentos.py` |
-| `/arvore/` | **real** — janela 1+2+4 a partir dos meus avós; a firmeza vai na haste casal→filho, a fonte na faixa da geração; lugares com província/região/país via `src/lib/lugares.ts` (comune fora da tabela derruba o build) | idem (ilha `ArvoreJanela`) |
+| `/registros-vistos/` + `/registros-vistos/catalogo/…` | **real** | `01 Indice/registros-vistos/*.csv` via `export_records.py` |
+| `/pessoas/` e `/pessoas/<id>/` | **real** — 243 dossiês | `persons.yaml` + fichas via `export_persons_documents.py` |
+| `/arvore/` | **real** — janela 1+2+4 a partir dos meus avós; a firmeza vai na haste casal→filho, a fonte na faixa da geração; lugares com província/região/país via `src/lib/places.ts` (lugar fora da tabela derruba o build) | idem (ilha `TreeWindow`) |
 | `/documentos/` e `/documentos/<id>/` | **real** — 192 documentos, sem imagem | idem |
 | busca rápida (Ctrl+K) | **real** | `/busca/indice.json` |
 | `/` (compêndio) | casca com texto gerado (ficção), `noindex` | — |
@@ -57,12 +57,12 @@ acervo privado (CSV, YAML, fichas)  ──exportador──▶  src/content/*.jso
 **Recorte das pessoas (decisão de 06/11/2026): «até os italianos».** Publica-se quem nasceu na Itália
 (lugar no `persons.yaml`, lugar declarado num ato, ou pessoa documentada só na Itália) e dali para cima
 sem limite; nascidos no Brasil ficam para outra fase; casos indeterminados decidem-se em
-`01 Indice/publicacao-pessoas.json` (`publicar_pessoas` / `ocultar_pessoas` / `ocultar_documentos`).
+`01 Indice/publicacao-pessoas.json` (`publish_persons` / `hide_persons` / `hide_documents`).
 O texto de apresentação de cada pessoa é o campo `public_summary` do `persons.yaml` (escrito à mão);
 o `summary` interno nunca é exportado. A `line` de cada pessoa também vem do `persons.yaml`.
 
 **Âncoras (07/11/2026).** O casal em que as linhas se juntam (os avós de Ramon) entra nomeado, com rótulo
-(«Meu avô», «Minha avó»), sem dossiê, via `publicacao-pessoas.json` › `ancoras`. Regras que vieram com
+(«Meu avô», «Minha avó»), sem dossiê, via `publicacao-pessoas.json` › `anchors`. Regras que vieram com
 isso: (a) pai/mãe de alguém nascido até 1925 conta como nascido até 1925; (b) as ligações que chegam às
 âncoras e aos pais delas podem citar POR REFERÊNCIA (tipo, lugar, ano) um documento não publicado —
 nada mais sai desse documento; (c) `needs_research: true` no `persons.yaml` marca quem está no grafo
@@ -74,6 +74,9 @@ ficção, substituir. As imagens em `public/imagens/` são stock, mantidas por e
 
 ## Convenções
 
+- **Código em inglês** (identificadores, arquivos, chaves dos JSON exportados, comentários, flags); em português só
+  o que o visitante lê e os endereços públicos, que não mudam. Vocabulário do acervo (`certain|stated|probable|doubtful`,
+  `record_type`) passa como está. Decisão de Ramon, 07/11/2026.
 - Português do Brasil em tudo que o visitante lê; resumos em italiano e inglês virão como páginas
   próprias (como no site anterior: `/suraci/it/`, `/suraci/en/`).
 - Páginas estáticas com URL própria; interatividade só onde faz diferença (busca, mapa), como ilha

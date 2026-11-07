@@ -1,13 +1,16 @@
 import type { APIRoute } from 'astro';
-import { carregarAcervo } from '../../lib/pessoas-build';
-import { ROTULO_TIPO_DOC, periodoVida } from '../../lib/pessoas';
+import { loadArchive } from '../../lib/persons-build';
+import { documentTypeLabel, lifeSpan } from '../../lib/persons';
+import { placeLabel } from '../../lib/places';
 
-/** Índice leve para a busca rápida (Ctrl+K): pessoas e documentos publicados. */
+/** Light index for the quick search (Ctrl+K): published persons and documents. */
 export const GET: APIRoute = async () => {
-  const { pessoas, documentos } = await carregarAcervo();
-  const indice = {
-    pessoas: pessoas.filter((p) => !p.sem_dossie).map((p) => ({ id: p.id, nome: p.nome_exibicao, outros: p.nomes_alternativos, vida: periodoVida(p), lugar: p.nascimento?.lugar ?? '', linha: p.linha })),
-    documentos: documentos.map((d) => ({ id: d.id, titulo: d.titulo, tipo: ROTULO_TIPO_DOC[d.tipo], lugar: d.lugar, ano: d.ano })),
+  const { persons, documents } = await loadArchive();
+  const index = {
+    persons: persons
+      .filter((p) => !p.no_dossier)
+      .map((p) => ({ id: p.id, name: p.display_name, aliases: p.aliases, life: lifeSpan(p), place: placeLabel(p.birth?.place), line: p.line })),
+    documents: documents.map((d) => ({ id: d.id, title: d.title, type: documentTypeLabel(d), place: d.place, year: d.year })),
   };
-  return new Response(JSON.stringify(indice), { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
+  return new Response(JSON.stringify(index), { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
 };

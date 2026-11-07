@@ -1,10 +1,10 @@
 import type { APIRoute } from 'astro';
-import { carregarRegistros } from '../../../lib/registros-build';
+import { loadRecords } from '../../../lib/records-build';
 
-/** Dados da aba «Páginas consultadas», carregados só quando a aba é aberta. */
+/** Data of the «Páginas consultadas» tab, loaded only when the tab is opened. */
 export const GET: APIRoute = async () => {
-  const { paginas } = await carregarRegistros();
-  return new Response(JSON.stringify({ paginas }), {
+  const { pages } = await loadRecords();
+  return new Response(JSON.stringify({ pages }), {
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
   });
 };

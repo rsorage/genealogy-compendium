@@ -1,0 +1,42 @@
+---
+import { personPath, lifeSpan, occupationLabel, type Person } from '../../lib/persons';
+import { placeLabel } from '../../lib/places';
+
+interface Props {
+  person: Person;
+  /** small text on the right (e.g. «pai», «cônjuge»), optional */
+  label?: string;
+  compact?: boolean;
+}
+const { person, label, compact = false } = Astro.props;
+const life = lifeSpan(person);
+const Tag = person.no_dossier ? 'div' : 'a';
+const place = placeLabel(person.birth?.place ?? person.death?.place);
+---
+
+<Tag
+  href={person.no_dossier ? undefined : personPath(person.id)}
+  class:list={[
+    'group block bg-white border border-[#E7E2D8] rounded-lg transition-colors',
+    person.no_dossier ? '' : 'hover:border-[#8C3A27]',
+    compact ? 'px-3 py-2' : 'p-4',
+  ]}
+>
+  <div class="flex items-baseline justify-between gap-3">
+    <span class:list={['font-display font-semibold text-[#1C1917] group-hover:text-[#8C3A27] leading-snug', compact ? 'text-base' : 'text-lg']}>
+      {person.display_name}
+    </span>
+    {(label || person.anchor) && <span class="text-[10px] uppercase tracking-wider font-sans text-[#78716C] shrink-0">{label ?? person.anchor?.label}</span>}
+  </div>
+  {
+    (life || place) && (
+      <div class="text-xs font-sans text-[#57534E] mt-0.5">
+        {life && <span class="font-mono tabular-nums text-[#8C3A27]">{life}</span>}
+        {life && place && <span aria-hidden="true"> · </span>}
+        {place && <span>{place}</span>}
+      </div>
+    )
+  }
+  {!compact && person.occupation && <div class="text-xs font-sans text-[#78716C] mt-0.5">{occupationLabel(person.occupation)}</div>}
+  {person.needs_research && <div class="text-[10px] font-sans text-[#8A5A14] mt-1">carece pesquisa</div>}
+</Tag>
